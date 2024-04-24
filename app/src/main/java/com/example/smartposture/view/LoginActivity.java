@@ -46,8 +46,10 @@ public class LoginActivity extends AppCompatActivity {
                 else {
                     loginVM.loginUser(email, password, new LoginModel.LoginResultCallback() {
                         @Override
-                        public void onSuccess() {
-                            startActivity(new Intent(LoginActivity.this, Home.class));
+                        public void onSuccess(String userName) {
+                            Intent intent = new Intent(LoginActivity.this, Home.class);
+                            intent.putExtra("USER_NAME", userName);
+                            startActivity(intent);
                             finish();
                         }
 
@@ -61,4 +63,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 }
+
 
