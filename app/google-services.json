@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "530813006595",
+    "firebase_url": "https://smartposture-a2269-default-rtdb.firebaseio.com",
+    "project_id": "smartposture-a2269",
+    "storage_bucket": "smartposture-a2269.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530813006595:android:472a3fff248fc435da2f36",
+        "android_client_info": {
+          "package_name": "com.example.smartposture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZyuteDwG6G1N5xfqvJzCTCUX_jHM9x8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
