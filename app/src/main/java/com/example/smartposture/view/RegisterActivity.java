@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smartposture.Home;
@@ -23,7 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText birthdateEditText;
     private Button registerButton;
     private RegisterViewModel registerVM;
-
+    private TextView signInTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +38,14 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.button3);
         registerVM = new ViewModelProvider(this).get(RegisterViewModel.class);
 
+        signInTextView = findViewById(R.id.signin);
+        signInTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
