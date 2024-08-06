@@ -35,12 +35,12 @@ public class HomeViewModel extends AndroidViewModel {
     public void incrementPushupCount() {
         int newCount = pushupCountLiveData.getValue() + 1;
         homeModel.setPushupCount(newCount);
-        pushupCountLiveData.setValue(newCount);
+        pushupCountLiveData.postValue(newCount);
     }
 
     public void incrementSquatCount() {
         int newCount = squatCountLiveData.getValue() + 1;
         homeModel.setSquatCount(newCount);
-        squatCountLiveData.setValue(newCount);
+        squatCountLiveData.postValue(newCount);
     }
 }

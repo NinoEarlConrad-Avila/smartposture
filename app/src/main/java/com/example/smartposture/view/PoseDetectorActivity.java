@@ -1,6 +1,7 @@
 package com.example.smartposture.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -25,10 +29,12 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.posedetector.GraphicOverlay;
 import com.example.smartposture.posedetector.classification.PoseClassifierProcessor;
+import com.example.smartposture.viewmodel.HomeViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -56,6 +62,7 @@ public class PoseDetectorActivity extends AppCompatActivity {
     private HandlerThread handlerThread;
     private Handler handler;
     private final boolean runClassification = true;
+    private HomeViewModel homeViewModel;
 
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Override
@@ -64,21 +71,33 @@ public class PoseDetectorActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_push_up);
 
+        ImageButton returnBtn = findViewById(R.id.returnBtn);
+        Intent intent = getIntent();
+        String type = intent.getStringExtra("exer");
+
         previewView = findViewById(R.id.previewView);
         graphicOverlay = findViewById(R.id.graphicOverlay);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // Setup Pose Detector
         PoseDetectorOptions options = new PoseDetectorOptions.Builder()
                 .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
                 .build();
         poseDetector = PoseDetection.getClient(options);
 
-        // Initialize HandlerThread for background processing
         handlerThread = new HandlerThread("PoseClassifierProcessorThread");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
 
-        poseClassifierProcessor = new PoseClassifierProcessor(getApplicationContext(), true);
+        poseClassifierProcessor = new PoseClassifierProcessor(getApplicationContext(), true, homeViewModel, type);
+
+        returnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PoseDetectorActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         // Request permissions if not granted
         if (!allPermissionsGranted()) {

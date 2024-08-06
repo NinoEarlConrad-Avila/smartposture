@@ -7,7 +7,9 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.smartposture.viewmodel.HomeViewModel;
 import com.google.mlkit.vision.pose.Pose;
 
 import java.io.BufferedReader;
@@ -22,7 +24,8 @@ import java.util.Locale;
  */
 public class PoseClassifierProcessor {
   private static final String TAG = "PoseClassifierProcessor";
-  private static final String POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
+  private static String POSE_SAMPLES_FILE;
+//  private static final String POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
 
   // Specify classes for which we want rep counting.
   private static final String PUSHUPS_CLASS = "pushups_down";
@@ -37,10 +40,20 @@ public class PoseClassifierProcessor {
   private List<RepetitionCounter> repCounters;
   private PoseClassifier poseClassifier;
   private String lastRepResult;
+  private HomeViewModel homeViewModel;
+  private String type;
 
-  public PoseClassifierProcessor(Context context, boolean isStreamMode) {
+
+  public PoseClassifierProcessor(Context context, boolean isStreamMode, HomeViewModel homeViewModel, String type) {
     Log.d(TAG, "PoseClassifierProcessor constructor started.");
     this.isStreamMode = isStreamMode;
+    this.homeViewModel = homeViewModel;
+    this.type = type;
+    if(type != null && type.trim().equals("pushup")){
+      POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
+    }else if(type != null && type.trim().equals("squat")){
+      POSE_SAMPLES_FILE = "pose/squats_sample_data.csv";
+    }
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
       repCounters = new ArrayList<>();
@@ -68,7 +81,7 @@ public class PoseClassifierProcessor {
       poseClassifier = new PoseClassifier(poseSamples);
       if (isStreamMode) {
         for (String className : POSE_CLASSES) {
-          repCounters.add(new RepetitionCounter(className));
+          repCounters.add(new RepetitionCounter(className, homeViewModel, type));
         }
       }
       Log.d(TAG, "Pose samples loaded successfully.");

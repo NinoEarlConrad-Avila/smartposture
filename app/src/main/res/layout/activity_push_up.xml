@@ -10,7 +10,9 @@
     <androidx.camera.view.PreviewView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/previewView"/>
+        android:id="@+id/previewView">
+
+    </androidx.camera.view.PreviewView>
 
     <com.example.smartposture.posedetector.GraphicOverlay
         android:id="@+id/graphicOverlay"
@@ -22,9 +24,13 @@
         app:layout_constraintBottom_toBottomOf="@id/previewView"
         />
 
-<!--    <com.example.smartposture.view.Display-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:id="@+id/displayOverlay"/>-->
+    <ImageButton
+        android:id="@+id/returnBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_dialog" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

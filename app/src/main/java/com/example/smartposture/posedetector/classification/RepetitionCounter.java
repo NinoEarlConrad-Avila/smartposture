@@ -16,6 +16,12 @@
 
 package com.example.smartposture.posedetector.classification;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getApplicationContext;
+
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.smartposture.viewmodel.HomeViewModel;
+
 /**
  * Counts reps for the give class.
  */
@@ -31,17 +37,21 @@ public class RepetitionCounter {
 
   private int numRepeats;
   private boolean poseEntered;
+  private HomeViewModel homeViewModel;
+  private String type;
 
-  public RepetitionCounter(String className) {
-    this(className, DEFAULT_ENTER_THRESHOLD, DEFAULT_EXIT_THRESHOLD);
+  public RepetitionCounter(String className, HomeViewModel homeViewModel, String type) {
+    this(className, DEFAULT_ENTER_THRESHOLD, DEFAULT_EXIT_THRESHOLD, homeViewModel, type);
   }
 
-  public RepetitionCounter(String className, float enterThreshold, float exitThreshold) {
+  public RepetitionCounter(String className, float enterThreshold, float exitThreshold, HomeViewModel homeViewModel, String type) {
     this.className = className;
     this.enterThreshold = enterThreshold;
     this.exitThreshold = exitThreshold;
     numRepeats = 0;
     poseEntered = false;
+    this.homeViewModel = homeViewModel;
+    this.type = type;
   }
 
   /**
@@ -60,6 +70,12 @@ public class RepetitionCounter {
 
     if (poseConfidence < exitThreshold) {
       numRepeats++;
+      if(type != null && type.trim().equals("pushup")){
+        homeViewModel.incrementPushupCount();
+      }else if(type != null && type.trim().equals("squat")){
+        homeViewModel.incrementSquatCount();
+      }
+
       poseEntered = false;
     }
 

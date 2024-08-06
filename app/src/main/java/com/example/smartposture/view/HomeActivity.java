@@ -39,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
+                intent.putExtra("exer", "pushup");
                 startActivity(intent);
             }
         });
@@ -46,7 +47,9 @@ public class HomeActivity extends AppCompatActivity {
         squatImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
+                intent.putExtra("exer", "squat");
+                startActivity(intent);
             }
         });
 
