@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.model.HomeModel;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,15 +29,18 @@ public class HomeViewModel extends AndroidViewModel {
     private MutableLiveData<Integer> pushupCountLiveData;
     private MutableLiveData<Integer> squatCountLiveData;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
     public HomeViewModel(Application application) {
         super(application);
         homeModel = new HomeModel(application);
 
         pushupCountLiveData = new MutableLiveData<>();
-        pushupCountLiveData.postValue(homeModel.getPushupCount());
-
         squatCountLiveData = new MutableLiveData<>();
-        squatCountLiveData.postValue(homeModel.getSquatCount());
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            fetchStats(currentUser.getUid());
+        }
     }
 
     public LiveData<Integer> getPushupCount() {
@@ -49,139 +53,73 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void incrementPushupCount() {
         int newCount = pushupCountLiveData.getValue() + 1;
-        homeModel.setPushupCount(newCount);
-        pushupCountLiveData.postValue(newCount);
+        pushupCountLiveData.setValue(newCount);
+        updatePushupCountInFirebase(newCount);
     }
 
     public void incrementSquatCount() {
         int newCount = squatCountLiveData.getValue() + 1;
-        homeModel.setSquatCount(newCount);
-        squatCountLiveData.postValue(newCount);
+        squatCountLiveData.setValue(newCount);
+        updateSquatCountInFirebase(newCount);
     }
 
-    public void updatePushupCountInFirebase(int newCount) {
+    private void updatePushupCountInFirebase(int newCount) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         String currentDate = dateFormat.format(calendar.getTime());
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(userID)
-                .child("stats")
-                .child(currentDate);
+        DatabaseReference statsRef = mDatabase.child("users").child(userID).child("stats").child(currentDate);
 
-        statsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    statsRef.child("pushup").setValue(newCount)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("Update success", "Pushup count updated successfully.");
-                                } else {
-                                    Log.e("Update error", "Failed to update pushup count: " + task.getException().getMessage());
-                                }
-                            });
-                } else {
-                    Map<String, Object> newStats = new HashMap<>();
-                    newStats.put("pushup", newCount);
-
-                    statsRef.setValue(newStats)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("Create success", "New stats created successfully.");
-                                } else {
-                                    Log.e("Create error", "Failed to create new stats: " + task.getException().getMessage());
-                                }
-                            });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("Database error", "Error checking stats: " + databaseError.getMessage());
-            }
-        });
+        statsRef.child("pushup").setValue(newCount)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Update success", "Pushup count updated successfully.");
+                    } else {
+                        Log.e("Update error", "Failed to update pushup count: " + task.getException().getMessage());
+                    }
+                });
     }
 
-    public void updateSquatCountInFirebase(int newCount) {
+    private void updateSquatCountInFirebase(int newCount) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         String currentDate = dateFormat.format(calendar.getTime());
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        DatabaseReference statsRef = FirebaseDatabase.getInstance().getReference()
-                .child("users")
-                .child(userID)
-                .child("stats")
-                .child(currentDate);
+        DatabaseReference statsRef = mDatabase.child("users").child(userID).child("stats").child(currentDate);
 
-        statsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    statsRef.child("squat").setValue(newCount)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("Update success", "Squat count updated successfully.");
-                                } else {
-                                    Log.e("Update error", "Failed to update squat count: " + task.getException().getMessage());
-                                }
-                            });
-                } else {
-                    Map<String, Object> newStats = new HashMap<>();
-                    newStats.put("squat", newCount);
-
-                    statsRef.setValue(newStats)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("Create success", "New stats created successfully.");
-                                } else {
-                                    Log.e("Create error", "Failed to create new stats: " + task.getException().getMessage());
-                                }
-                            });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("Database error", "Error checking stats: " + databaseError.getMessage());
-            }
-        });
+        statsRef.child("squat").setValue(newCount)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Update success", "Squat count updated successfully.");
+                    } else {
+                        Log.e("Update error", "Failed to update squat count: " + task.getException().getMessage());
+                    }
+                });
     }
 
     public void fetchStats(String userID) {
-
-        // Get the current date in yyyymmdd format
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         String currentDate = dateFormat.format(calendar.getTime());
 
-        // Reference to the stats node under the current date
         DatabaseReference statsRef = mDatabase.child("users").child(userID).child("stats").child(currentDate);
 
         statsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int pushup;
-                int squat;
-
-                if (dataSnapshot.exists()) {
-                    // Date exists, fetch the data
-                    pushup = dataSnapshot.child("pushup").getValue(Integer.class);
-                    squat = dataSnapshot.child("squat").getValue(Integer.class);
-                } else {
-                    // Date does not exist, initialize counts to 0
-                    pushup = 0;
-                    squat = 0;
-                    initializeStats(userID, currentDate, pushup, squat);
-                }
+                int pushup = dataSnapshot.child("pushup").exists() ? dataSnapshot.child("pushup").getValue(Integer.class) : 0;
+                int squat = dataSnapshot.child("squat").exists() ? dataSnapshot.child("squat").getValue(Integer.class) : 0;
 
                 pushupCountLiveData.setValue(pushup);
                 squatCountLiveData.setValue(squat);
+
+                if (!dataSnapshot.exists()) {
+                    initializeStats(userID, currentDate, pushup, squat);
+                }
             }
 
             @Override
@@ -208,3 +146,4 @@ public class HomeViewModel extends AndroidViewModel {
                 });
     }
 }
+

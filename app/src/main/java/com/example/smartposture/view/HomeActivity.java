@@ -53,38 +53,23 @@ public class HomeActivity extends AppCompatActivity {
             squatCount.setText(String.valueOf(newCount));
         });
 
+        pushupImgBtn.setOnClickListener(v -> {
+            homeViewModel.incrementPushupCount();
+            Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
+            intent.putExtra("exer", "pushup");
+            startActivity(intent);
+        });
+
+        squatImgBtn.setOnClickListener(v -> {
+            homeViewModel.incrementSquatCount();
+            Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
+            intent.putExtra("exer", "squat");
+            startActivity(intent);
+        });
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             homeViewModel.fetchStats(currentUser.getUid());
         }
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
-        pushupImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
-                intent.putExtra("exer", "pushup");
-                startActivity(intent);
-            }
-        });
-
-        squatImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, PoseDetectorActivity.class);
-                intent.putExtra("exer", "squat");
-                startActivity(intent);
-            }
-        });
-
-        homeViewModel.getSquatCount().observe(this, newCount -> {
-            squatCount.setText(String.valueOf(newCount));
-            homeViewModel.updateSquatCountInFirebase(newCount);
-        });
-
-        homeViewModel.getPushupCount().observe(this, newCount -> {
-            pushupCount.setText(String.valueOf(newCount));
-            homeViewModel.updatePushupCountInFirebase(newCount);
-        });
     }
 }
