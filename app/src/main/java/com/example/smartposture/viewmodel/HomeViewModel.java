@@ -53,13 +53,13 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void incrementPushupCount() {
         int newCount = pushupCountLiveData.getValue() + 1;
-        pushupCountLiveData.setValue(newCount);
+        pushupCountLiveData.postValue(newCount);
         updatePushupCountInFirebase(newCount);
     }
 
     public void incrementSquatCount() {
         int newCount = squatCountLiveData.getValue() + 1;
-        squatCountLiveData.setValue(newCount);
+        squatCountLiveData.postValue(newCount);
         updateSquatCountInFirebase(newCount);
     }
 
