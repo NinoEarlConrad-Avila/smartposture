@@ -18,10 +18,10 @@ public class HomeViewModel extends AndroidViewModel {
         homeModel = new HomeModel(application);
 
         pushupCountLiveData = new MutableLiveData<>();
-        pushupCountLiveData.setValue(homeModel.getPushupCount());
+        pushupCountLiveData.postValue(homeModel.getPushupCount());
 
         squatCountLiveData = new MutableLiveData<>();
-        squatCountLiveData.setValue(homeModel.getSquatCount());
+        squatCountLiveData.postValue(homeModel.getSquatCount());
     }
 
     public LiveData<Integer> getPushupCount() {

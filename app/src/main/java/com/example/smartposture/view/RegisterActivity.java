@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
                     registerVM.registerUser(username, email, password, birthdate, new RegisterModel.RegisterResultCallback() {
                         @Override
                         public void onSuccess() {
-                            startActivity(new Intent(RegisterActivity.this, Home.class));
+                            startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
                             finish();
                         }
 

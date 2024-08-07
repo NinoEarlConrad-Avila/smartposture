@@ -7,6 +7,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterModel {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -36,10 +42,35 @@ public class RegisterModel {
                 });
     }
 
+    public static String getCurrentDateFormatted() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        return dateFormat.format(calendar.getTime());
+    }
+
     private void writeUserDetails(User userDetails, String uid) {
         Log.d("User id", uid);
 
-        mDatabase.child(uid).setValue(userDetails)
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        String currentDate = dateFormat.format(calendar.getTime());
+
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("username", userDetails.getUsername());
+        userInfo.put("birthdate", userDetails.getBirthdate());
+
+        Map<String, Object> dailyStats = new HashMap<>();
+        dailyStats.put("pushup", 0);
+        dailyStats.put("squat", 0);
+
+        Map<String, Object> userStats = new HashMap<>();
+        userStats.put(currentDate, dailyStats);
+
+        Map<String, Object> userDetailsMap = new HashMap<>();
+        userDetailsMap.put("info", userInfo);
+        userDetailsMap.put("stats", userStats);
+
+        mDatabase.child(uid).setValue(userDetailsMap)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Write success", "User details written successfully.");
