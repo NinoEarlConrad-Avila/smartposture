@@ -22,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private LoginViewModel loginVM;
     private TextView signUpTextView;
+
+    private Button loginAsGuestButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +32,10 @@ public class LoginActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.user);
         passwordEditText = findViewById(R.id.pass);
         loginButton = findViewById(R.id.btnLogin);
+        loginAsGuestButton = findViewById(R.id.guest);
         loginVM = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        signUpTextView = findViewById(R.id.txtSignUp);
+        signUpTextView = findViewById(R.id.textSignUp);
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,6 +73,16 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        loginAsGuestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                intent.putExtra("USER_NAME", "Guest");
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 }
 
