@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">smartposture</string>
+    <string name="register_txt">Register!</string>
+    <string name="email_hint">EMAIL</string>
+    <string name="username_hint">USERNAME</string>
+    <string name="firstname_hint">FIRST NAME</string>
+    <string name="lastname_hint">LAST NAME</string>
+    <string name="birthdate_hint">BIRTHDATE</string>
+    <string name="password_hint">PASSWORD</string>
+    <string name="confirmpassword_hint">CONFIRM PASSWORD</string>
+    <string name="already_txt">Already have an account?</string>
+    <string name="login_txt">LOGIN</string>
+    <string name="signup_btntxt">SIGN UP</string>
 </resources>
