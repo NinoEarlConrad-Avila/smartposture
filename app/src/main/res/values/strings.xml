@@ -11,4 +11,7 @@
     <string name="already_txt">Already have an account?</string>
     <string name="login_txt">LOGIN</string>
     <string name="signup_btntxt">SIGN UP</string>
+    <string name="welcome_txt">Welcome!</string>
+    <string name="logtocon">Log in to Continue</string>
+    <string name="conguest">Continue as a Guest</string>
 </resources>
