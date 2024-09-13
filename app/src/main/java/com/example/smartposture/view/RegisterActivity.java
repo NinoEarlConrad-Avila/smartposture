@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -37,9 +38,9 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private RegisterViewModel registerVM;
     private TextView signInTextView;
-    final Calendar myCalendar= Calendar.getInstance();
+    private TextInputEditText birthDateEditText;
+    final Calendar myCalendar = Calendar.getInstance();
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,15 +50,28 @@ public class RegisterActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         firstNameEditText = findViewById(R.id.firstName);
         lastNameEditText = findViewById(R.id.lastName);
-        birthdateEditText = (EditText) findViewById(R.id.birthDate);
+        birthDateEditText= findViewById(R.id.birthDate);
         passwordEditText = findViewById(R.id.password);
         confirmPasswordEditText = findViewById(R.id.confirmPassword);
         registerButton = findViewById(R.id.button);
         registerVM = new ViewModelProvider(this).get(RegisterViewModel.class);
 
         signInTextView = findViewById(R.id.txtlogin);
-        EditText editText;
-
+        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH,month);
+                myCalendar.set(Calendar.DAY_OF_MONTH,day);
+                updateLabel();
+            }
+        };
+        birthDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(RegisterActivity.this,date,myCalendar.get(Calendar.YEAR),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
         signInTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,16 +84,18 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = emailEditText.getText().toString();
                 String username = usernameEditText.getText().toString();
+                String firstname = firstNameEditText.getText().toString();
+                String lastname = lastNameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 String confirmPassword = confirmPasswordEditText.getText().toString();
-                String birthdate = birthdateEditText.getText().toString();
+                String birthdate = birthDateEditText.getText().toString();
 
                 if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || birthdate.isEmpty()) {
                     Toast.makeText(RegisterActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else if (!password.equals(confirmPassword)) {
                     Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 } else {
-                    registerVM.registerUser(username, email, password, birthdate, new RegisterModel.RegisterResultCallback() {
+                    registerVM.registerUser(username, email, password, firstname, lastname, birthdate, new RegisterModel.RegisterResultCallback() {
                         @Override
                         public void onSuccess() {
                             startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
@@ -93,37 +109,12 @@ public class RegisterActivity extends AppCompatActivity {
                     });
                 }
             }
-
         });
-        birthdateEditText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // Check if the touch event is ACTION_UP and within the bounds of the drawableEnd
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (birthdateEditText.getRight() - birthdateEditText.getCompoundDrawables()[2].getBounds().width())) {
-                        showDatePickerDialog(birthdateEditText);
-                        return true; // Handle the touch event
-                    }
-                }
-                return false; // Pass the touch event further
-            }
-        });
+    }
 
-}
-    private void showDatePickerDialog(EditText birthdateEditText) {
-        // Get the current date
-        final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // Create and show the DatePickerDialog
-        DatePickerDialog datePickerDialog = new DatePickerDialog(RegisterActivity.this,
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Set the selected date on the EditText
-                    String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-                    birthdateEditText.setText(selectedDate);
-                }, year, month, day);
-        datePickerDialog.show();
+    private void updateLabel(){
+        String myFormat="MM/dd/yy";
+        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+        birthDateEditText.setText(dateFormat.format(myCalendar.getTime()));
     }
 }

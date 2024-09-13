@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +23,15 @@ public class RegisterModel {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
     }
 
-    public void registerUser(String username, String email, String password, String birthdate, RegisterResultCallback callback) {
+    public void registerUser(String username, String email, String password, String firstname, String lastname,
+                             String birthdate, RegisterResultCallback callback) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             String userID = user.getUid();
-                            User newUser = new User(username, birthdate); // Assuming User class constructor includes username
+                            User newUser = new User(username, firstname, lastname, birthdate);
                             writeUserDetails(newUser, userID);
                             callback.onSuccess();
                         } else {
@@ -57,6 +59,8 @@ public class RegisterModel {
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("username", userDetails.getUsername());
+        userInfo.put("firstname", userDetails.getFirstname());
+        userInfo.put("lastname", userDetails.getLastname());
         userInfo.put("birthdate", userDetails.getBirthdate());
 
         Map<String, Object> dailyStats = new HashMap<>();
