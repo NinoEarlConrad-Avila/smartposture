@@ -116,7 +116,7 @@
             android:id="@+id/btnLogin"
             android:layout_width="218dp"
             android:layout_height="64dp"
-            android:layout_marginTop="76dp"
+            android:layout_marginTop="56dp"
             android:backgroundTint="#4CA771"
             android:text="@string/login_txt"
             android:textColor="@color/white"
@@ -124,7 +124,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtPassword"
+            app:layout_constraintTop_toBottomOf="@+id/clickhere"
             tools:layout_conversion_absoluteHeight="70dp"
             tools:layout_conversion_absoluteWidth="292dp" />
 
@@ -161,6 +161,31 @@
             app:strokeColor="#4CA771"
             tools:layout_conversion_absoluteHeight="48dp"
             tools:layout_conversion_absoluteWidth="360dp" />
+
+        <TextView
+            android:id="@+id/forgotpass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/forgotpass"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
+
+        <TextView
+            android:id="@+id/clickhere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/clickhere"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/forgotpass"
+            app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

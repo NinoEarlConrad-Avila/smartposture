@@ -14,6 +14,8 @@
     <string name="welcome_txt">Welcome!</string>
     <string name="logtocon">Log in to Continue</string>
     <string name="conguest">Continue as a Guest</string>
+    <string name="forgotpass">Forgot Password?</string>
+    <string name="clickhere">CLICK HERE</string>
 
     <string name="workout_text">WORKOUT</string>
 </resources>
