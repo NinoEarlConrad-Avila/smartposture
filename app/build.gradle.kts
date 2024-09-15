@@ -43,11 +43,13 @@ dependencies {
     implementation("com.google.mlkit:pose-detection:18.0.0-beta4")
     // If you want to use the accurate sdk
     implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta4")
+    implementation(libs.gridlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation ("com.google.guava:guava:31.1-android")
-
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
 
     // CameraX dependencies

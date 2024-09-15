@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginVM.loginUser(email, password, new LoginModel.LoginResultCallback() {
                         @Override
                         public void onSuccess(String userName) {
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, WorkoutActivity.class);
                             intent.putExtra("USER_NAME", userName);
                             startActivity(intent);
                             finish();
