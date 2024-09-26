@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         loginAsGuestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                Intent intent = new Intent(LoginActivity.this, WorkoutDetailsStartActivity.class);
                 intent.putExtra("USER_NAME", "Guest");
                 startActivity(intent);
                 finish();

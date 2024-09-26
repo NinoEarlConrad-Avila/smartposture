@@ -45,6 +45,10 @@
         <activity
             android:name=".view.WorkoutActivity"
             android:exported="true" />
+        <activity
+            android:name=".view.WorkoutDetailsStartActivity"
+            android:exported="true"/>
+
     </application>
 
 </manifest>

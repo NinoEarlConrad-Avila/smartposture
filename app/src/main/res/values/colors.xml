@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
+    <color name="light_green">#D1E7C2</color>
+    <color name="teal">#004D40</color>
 </resources>
