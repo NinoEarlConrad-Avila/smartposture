@@ -28,6 +28,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -89,6 +92,21 @@ public class PoseDetectorActivity extends AppCompatActivity {
         handler = new Handler(handlerThread.getLooper());
 
         poseClassifierProcessor = new PoseClassifierProcessor(getApplicationContext(), true, homeViewModel, type);
+
+        View rootView = findViewById(R.id.main);
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+            Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            v.setPadding(
+                    systemBarsInsets.left,
+                    systemBarsInsets.top,
+                    systemBarsInsets.right,
+                    systemBarsInsets.bottom
+            );
+
+            return insets;
+        });
 
         returnBtn.setOnClickListener(new View.OnClickListener() {
             @Override

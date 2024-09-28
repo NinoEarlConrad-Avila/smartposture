@@ -86,8 +86,9 @@ public class LoginActivity extends AppCompatActivity {
         loginAsGuestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, WorkoutDetailsStartActivity.class);
-                intent.putExtra("USER_NAME", "Guest");
+                Intent intent = new Intent(LoginActivity.this, PoseDetectorActivity.class);
+                intent.putExtra("exer", "pushup");
+//                intent.putExtra("USER_NAME", "Guest");
                 startActivity(intent);
                 finish();
             }
