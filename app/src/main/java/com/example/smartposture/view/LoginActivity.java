@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginVM.loginUser(email, password, new LoginModel.LoginResultCallback() {
                         @Override
                         public void onSuccess(String userName) {
-                            Intent intent = new Intent(LoginActivity.this, WorkoutActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("USER_NAME", userName);
                             startActivity(intent);
                             finish();
@@ -86,9 +86,9 @@ public class LoginActivity extends AppCompatActivity {
         loginAsGuestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, PoseDetectorActivity.class);
-                intent.putExtra("exer", "pushup");
-//                intent.putExtra("USER_NAME", "Guest");
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                intent.putExtra("exer", "pushup");
+                intent.putExtra("USER_NAME", "Guest");
                 startActivity(intent);
                 finish();
             }

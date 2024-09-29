@@ -111,7 +111,7 @@ public class PoseDetectorActivity extends AppCompatActivity {
         returnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PoseDetectorActivity.this, HomeActivity.class);
+                Intent intent = new Intent(PoseDetectorActivity.this, HomeFragment.class);
                 startActivity(intent);
                 finish();
             }

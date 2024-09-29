@@ -181,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:backgroundTint="#4CA771"
+                android:backgroundTint="@color/teal"
                 android:text="Restart"
                 android:textColor="@color/white" />
 
@@ -189,7 +189,7 @@
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#4CA771"
+                android:backgroundTint="@color/teal"
                 android:text="Button"
                 android:textColor="@color/white" />
         </LinearLayout>

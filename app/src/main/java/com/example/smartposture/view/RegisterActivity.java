@@ -3,11 +3,9 @@ package com.example.smartposture.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -15,8 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.smartposture.Home;
-import com.example.smartposture.MainActivity;
 import com.example.smartposture.R;
 import com.example.smartposture.model.RegisterModel;
 import com.example.smartposture.viewmodel.RegisterViewModel;
@@ -24,7 +20,6 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -98,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
                     registerVM.registerUser(username, email, password, firstname, lastname, birthdate, new RegisterModel.RegisterResultCallback() {
                         @Override
                         public void onSuccess() {
-                            startActivity(new Intent(RegisterActivity.this, HomeActivity.class));
+                            startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                             finish();
                         }
 
