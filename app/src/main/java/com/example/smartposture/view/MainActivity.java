@@ -17,32 +17,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment()); // Load HomeFragment by default
+            loadFragment(new HomeFragment(), false); // Load HomeFragment by default
         }
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_home) {
-                loadFragment(new HomeFragment());
+                loadFragment(new HomeFragment(), false);
                 return true;
             } else if (item.getItemId() == R.id.nav_room) {
-                loadFragment(new RoomFragment());
+                loadFragment(new RoomFragment(), false);
                 return true;
             } else if (item.getItemId() == R.id.nav_workout) {
-                loadFragment(new WorkoutFragment());
+                loadFragment(new WorkoutFragment(), false);
                 return true;
             } else if (item.getItemId() == R.id.nav_profile) {
-                loadFragment(new ProfileFragment());
+                loadFragment(new ProfileFragment(), false);
                 return true;
+            }else{
+                return false;
             }
-            return false;
         });
     }
 
-    private void loadFragment(Fragment fragment) {
+    private void loadFragment(Fragment fragment, boolean addToBackStack) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
-        transaction.addToBackStack(null);
+
+        if (addToBackStack) {
+            transaction.addToBackStack(fragment.getClass().getSimpleName());
+        }
         transaction.commit();
     }
 }

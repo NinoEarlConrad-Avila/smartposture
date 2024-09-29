@@ -39,25 +39,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             </activity>
-        <activity
-            android:name=".view.HomeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".view.RoomActivity"
-            android:exported="true" />
-        <activity
-            android:name=".view.WorkoutActivity"
-            android:exported="true" />
-        <activity
-            android:name=".view.ProfileActivity"
-            android:exported="true" />
-        <activity
-            android:name=".view.WorkoutDetailsStartActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".Home"
-            android:exported="true" />
-
     </application>
 
 </manifest>

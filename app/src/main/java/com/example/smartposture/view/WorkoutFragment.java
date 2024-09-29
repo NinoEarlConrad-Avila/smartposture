@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.smartposture.R;
 import com.example.smartposture.CardFragment;
+import com.example.smartposture.model.CardData;
 
 public class WorkoutFragment extends Fragment {
     @Nullable
@@ -25,5 +26,16 @@ public class WorkoutFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void navigateToWorkoutDetails(CardData cardData) {
+        WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
+                cardData.getTitle(), cardData.getPath(), cardData.getId()
+        );
+
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.container, detailsFragment)
+                .addToBackStack("WorkoutDetails")
+                .commit();
     }
 }
