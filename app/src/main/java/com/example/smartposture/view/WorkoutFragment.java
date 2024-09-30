@@ -30,7 +30,7 @@ public class WorkoutFragment extends Fragment {
 
     private void navigateToWorkoutDetails(CardData cardData) {
         WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
-                cardData.getTitle(), cardData.getPath(), cardData.getId()
+                cardData.getTitle(), cardData.getPath(), cardData.getId(), cardData.getDescription()
         );
 
         getParentFragmentManager().beginTransaction()

@@ -1,23 +1,21 @@
 package com.example.smartposture.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalGetImage;
@@ -26,11 +24,11 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -53,8 +51,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class PoseDetectorActivity extends AppCompatActivity {
-    private static final String TAG = "PoseDetectorActivity";
+public class PoseDetectorFragment extends Fragment {
+    private static final String TAG = "PoseDetectorFragment";
     private static final int PERMISSION_REQUESTS = 1;
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -68,18 +66,15 @@ public class PoseDetectorActivity extends AppCompatActivity {
     private HomeViewModel homeViewModel;
 
     @OptIn(markerClass = ExperimentalGetImage.class)
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_push_up);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_pose_detector, container, false);
 
-        ImageButton returnBtn = findViewById(R.id.returnBtn);
-        Intent intent = getIntent();
-        String type = intent.getStringExtra("exer");
+        ImageButton returnBtn = view.findViewById(R.id.returnBtn);
+        previewView = view.findViewById(R.id.previewView);
+        graphicOverlay = view.findViewById(R.id.graphicOverlay);
 
-        previewView = findViewById(R.id.previewView);
-        graphicOverlay = findViewById(R.id.graphicOverlay);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         PoseDetectorOptions options = new PoseDetectorOptions.Builder()
@@ -91,42 +86,31 @@ public class PoseDetectorActivity extends AppCompatActivity {
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
 
-        poseClassifierProcessor = new PoseClassifierProcessor(getApplicationContext(), true, homeViewModel, type);
+        Bundle args = getArguments();
+        String type = args != null ? args.getString("exer") : "squat";
+        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), true, homeViewModel, type);
 
-        View rootView = findViewById(R.id.main);
+        returnBtn.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
 
-        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            v.setPadding(
-                    systemBarsInsets.left,
-                    systemBarsInsets.top,
-                    systemBarsInsets.right,
-                    systemBarsInsets.bottom
-            );
-
+            v.setPadding(systemBarsInsets.left, systemBarsInsets.top, systemBarsInsets.right, systemBarsInsets.bottom);
             return insets;
         });
 
-        returnBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PoseDetectorActivity.this, HomeFragment.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        // Request permissions if not granted
         if (!allPermissionsGranted()) {
             getRuntimePermissions();
         } else {
             startCamera();
         }
+
+        return view;
     }
 
     private void startCamera() {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
@@ -134,7 +118,7 @@ public class PoseDetectorActivity extends AppCompatActivity {
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Error starting camera", e);
             }
-        }, ContextCompat.getMainExecutor(this));
+        }, ContextCompat.getMainExecutor(requireContext()));
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
@@ -150,42 +134,31 @@ public class PoseDetectorActivity extends AppCompatActivity {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
-        imageAnalysis.setAnalyzer(ActivityCompat.getMainExecutor(this), new ImageAnalysis.Analyzer() {
-            @Override
-            public void analyze(@NonNull ImageProxy imageProxy) {
-                ByteBuffer byteBuffer = imageProxy.getImage().getPlanes()[0].getBuffer();
-                byteBuffer.rewind();
-                Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
-                bitmap.copyPixelsFromBuffer(byteBuffer);
+        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), imageProxy -> {
+            ByteBuffer byteBuffer = imageProxy.getImage().getPlanes()[0].getBuffer();
+            byteBuffer.rewind();
+            Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
+            bitmap.copyPixelsFromBuffer(byteBuffer);
 
-                if (bitmap != null) {
-                    InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
-                    Task<Pose> result = poseDetector.process(image)
-                            .addOnSuccessListener(new OnSuccessListener<Pose>() {
-                                @Override
-                                public void onSuccess(Pose pose) {
-                                    List<String> classificationResult = new ArrayList<>();
-                                    if (poseClassifierProcessor != null && runClassification) {
-                                        handler.post(() -> {
-                                            classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
-                                            runOnUiThread(() -> {
-                                                graphicOverlay.setImageSourceInfo(imageProxy.getHeight(), imageProxy.getWidth(), true);
-                                                graphicOverlay.clear();
-                                                graphicOverlay.add(new Display(graphicOverlay, pose, true, true, true, classificationResult));
-                                            });
-                                        });
-                                    }
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.e(TAG, "Pose detection failed", e);
-                                }
-                            });
-                }
-                imageProxy.close();
+            if (bitmap != null) {
+                InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
+                Task<Pose> result = poseDetector.process(image)
+                        .addOnSuccessListener(pose -> {
+                            List<String> classificationResult = new ArrayList<>();
+                            if (poseClassifierProcessor != null && runClassification) {
+                                handler.post(() -> {
+                                    classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
+                                    requireActivity().runOnUiThread(() -> {
+                                        graphicOverlay.setImageSourceInfo(imageProxy.getHeight(), imageProxy.getWidth(), true);
+                                        graphicOverlay.clear();
+                                        graphicOverlay.add(new Display(graphicOverlay, pose, true, true, true, classificationResult));
+                                    });
+                                });
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.e(TAG, "Pose detection failed", e));
             }
+            imageProxy.close();
         });
 
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imageAnalysis, preview);
@@ -193,7 +166,7 @@ public class PoseDetectorActivity extends AppCompatActivity {
 
     private boolean allPermissionsGranted() {
         for (String permission : getRequiredPermissions()) {
-            if (!isPermissionGranted(this, permission)) {
+            if (!isPermissionGranted(requireContext(), permission)) {
                 return false;
             }
         }
@@ -207,30 +180,19 @@ public class PoseDetectorActivity extends AppCompatActivity {
     private void getRuntimePermissions() {
         List<String> allNeededPermissions = new ArrayList<>();
         for (String permission : getRequiredPermissions()) {
-            if (!isPermissionGranted(this, permission)) {
+            if (!isPermissionGranted(requireContext(), permission)) {
                 allNeededPermissions.add(permission);
             }
         }
 
         if (!allNeededPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (poseClassifierProcessor != null) {
-            poseClassifierProcessor.cleanup();
-        }
-        if (handlerThread != null) {
-            handlerThread.quitSafely();
+            requestPermissions(allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
         }
     }
 
     private String[] getRequiredPermissions() {
         try {
-            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_PERMISSIONS);
+            PackageInfo info = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), PackageManager.GET_PERMISSIONS);
             return info.requestedPermissions != null ? info.requestedPermissions : new String[0];
         } catch (Exception e) {
             Log.e(TAG, "Error getting required permissions", e);
@@ -239,7 +201,13 @@ public class PoseDetectorActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        super.onPointerCaptureChanged(hasCapture);
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (poseClassifierProcessor != null) {
+            poseClassifierProcessor.cleanup();
+        }
+        if (handlerThread != null) {
+            handlerThread.quitSafely();
+        }
     }
 }

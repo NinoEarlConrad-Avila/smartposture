@@ -20,13 +20,15 @@ public class WorkoutDetailsStartFragment extends Fragment {
     private static final String ARG_CARD_TITLE = "CARD_TITLE";
     private static final String ARG_CARD_PATH = "CARD_PATH";
     private static final String ARG_CARD_ID = "CARD_ID";
+    private static final String ARG_CARD_DESCRIPTION = "CARD_DESCRIPTION";
 
-    public static WorkoutDetailsStartFragment newInstance(String cardTitle, String cardPath, int cardId) {
+    public static WorkoutDetailsStartFragment newInstance(String cardTitle, String cardPath, int cardId, String cardDescription) {
         WorkoutDetailsStartFragment fragment = new WorkoutDetailsStartFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CARD_TITLE, cardTitle);
         args.putString(ARG_CARD_PATH, cardPath);
         args.putInt(ARG_CARD_ID, cardId);
+        args.putString(ARG_CARD_DESCRIPTION, cardDescription);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,13 +42,18 @@ public class WorkoutDetailsStartFragment extends Fragment {
         String cardTitle = getArguments().getString(ARG_CARD_TITLE);
         String cardPath = getArguments().getString(ARG_CARD_PATH);
         String cardId = getArguments().getString(ARG_CARD_ID);
+        String cardDescription = getArguments().getString(ARG_CARD_DESCRIPTION);
 
         TextView workoutTitleTextView = view.findViewById(R.id.workout_title);
+        TextView workoutTopTitleTextView = view.findViewById(R.id.workout_top_title);
+        TextView workoutDescription = view.findViewById(R.id.description);
         ImageView imageView = view.findViewById(R.id.workout_image);
         ImageButton backButton = view.findViewById(R.id.back_to_workout_fragment);
         Button startButton = view.findViewById(R.id.start_button);
 
         workoutTitleTextView.setText(cardTitle);
+        workoutTopTitleTextView.setText(cardTitle);
+        workoutDescription.setText(cardDescription);
 
         int resourceId = getResources().getIdentifier(cardPath, "drawable", requireActivity().getPackageName());
         if (resourceId != 0) {
@@ -60,20 +67,28 @@ public class WorkoutDetailsStartFragment extends Fragment {
         }
 
         backButton.setOnClickListener(v -> {
-            // Pop the current fragment off the back stack, returning to WorkoutFragment
             requireActivity().getSupportFragmentManager().popBackStack();
         });
 
-//        startButton.setOnClickListener(v -> {
-//            // Create the new fragment instance
-//            PoseDetectorActivity workoutInProgressFragment = new PoseDetectorActivity();
-//
-//            // Navigate to the next fragment
-//            requireActivity().getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.container, workoutInProgressFragment)
-//                    .addToBackStack("WorkoutInProgress")  // Add to back stack to support back navigation
-//                    .commit();
-//        });
+        startButton.setOnClickListener(v -> {
+            PoseDetectorFragment poseDetector = new PoseDetectorFragment();
+
+            Bundle args = new Bundle();
+            String type = null;
+            if (cardTitle.equals("Squats"))
+                type = "squat";
+            else if (cardTitle.equals("Push up"))
+                type = "pushup";
+
+            args.putString("exer", type);
+
+            poseDetector.setArguments(args);
+
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, poseDetector)
+                    .addToBackStack("PoseDetector")
+                    .commit();
+        });
 
         return view;
     }

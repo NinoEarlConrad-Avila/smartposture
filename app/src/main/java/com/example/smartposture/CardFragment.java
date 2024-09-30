@@ -34,7 +34,7 @@ public class CardFragment extends Fragment {
         cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
         adapter = new CardAdapter(getActivity(), new ArrayList<>(), cardData -> {
-            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(cardData.getTitle(), cardData.getPath(), cardData.getId());
+            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(cardData.getTitle(), cardData.getPath(), cardData.getId(), cardData.getDescription());
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
             transaction.replace(R.id.frag_workout, detailsFragment);
             transaction.addToBackStack(null);
