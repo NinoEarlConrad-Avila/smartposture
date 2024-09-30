@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -74,6 +75,7 @@ public class PoseDetectorFragment extends Fragment {
         ImageButton returnBtn = view.findViewById(R.id.returnBtn);
         previewView = view.findViewById(R.id.previewView);
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
+        Button done = view.findViewById(R.id.done);
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
@@ -92,6 +94,15 @@ public class PoseDetectorFragment extends Fragment {
 
         returnBtn.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
+        });
+
+        done.setOnClickListener(v -> {
+            WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
+
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, summary)
+                    .addToBackStack("WorkoutSummary")
+                    .commit();
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
