@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new HomeFragment(), false);
                 return true;
             } else if (item.getItemId() == R.id.nav_room) {
-                loadFragment(new RoomFragment(), false);
+                loadFragment(new SelectRoomFragment(), false);
                 return true;
             } else if (item.getItemId() == R.id.nav_workout) {
                 loadFragment(new WorkoutFragment(), false);
