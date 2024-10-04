@@ -4,17 +4,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_green"
-    android:paddingLeft="20dp"
+    android:paddingStart="20dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
-    android:paddingRight="12dp"
+    android:paddingEnd="12dp"
     android:layout_marginBottom="10dp">
 
     <TextView
         android:id="@+id/roomName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Room Name"
+        android:text="@string/room_name"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -23,7 +23,7 @@
         android:id="@+id/roomCreator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Room Creator"
+        android:text="@string/room_creator"
         android:textColor="@color/black"
         android:textSize="16sp" />
 

@@ -1,6 +1,5 @@
 package com.example.smartposture.view;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -15,21 +14,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.smartposture.R;
-import com.example.smartposture.model.LoginModel;
 import com.example.smartposture.viewmodel.LoginViewModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private Button loginButton;
     private LoginViewModel loginVM;
-    private TextView signUpTextView;
 
-    private Button loginAsGuestButton;
-    private TextView forgotPassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,63 +31,45 @@ public class LoginActivity extends AppCompatActivity {
 
         usernameEditText = findViewById(R.id.user);
         passwordEditText = findViewById(R.id.pass);
-        forgotPassword = findViewById(R.id.clickhere);
-        loginButton = findViewById(R.id.btnLogin);
-        loginAsGuestButton = findViewById(R.id.guest);
+        TextView forgotPassword = findViewById(R.id.clickhere);
+        Button loginButton = findViewById(R.id.btnLogin);
+        Button loginAsGuestButton = findViewById(R.id.guest);
         loginVM = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        signUpTextView = findViewById(R.id.textSignUp);
-        signUpTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
+        TextView signUpTextView = findViewById(R.id.textSignUp);
+        signUpTextView.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
         });
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                if(email.isEmpty() && password.isEmpty()){
-                    Toast.makeText(LoginActivity.this, "Input email and password", Toast.LENGTH_SHORT).show();
-                }else if(email.isEmpty()){
-                    Toast.makeText(LoginActivity.this, "Input email", Toast.LENGTH_SHORT).show();
-                }else if(password.isEmpty()){
-                    Toast.makeText(LoginActivity.this, "Input password", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    loginVM.loginUser(email, password, new LoginModel.LoginResultCallback() {
-                        @Override
-                        public void onSuccess(String userName) {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("USER_NAME", userName);
-                            startActivity(intent);
-                            finish();
-                        }
 
-                        @Override
-                        public void onError(String message) {
-                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
+        setupObservers();
+
+        loginButton.setOnClickListener(view -> {
+            String email = usernameEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+            loginVM.loginUser(email, password);
         });
-        loginAsGuestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+
+        loginAsGuestButton.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("USER_NAME", "Guest");
+            startActivity(intent);
+            finish();
+        });
+
+        forgotPassword.setOnClickListener(view -> showForgotPasswordDialog());
+    }
+
+    private void setupObservers() {
+        loginVM.getLoginResult().observe(this, message -> Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show());
+
+        loginVM.isLoginSuccessful().observe(this, success -> {
+            if (success != null && success) {
+                String userName = loginVM.getLoginResult().getValue();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                intent.putExtra("exer", "pushup");
-                intent.putExtra("USER_NAME", "Guest");
+                intent.putExtra("USER_NAME", userName);
                 startActivity(intent);
                 finish();
-            }
-        });
-        forgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showForgotPasswordDialog();
             }
         });
     }
@@ -125,18 +101,12 @@ public class LoginActivity extends AppCompatActivity {
     private void sendPasswordResetEmail(String email) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Reset email sent", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, "Reset email sent", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
 }
-
-

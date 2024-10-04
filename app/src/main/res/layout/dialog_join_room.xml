@@ -12,16 +12,18 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="end"
+        android:contentDescription="@string/close"
         app:srcCompat="@drawable/ic_close" />
 
     <TextView
         android:id="@+id/modal_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="JOIN ROOM"
-        android:textColor="@android:color/black"
         android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="@string/join_room"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
         android:textSize="24sp" />
 
     <EditText
@@ -30,9 +32,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_lightgreen_border"
-        android:hint="Enter Room Code"
+        android:background="@drawable/bg_light_green_border"
         android:gravity="center"
+        android:hint="@string/hint_enter_code"
+        android:autofillHints="text"
+        android:inputType="text"
         android:textColor="@color/white" />
 
     <Button
@@ -42,6 +46,6 @@
         android:layout_gravity="center"
         android:backgroundTint="@color/teal"
         android:textColor="@color/white"
-        android:text="Send Request" />
+        android:text="@string/send_request" />
 
 </LinearLayout>

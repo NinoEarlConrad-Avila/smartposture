@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.smartposture.model.CardData;
+import com.example.smartposture.model.WorkoutModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CardViewModel extends ViewModel {
-    private MutableLiveData<List<CardData>> cardListLiveData;
+    private MutableLiveData<List<WorkoutModel>> cardListLiveData;
     private DatabaseReference databaseReference;
 
     public CardViewModel() {
@@ -24,7 +24,7 @@ public class CardViewModel extends ViewModel {
         loadCardData();
     }
 
-    public LiveData<List<CardData>> getCardListLiveData() {
+    public LiveData<List<WorkoutModel>> getCardListLiveData() {
         return cardListLiveData;
     }
 
@@ -32,9 +32,9 @@ public class CardViewModel extends ViewModel {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<CardData> cardList = new ArrayList<>();
+                List<WorkoutModel> cardList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    CardData cardData = snapshot.getValue(CardData.class);
+                    WorkoutModel cardData = snapshot.getValue(WorkoutModel.class);
                     if (cardData != null) {
                         cardList.add(cardData);
                     }

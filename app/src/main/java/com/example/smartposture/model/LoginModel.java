@@ -1,6 +1,5 @@
 package com.example.smartposture.model;
 
-
 import androidx.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,7 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class LoginModel {
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth;
 
     public LoginModel() {
         mAuth = FirebaseAuth.getInstance();
@@ -24,19 +23,7 @@ public class LoginModel {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-                            database.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    String userName = dataSnapshot.getValue(String.class);
-                                    callback.onSuccess(userName != null ? userName : "No Name");
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    callback.onError("Failed to fetch user data");
-                                }
-                            });
+                            fetchUserName(user.getUid(), callback);
                         } else {
                             callback.onError("User is not logged in");
                         }
@@ -45,6 +32,22 @@ public class LoginModel {
                         callback.onError(errorMessage);
                     }
                 });
+    }
+
+    private void fetchUserName(String userId, LoginResultCallback callback) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        database.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String userName = dataSnapshot.getValue(String.class);
+                callback.onSuccess(userName != null ? userName : "No Name");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onError("Failed to fetch user data");
+            }
+        });
     }
 
     public interface LoginResultCallback {

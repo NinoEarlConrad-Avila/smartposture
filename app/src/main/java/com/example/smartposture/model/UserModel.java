@@ -1,18 +1,16 @@
 package com.example.smartposture.model;
 
-import java.util.Date;
-
-public class User {
+public class UserModel {
     private String username;
     private String firstname;
     private String lastname;
     private String birthdate;
 
-    public User() {
+    public UserModel() {
         // Default constructor required for Firebase
     }
 
-    public User(String username, String firstname, String lastname, String birthdate) {
+    public UserModel(String username, String firstname, String lastname, String birthdate) {
         this.username = username;
         this.birthdate = birthdate;
         this.firstname = firstname;

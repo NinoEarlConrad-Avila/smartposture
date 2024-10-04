@@ -9,14 +9,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegisterModel {
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
+    private final FirebaseAuth mAuth;
+    private final DatabaseReference mDatabase;
 
     public RegisterModel() {
         mAuth = FirebaseAuth.getInstance();
@@ -24,38 +24,29 @@ public class RegisterModel {
     }
 
     public void registerUser(String username, String email, String password, String firstname, String lastname,
-                             String birthdate, RegisterResultCallback callback) {
+                             String birthdate, OnRegisterCompleteListener listener) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             String userID = user.getUid();
-                            User newUser = new User(username, firstname, lastname, birthdate);
-                            writeUserDetails(newUser, userID);
-                            callback.onSuccess();
+                            UserModel newUser = new UserModel(username, firstname, lastname, birthdate);
+                            writeUserDetails(newUser, userID, listener);
                         } else {
-                            callback.onError("Failed to get user information.");
+                            listener.onError("Failed to get user information.");
                         }
                     } else {
-                        String errorMessage = task.getException().getMessage();
-                        callback.onError("Registration failed: " + errorMessage);
+                        String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                        listener.onError("Registration failed: " + errorMessage);
                     }
                 });
     }
 
-    public static String getCurrentDateFormatted() {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-        return dateFormat.format(calendar.getTime());
-    }
+    private void writeUserDetails(UserModel userDetails, String uid, OnRegisterCompleteListener listener) {
+        Log.d("User ID", uid);
 
-    private void writeUserDetails(User userDetails, String uid) {
-        Log.d("User id", uid);
-
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-        String currentDate = dateFormat.format(calendar.getTime());
+        String currentDate = getCurrentDateFormatted();
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("username", userDetails.getUsername());
@@ -77,14 +68,22 @@ public class RegisterModel {
         mDatabase.child(uid).setValue(userDetailsMap)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d("Write success", "User details written successfully.");
+                        Log.d("Write Success", "User details written successfully.");
+                        listener.onSuccess();
                     } else {
-                        Log.e("Write error", "Failed to write user details: " + task.getException().getMessage());
+                        Log.e("Write Error", "Failed to write user details: " + Objects.requireNonNull(task.getException()).getMessage());
+                        listener.onError("Failed to write user details.");
                     }
                 });
     }
 
-    public interface RegisterResultCallback {
+    public static String getCurrentDateFormatted() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        return dateFormat.format(calendar.getTime());
+    }
+
+    public interface OnRegisterCompleteListener {
         void onSuccess();
         void onError(String message);
     }

@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="150dp"
         android:layout_height="180dp"
-        android:background="#013237"
+        android:background="@color/teal"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="5dp">
@@ -19,7 +19,7 @@
             android:id="@+id/workoutImg"
             android:layout_width="110dp"
             android:layout_height="120dp"
-            android:contentDescription="Workout Image"
+            android:contentDescription="@string/workout_image"
             android:scaleType="fitXY"
             tools:srcCompat="@tools:sample/avatars" />
 
@@ -28,8 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Item"
-            android:textColor="#FFFFFF"
+            android:text="@string/item"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
     </LinearLayout>

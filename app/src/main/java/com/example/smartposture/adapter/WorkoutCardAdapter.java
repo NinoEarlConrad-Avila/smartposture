@@ -1,4 +1,4 @@
-package com.example.smartposture;
+package com.example.smartposture.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,20 +11,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.smartposture.model.CardData;
+import com.example.smartposture.R;
+import com.example.smartposture.model.WorkoutModel;
 
 import java.util.List;
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
+public class WorkoutCardAdapter extends RecyclerView.Adapter<WorkoutCardAdapter.CardViewHolder> {
     private static Context context;
-    private List<CardData> cardList;
+    private List<WorkoutModel> cardList;
     private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(CardData cardData);
+        void onItemClick(WorkoutModel cardData);
     }
 
-    public CardAdapter(Context context, List<CardData> cardList, OnItemClickListener listener) {
+    public WorkoutCardAdapter(Context context, List<WorkoutModel> cardList, OnItemClickListener listener) {
         this.context = context;
         this.cardList = cardList;
         this.onItemClickListener = listener;
@@ -33,13 +34,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     @NonNull
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_workout_card, parent, false);
         return new CardViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
-        CardData card = cardList.get(position);
+        WorkoutModel card = cardList.get(position);
         holder.bind(card, onItemClickListener);
     }
 
@@ -48,7 +49,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         return cardList.size();
     }
 
-    public void updateCardList(List<CardData> newCardList) {
+    public void updateCardList(List<WorkoutModel> newCardList) {
         cardList.clear();
         cardList.addAll(newCardList);
         notifyDataSetChanged(); // Notify RecyclerView to refresh the data
@@ -64,7 +65,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             workoutName = itemView.findViewById(R.id.workoutName);
         }
 
-        public void bind(final CardData card, final OnItemClickListener listener) {
+        public void bind(final WorkoutModel card, final OnItemClickListener listener) {
             int resourceId = context.getResources().getIdentifier(card.getPath(), "drawable", context.getPackageName());
 
             if (resourceId != 0) {
