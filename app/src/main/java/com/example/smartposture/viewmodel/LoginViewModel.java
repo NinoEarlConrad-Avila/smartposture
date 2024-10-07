@@ -5,10 +5,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.model.LoginModel;
+import com.example.smartposture.model.UserModel;
 
 public class LoginViewModel extends ViewModel {
     private final LoginModel loginModel;
-    private final MutableLiveData<String> loginResult = new MutableLiveData<>();
+    private final MutableLiveData<UserModel> loginResult = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loginSuccess = new MutableLiveData<>();
 
     public LoginViewModel() {
@@ -17,27 +18,26 @@ public class LoginViewModel extends ViewModel {
 
     public void loginUser(String email, String password) {
         if (email.isEmpty() || password.isEmpty()) {
-            loginResult.setValue("Email and password must not be empty.");
             loginSuccess.setValue(false);
             return;
         }
 
         loginModel.loginUser(email, password, new LoginModel.LoginResultCallback() {
+
             @Override
-            public void onSuccess(String userName) {
+            public void onSuccess(UserModel user) {
                 loginSuccess.setValue(true);
-                loginResult.setValue(userName);
+                loginResult.setValue(user);
             }
 
             @Override
             public void onError(String message) {
                 loginSuccess.setValue(false);
-                loginResult.setValue(message);
             }
         });
     }
 
-    public LiveData<String> getLoginResult() {
+    public LiveData<UserModel> getLoginResult() {
         return loginResult;
     }
 

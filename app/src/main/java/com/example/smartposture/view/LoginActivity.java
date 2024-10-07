@@ -3,8 +3,11 @@ package com.example.smartposture.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.smartposture.R;
+import com.example.smartposture.model.UserModel;
 import com.example.smartposture.viewmodel.LoginViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -23,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameEditText;
     private EditText passwordEditText;
     private LoginViewModel loginVM;
+    private static final String PREFS_NAME = "UserDetails";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         loginAsGuestButton.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USER_NAME", "Guest");
+            intent.putExtra("isGuest", true);
             startActivity(intent);
             finish();
         });
@@ -61,17 +67,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupObservers() {
-        loginVM.getLoginResult().observe(this, message -> Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show());
+        loginVM.getLoginResult().observe(this, userModel -> {
+            if (userModel != null) {
+                saveUserDetails(userModel);
+                Log.d("HomeFragment", "Logged User: " + userModel.getUsername());
+                navigateToMain(userModel);
 
-        loginVM.isLoginSuccessful().observe(this, success -> {
-            if (success != null && success) {
-                String userName = loginVM.getLoginResult().getValue();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("USER_NAME", userName);
-                startActivity(intent);
-                finish();
             }
         });
+
+        loginVM.isLoginSuccessful().observe(this, success -> {
+            if (success != null && !success) {
+                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void navigateToMain(UserModel userModel) {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("USER_NAME", userModel.getUsername());
+        startActivity(intent);
+        finish();
     }
 
     private void showForgotPasswordDialog() {
@@ -109,4 +125,16 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void saveUserDetails(UserModel userModel) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("USER_NAME", userModel.getUsername());
+        editor.putString("FIRST_NAME", userModel.getFirstname());
+        editor.putString("LAST_NAME", userModel.getLastname());
+        editor.putString("USER_TYPE", userModel.getUserType());
+        editor.putString("BIRTH_DATE", userModel.getBirthdate());
+        editor.apply();
+    }
+
 }

@@ -31,7 +31,7 @@ public class RegisterModel {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             String userID = user.getUid();
-                            UserModel newUser = new UserModel(username, firstname, lastname, birthdate);
+                            UserModel newUser = new UserModel(username, firstname, lastname, birthdate, "trainee");
                             writeUserDetails(newUser, userID, listener);
                         } else {
                             listener.onError("Failed to get user information.");
@@ -53,6 +53,7 @@ public class RegisterModel {
         userInfo.put("firstname", userDetails.getFirstname());
         userInfo.put("lastname", userDetails.getLastname());
         userInfo.put("birthdate", userDetails.getBirthdate());
+        userInfo.put("usertype", userDetails.getUserType());
 
         Map<String, Object> dailyStats = new HashMap<>();
         dailyStats.put("pushup", 0);

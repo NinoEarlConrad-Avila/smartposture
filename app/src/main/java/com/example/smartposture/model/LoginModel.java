@@ -23,7 +23,7 @@ public class LoginModel {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            fetchUserName(user.getUid(), callback);
+                            fetchUserData(user.getUid(), callback);
                         } else {
                             callback.onError("User is not logged in");
                         }
@@ -34,24 +34,35 @@ public class LoginModel {
                 });
     }
 
-    private void fetchUserName(String userId, LoginResultCallback callback) {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(userId);
-        database.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void fetchUserData(String userId, LoginResultCallback callback) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("users").child(userId).child("info");
+
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String userName = dataSnapshot.getValue(String.class);
-                callback.onSuccess(userName != null ? userName : "No Name");
+                if (dataSnapshot.exists()) {
+                    String username = dataSnapshot.child("username").getValue(String.class);
+                    String firstname = dataSnapshot.child("firstname").getValue(String.class);
+                    String lastname = dataSnapshot.child("lastname").getValue(String.class);
+                    String userType = dataSnapshot.child("userType").getValue(String.class);
+                    String birthdate = dataSnapshot.child("birthdate").getValue(String.class);
+
+                    UserModel user = new UserModel(username, firstname, lastname, birthdate, userType);
+                    callback.onSuccess(user);
+                } else {
+                    callback.onError("No data found for user");
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onError("Failed to fetch user data");
+                callback.onError("Failed to fetch user data: " + databaseError.getMessage());
             }
         });
     }
 
     public interface LoginResultCallback {
-        void onSuccess(String userName);
+        void onSuccess(UserModel user);
         void onError(String message);
     }
 }

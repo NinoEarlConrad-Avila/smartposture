@@ -5,16 +5,18 @@ public class UserModel {
     private String firstname;
     private String lastname;
     private String birthdate;
+    private String userType;
 
     public UserModel() {
         // Default constructor required for Firebase
     }
 
-    public UserModel(String username, String firstname, String lastname, String birthdate) {
+    public UserModel(String username, String firstname, String lastname, String birthdate, String userType) {
         this.username = username;
         this.birthdate = birthdate;
         this.firstname = firstname;
         this.lastname = lastname;
+        this.userType = userType;
     }
     public String getUsername() {
         return username;
@@ -27,6 +29,11 @@ public class UserModel {
     public String getLastname() {
         return lastname;
     }
+
+    public String getUserType() {
+        return userType;
+    }
+
     public String getBirthdate() {
         return birthdate;
     }
@@ -45,5 +52,9 @@ public class UserModel {
 
     public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }
