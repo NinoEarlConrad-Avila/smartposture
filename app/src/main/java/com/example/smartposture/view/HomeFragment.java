@@ -1,20 +1,17 @@
 package com.example.smartposture.view;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.smartposture.R;
+import com.example.smartposture.model.UserModel;
 
 public class HomeFragment extends Fragment {
 
@@ -27,12 +24,11 @@ public class HomeFragment extends Fragment {
         TextView username = view.findViewById(R.id.txtUsername);
         ImageView notification = view.findViewById(R.id.notification);
 
-        if (getArguments() != null && getArguments().getBoolean("isGuest", false)) {
-            username.setText("Guest");
+        UserModel user = MainActivity.getUserDetails(requireContext());
+        if (user != null && user.getUsername() != null) {
+            username.setText(user.getUsername());
         } else {
-            SharedPreferences sharedPreferences = requireContext().getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
-            String loggedUser = sharedPreferences.getString("USER_NAME", "");
-            username.setText(loggedUser);
+            username.setText("Guest");
         }
 
         notification.setOnClickListener(v -> {

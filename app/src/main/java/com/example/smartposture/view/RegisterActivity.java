@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -68,15 +69,30 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupObservers() {
-        registerVM.getRegistrationResult().observe(this, message -> Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show());
+        registerVM.getRegistrationResult().observe(this, user -> {
+            if (user != null) {
+                registerVM.saveUserDetails(this, user);
+                Log.d("RegisterActivity", "Logged User: " + user.getUsername());
+                String message = "User registered: " + user.getUsername();
+                Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         registerVM.isRegistrationSuccessful().observe(this, success -> {
             if (success != null && success) {
-                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                finish();
+                registerVM.getRegistrationResult().observe(this, registeredUser -> {
+                    if (registeredUser != null) {
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        intent.putExtra("USER_NAME", registeredUser.getUsername());
+                        startActivity(intent);
+                        finish();
+                    }
+                });
             }
         });
     }
+
+
 
     private void onDateSet(DatePicker view, int year, int month, int day) {
         myCalendar.set(Calendar.YEAR, year);

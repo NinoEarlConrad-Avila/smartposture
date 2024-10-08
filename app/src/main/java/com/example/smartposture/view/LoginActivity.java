@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -67,12 +66,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupObservers() {
-        loginVM.getLoginResult().observe(this, userModel -> {
-            if (userModel != null) {
-                saveUserDetails(userModel);
-                Log.d("HomeFragment", "Logged User: " + userModel.getUsername());
-                navigateToMain(userModel);
+        loginVM.getLoginResult().observe(this, user -> {
+            if (user != null) {
+                saveUserDetails(user);
+                Toast.makeText(LoginActivity.this, "Login successful: " + user.getUsername(), Toast.LENGTH_SHORT).show();
 
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -132,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("USER_NAME", userModel.getUsername());
         editor.putString("FIRST_NAME", userModel.getFirstname());
         editor.putString("LAST_NAME", userModel.getLastname());
-        editor.putString("USER_TYPE", userModel.getUserType());
+        editor.putString("USER_TYPE", userModel.getUsertype());
         editor.putString("BIRTH_DATE", userModel.getBirthdate());
         editor.apply();
     }

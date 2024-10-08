@@ -44,7 +44,7 @@ public class LoginModel {
                     String username = dataSnapshot.child("username").getValue(String.class);
                     String firstname = dataSnapshot.child("firstname").getValue(String.class);
                     String lastname = dataSnapshot.child("lastname").getValue(String.class);
-                    String userType = dataSnapshot.child("userType").getValue(String.class);
+                    String userType = dataSnapshot.child("usertype").getValue(String.class);
                     String birthdate = dataSnapshot.child("birthdate").getValue(String.class);
 
                     UserModel user = new UserModel(username, firstname, lastname, birthdate, userType);

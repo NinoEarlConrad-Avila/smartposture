@@ -1,5 +1,7 @@
 package com.example.smartposture.model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,7 +19,7 @@ import java.util.Objects;
 public class RegisterModel {
     private final FirebaseAuth mAuth;
     private final DatabaseReference mDatabase;
-
+    private static final String PREFS_NAME = "UserDetails";
     public RegisterModel() {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
@@ -33,6 +35,7 @@ public class RegisterModel {
                             String userID = user.getUid();
                             UserModel newUser = new UserModel(username, firstname, lastname, birthdate, "trainee");
                             writeUserDetails(newUser, userID, listener);
+
                         } else {
                             listener.onError("Failed to get user information.");
                         }
@@ -53,7 +56,7 @@ public class RegisterModel {
         userInfo.put("firstname", userDetails.getFirstname());
         userInfo.put("lastname", userDetails.getLastname());
         userInfo.put("birthdate", userDetails.getBirthdate());
-        userInfo.put("usertype", userDetails.getUserType());
+        userInfo.put("usertype", userDetails.getUsertype());
 
         Map<String, Object> dailyStats = new HashMap<>();
         dailyStats.put("pushup", 0);
@@ -70,7 +73,7 @@ public class RegisterModel {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Write Success", "User details written successfully.");
-                        listener.onSuccess();
+                        listener.onSuccess(userDetails);
                     } else {
                         Log.e("Write Error", "Failed to write user details: " + Objects.requireNonNull(task.getException()).getMessage());
                         listener.onError("Failed to write user details.");
@@ -85,7 +88,18 @@ public class RegisterModel {
     }
 
     public interface OnRegisterCompleteListener {
-        void onSuccess();
+        void onSuccess(UserModel user);
         void onError(String message);
+    }
+
+    public void saveUserDetails(Context context, UserModel userModel) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("USER_NAME", userModel.getUsername());
+        editor.putString("FIRST_NAME", userModel.getFirstname());
+        editor.putString("LAST_NAME", userModel.getLastname());
+        editor.putString("USER_TYPE", userModel.getUsertype());
+        editor.putString("BIRTH_DATE", userModel.getBirthdate());
+        editor.apply();
     }
 }
