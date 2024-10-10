@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
+    android:background="@color/bg_color"
     android:padding="30dp">
 
 
@@ -55,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Guest"
-                    android:textColor="@color/black"
+                    android:textColor="@color/green"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -97,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Activity Progress"
-                    android:textColor="@color/white"
+                    android:textColor="@color/font_light_green"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -128,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Today's Workout Repeation Count"
-            android:textColor="@color/black"
+            android:textColor="@color/font_dark_green"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/linearLayout8"
             app:layout_constraintStart_toStartOf="@+id/linearLayout8"
@@ -308,7 +309,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Today's Activities"
-            android:textColor="@color/black"
+            android:textColor="@color/font_dark_green"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -342,7 +343,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -364,7 +366,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -385,7 +388,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -407,7 +411,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -428,7 +433,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -450,7 +456,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -469,7 +476,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Exercises"
-            android:textColor="@color/black"
+            android:textColor="@color/font_dark_green"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -502,7 +509,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -524,7 +532,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -545,7 +554,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -567,7 +577,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -588,7 +599,8 @@
                         android:layout_height="wrap_content"
                         android:text="Pushup"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -610,7 +622,8 @@
                         android:layout_height="wrap_content"
                         android:text="Squat"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/font_dark_green"
+                        android:alpha="0.6"
                         android:textSize="16sp" />
 
                     <ImageView
