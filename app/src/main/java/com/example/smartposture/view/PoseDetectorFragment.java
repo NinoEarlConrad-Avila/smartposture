@@ -40,6 +40,7 @@ import com.example.smartposture.viewmodel.HomeViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
@@ -220,5 +221,7 @@ public class PoseDetectorFragment extends Fragment {
         if (handlerThread != null) {
             handlerThread.quitSafely();
         }
+        BottomNavigationView bottomNavigation = requireActivity().findViewById(R.id.bottom_navigation);
+        bottomNavigation.setVisibility(View.VISIBLE);
     }
 }

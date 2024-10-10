@@ -125,8 +125,8 @@ public class PoseClassifierProcessor {
         if (repsAfter > repsBefore) {
           ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
           tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-          lastRepResult = String.format(
-                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
+//          lastRepResult = String.format(
+//                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
           break;
         }
       }
@@ -135,13 +135,13 @@ public class PoseClassifierProcessor {
 
     if (!pose.getAllPoseLandmarks().isEmpty()) {
       String maxConfidenceClass = classification.getMaxConfidenceClass();
-      String maxConfidenceClassResult = String.format(
-              Locale.US,
-              "%s : %.2f confidence",
-              maxConfidenceClass,
-              classification.getClassConfidence(maxConfidenceClass)
-                      / poseClassifier.confidenceRange());
-      result.add(maxConfidenceClassResult);
+//      String maxConfidenceClassResult = String.format(
+//              Locale.US,
+//              "%s : %.2f confidence",
+//              maxConfidenceClass,
+//              classification.getClassConfidence(maxConfidenceClass)
+//                      / poseClassifier.confidenceRange());
+//      result.add(maxConfidenceClassResult);
     }
 
     return result;

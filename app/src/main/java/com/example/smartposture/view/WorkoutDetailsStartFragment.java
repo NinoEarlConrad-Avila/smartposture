@@ -2,6 +2,7 @@ package com.example.smartposture.view;
 
 import com.bumptech.glide.Glide;
 import com.example.smartposture.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -84,6 +85,8 @@ public class WorkoutDetailsStartFragment extends Fragment {
 
             poseDetector.setArguments(args);
 
+            BottomNavigationView bottomNavigation = requireActivity().findViewById(R.id.bottom_navigation);
+            bottomNavigation.setVisibility(View.GONE);
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, poseDetector)
                     .addToBackStack("PoseDetector")
