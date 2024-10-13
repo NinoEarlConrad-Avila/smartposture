@@ -1,6 +1,8 @@
 package com.example.smartposture.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -136,9 +138,11 @@ public class PoseDetectorFragment extends Fragment {
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder().build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
+        boolean isBackCamera = true; // or false for front camera
+
 
         CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+                .requireLensFacing(isBackCamera ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT)
                 .build();
 
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
@@ -146,31 +150,48 @@ public class PoseDetectorFragment extends Fragment {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), imageProxy -> {
-            ByteBuffer byteBuffer = imageProxy.getImage().getPlanes()[0].getBuffer();
-            byteBuffer.rewind();
-            Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
-            bitmap.copyPixelsFromBuffer(byteBuffer);
+// Set custom frame rate (e.g., 15 FPS)
+        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext()), new ImageAnalysis.Analyzer() {
+            private long lastAnalyzedTimestamp = 0L;
+            private static final long ANALYSIS_INTERVAL_MS = 1000L / 24; // 15 FPS
 
-            if (bitmap != null) {
-                InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
-                Task<Pose> result = poseDetector.process(image)
-                        .addOnSuccessListener(pose -> {
-                            List<String> classificationResult = new ArrayList<>();
-                            if (poseClassifierProcessor != null && runClassification) {
-                                handler.post(() -> {
-                                    classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
-                                    requireActivity().runOnUiThread(() -> {
-                                        graphicOverlay.setImageSourceInfo(imageProxy.getHeight(), imageProxy.getWidth(), true);
-                                        graphicOverlay.clear();
-                                        graphicOverlay.add(new Display(graphicOverlay, pose, true, true, true, classificationResult));
-                                    });
-                                });
-                            }
-                        })
-                        .addOnFailureListener(e -> Log.e(TAG, "Pose detection failed", e));
+            @Override
+            public void analyze(@NonNull ImageProxy imageProxy) {
+                long currentTimestamp = System.currentTimeMillis();
+
+                if (currentTimestamp - lastAnalyzedTimestamp >= ANALYSIS_INTERVAL_MS) {
+                    ByteBuffer byteBuffer = imageProxy.getImage().getPlanes()[0].getBuffer();
+                    byteBuffer.rewind();
+                    Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(), imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
+                    bitmap.copyPixelsFromBuffer(byteBuffer);
+
+                    if (bitmap != null) {
+                        InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
+                        Task<Pose> result = poseDetector.process(image)
+                                .addOnSuccessListener(pose -> {
+                                    List<String> classificationResult = new ArrayList<>();
+                                    if (poseClassifierProcessor != null && runClassification) {
+                                        handler.post(() -> {
+                                            classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
+                                            requireActivity().runOnUiThread(() -> {
+                                                // Adjust based on back camera flip
+                                                graphicOverlay.setImageSourceInfo(imageProxy.getHeight(), imageProxy.getWidth(), !isBackCamera);
+                                                graphicOverlay.clear();
+                                                graphicOverlay.add(new Display(graphicOverlay, pose, true, true, true, classificationResult));
+                                            });
+                                        });
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "Pose detection failed", e));
+                    }
+
+                    // Update the timestamp after processing the current frame
+                    lastAnalyzedTimestamp = currentTimestamp;
+                }
+
+                // Always close the imageProxy to prevent memory leaks
+                imageProxy.close();
             }
-            imageProxy.close();
         });
 
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imageAnalysis, preview);
@@ -224,4 +245,20 @@ public class PoseDetectorFragment extends Fragment {
         BottomNavigationView bottomNavigation = requireActivity().findViewById(R.id.bottom_navigation);
         bottomNavigation.setVisibility(View.VISIBLE);
     }
+    public void showBadPosturePopup(String alert) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Posture Alert");
+        builder.setMessage(alert);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
 }

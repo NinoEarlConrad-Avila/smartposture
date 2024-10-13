@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadFragment(Fragment fragment, boolean addToBackStack, Bundle bundle) {
+    void loadFragment(Fragment fragment, boolean addToBackStack, Bundle bundle) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         if (bundle != null) {
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.commit();
     }
+
 
     private Bundle addBundle() {
         Bundle bundle = new Bundle();

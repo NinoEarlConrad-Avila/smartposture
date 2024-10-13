@@ -5,6 +5,7 @@ import com.example.smartposture.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 public class WorkoutDetailsStartFragment extends Fragment {
     private static final String ARG_CARD_TITLE = "CARD_TITLE";
@@ -68,8 +70,21 @@ public class WorkoutDetailsStartFragment extends Fragment {
         }
 
         backButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            Fragment workoutFragment = fragmentManager.findFragmentByTag("WorkoutFragment");
+
+            if (workoutFragment instanceof WorkoutFragment) {
+                ((WorkoutFragment) workoutFragment).enableWorkoutCards(); // Enable the workout cards
+                Log.d("WorkoutDetailsStartFragment", "Enabling workout cards");
+            } else {
+                Log.d("WorkoutDetailsStartFragment", "WorkoutFragment not found or is not an instance");
+            }
+
             requireActivity().getSupportFragmentManager().popBackStack();
         });
+
+
+
 
         startButton.setOnClickListener(v -> {
             PoseDetectorFragment poseDetector = new PoseDetectorFragment();
@@ -78,7 +93,7 @@ public class WorkoutDetailsStartFragment extends Fragment {
             String type = null;
             if (cardTitle.equals("Squats"))
                 type = "squat";
-            else if (cardTitle.equals("Push up"))
+            else if (cardTitle.equals("Push Up"))
                 type = "pushup";
 
             args.putString("exer", type);
@@ -87,12 +102,13 @@ public class WorkoutDetailsStartFragment extends Fragment {
 
             BottomNavigationView bottomNavigation = requireActivity().findViewById(R.id.bottom_navigation);
             bottomNavigation.setVisibility(View.GONE);
+
+            requireActivity().getSupportFragmentManager().popBackStack("WorkoutDetailsStartFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, poseDetector)
                     .addToBackStack("PoseDetector")
                     .commit();
         });
-
         return view;
     }
 }

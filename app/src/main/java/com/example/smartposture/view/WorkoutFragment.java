@@ -4,6 +4,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -24,39 +25,41 @@ public class WorkoutFragment extends Fragment {
     private RecyclerView recyclerView;
     private CardViewModel cardViewModel;
     private WorkoutCardAdapter adapter;
-
+    LinearLayout squatCard;
+    LinearLayout pushupCard;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
-        LinearLayout squatCard = view.findViewById(R.id.linearLayoutSquat);
-        LinearLayout pushupCard = view.findViewById(R.id.linearLayoutPushup);
+        squatCard = view.findViewById(R.id.linearLayoutSquat);
+        pushupCard = view.findViewById(R.id.linearLayoutPushup);
+
+        squatCard.setEnabled(true);
+        pushupCard.setEnabled(true);
 
         squatCard.setOnClickListener(v -> {
+            squatCard.setEnabled(false);
+            pushupCard.setEnabled(false);
             WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
                     "Squats",
                     "squat",
                     1,
                     "A squat is a strength exercise in which the trainee lowers their hips from a standing position and then stands back up."
             );
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.frag_workout, detailsFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
         });
 
         pushupCard.setOnClickListener(v -> {
+            squatCard.setEnabled(false);
+            pushupCard.setEnabled(false);
             WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
                     "Push Up",
                     "pushup",
                     2,
                     "A push-up is a common strength training exercise performed in a prone position, lying horizontal and face down, raising and lowering the body using the arms."
             );
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.frag_workout, detailsFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
         });
 
 
@@ -89,5 +92,30 @@ public class WorkoutFragment extends Fragment {
 //        });
 
         return view;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        enableWorkoutCards();
+    }
+
+    public void enableWorkoutCards() {
+        if (squatCard != null) {
+            squatCard.setEnabled(true);
+        }
+        if (pushupCard != null) {
+            pushupCard.setEnabled(true);
+        }
+    }
+    private void navigateToFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate(fragment.getClass().getName(), 0);
+
+        if (!fragmentPopped) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.frag_workout, fragment, "WorkoutFragment");
+            transaction.addToBackStack("WorkoutFragment");
+            transaction.commit();
+        }
     }
 }
