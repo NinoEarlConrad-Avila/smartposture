@@ -52,15 +52,30 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void incrementPushupCount() {
-        int newCount = pushupCountLiveData.getValue() + 1;
+        Integer currentCount = pushupCountLiveData.getValue();
+        if (currentCount == null) {
+            currentCount = 0;  // Default to 0 if it's null
+        }
+        int newCount = currentCount + 1;
         pushupCountLiveData.postValue(newCount);
-        updatePushupCountInFirebase(newCount);
+//        updatePushupCountInFirebase(newCount);
+//        int newCount = pushupCountLiveData.getValue() + 1;
+//        pushupCountLiveData.postValue(newCount);
+//        updatePushupCountInFirebase(newCount);
     }
 
     public void incrementSquatCount() {
-        int newCount = squatCountLiveData.getValue() + 1;
+        Integer currentCount = squatCountLiveData.getValue();
+        if (currentCount == null) {
+            currentCount = 0;  // Default to 0 if it's null
+        }
+        int newCount = currentCount + 1;
         squatCountLiveData.postValue(newCount);
-        updateSquatCountInFirebase(newCount);
+//        updateSquatCountInFirebase(newCount);
+
+//        int newCount = squatCountLiveData.getValue() + 1;
+//        squatCountLiveData.postValue(newCount);
+//        updateSquatCountInFirebase(newCount);
     }
 
     private void updatePushupCountInFirebase(int newCount) {
