@@ -24,14 +24,16 @@ public class WorkoutDetailsStartFragment extends Fragment {
     private static final String ARG_CARD_PATH = "CARD_PATH";
     private static final String ARG_CARD_ID = "CARD_ID";
     private static final String ARG_CARD_DESCRIPTION = "CARD_DESCRIPTION";
+    private static final String ARG_CARD_GUIDE = "CARD_GUIDE";
 
-    public static WorkoutDetailsStartFragment newInstance(String cardTitle, String cardPath, int cardId, String cardDescription) {
+    public static WorkoutDetailsStartFragment newInstance(String cardTitle, String cardPath, int cardId, String cardDescription, String cardGuide) {
         WorkoutDetailsStartFragment fragment = new WorkoutDetailsStartFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CARD_TITLE, cardTitle);
         args.putString(ARG_CARD_PATH, cardPath);
         args.putInt(ARG_CARD_ID, cardId);
         args.putString(ARG_CARD_DESCRIPTION, cardDescription);
+        args.putString(ARG_CARD_GUIDE, cardGuide);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,10 +48,13 @@ public class WorkoutDetailsStartFragment extends Fragment {
         String cardPath = getArguments().getString(ARG_CARD_PATH);
         String cardId = getArguments().getString(ARG_CARD_ID);
         String cardDescription = getArguments().getString(ARG_CARD_DESCRIPTION);
+        String cardGuide = getArguments().getString(ARG_CARD_GUIDE);
+
 
         TextView workoutTitleTextView = view.findViewById(R.id.workout_title);
         TextView workoutTopTitleTextView = view.findViewById(R.id.workout_top_title);
         TextView workoutDescription = view.findViewById(R.id.description);
+        TextView workoutGuide = view.findViewById(R.id.guide);
         ImageView imageView = view.findViewById(R.id.workout_image);
         ImageButton backButton = view.findViewById(R.id.back_to_workout_fragment);
         Button startButton = view.findViewById(R.id.start_button);
@@ -57,6 +62,7 @@ public class WorkoutDetailsStartFragment extends Fragment {
         workoutTitleTextView.setText(cardTitle);
         workoutTopTitleTextView.setText(cardTitle);
         workoutDescription.setText(cardDescription);
+        workoutGuide.setText(cardGuide);
 
         int resourceId = getResources().getIdentifier(cardPath, "drawable", requireActivity().getPackageName());
         if (resourceId != 0) {

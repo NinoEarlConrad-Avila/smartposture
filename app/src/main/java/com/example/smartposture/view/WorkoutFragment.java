@@ -45,7 +45,8 @@ public class WorkoutFragment extends Fragment {
                     "Squats",
                     "squat",
                     1,
-                    "A squat is a strength exercise in which the trainee lowers their hips from a standing position and then stands back up."
+                    "A squat is a strength exercise in which the trainee lowers their hips from a standing position and then stands back up.",
+                    "1.Stand with feet shoulder-width apart, toes facing forward.\n2.Engage your core and hinge at the hips.\n3.Drive the hips back, bend at the knees and ankles, and press your knees slightly open.\n4.Sit down into a squat position, keeping your heels and toes on the ground, chest up, and shoulders back.\n5.Repeat the movement several times."
             );
             ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
         });
@@ -57,7 +58,8 @@ public class WorkoutFragment extends Fragment {
                     "Push Up",
                     "pushup",
                     2,
-                    "A push-up is a common strength training exercise performed in a prone position, lying horizontal and face down, raising and lowering the body using the arms."
+                    "A push-up is a common strength training exercise performed in a prone position, lying horizontal and face down, raising and lowering the body using the arms.",
+                    "1.Place your hands shoulder-width apart, body straight from head to heels, and engage your core.\n2.Slowly bend your elbows, lowering yourself until your chest nearly touches the ground.\n3.Press through your palms to lift your body back to the starting position, keeping your core tight.\n4.Perform the movement for your desired number of repetitions, maintaining proper form throughout."
             );
             ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
         });
