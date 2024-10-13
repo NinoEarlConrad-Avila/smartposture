@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_color"
@@ -129,6 +130,15 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/idGraphView"
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:layout_alignParentTop="true"
+
+            android:background="@drawable/rounded_edittext"
+            android:paddingRight="10dp" />
 
         <TextView
             android:id="@+id/textView17"

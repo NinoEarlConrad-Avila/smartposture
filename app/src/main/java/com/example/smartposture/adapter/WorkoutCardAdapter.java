@@ -66,17 +66,17 @@ public class WorkoutCardAdapter extends RecyclerView.Adapter<WorkoutCardAdapter.
         }
 
         public void bind(final WorkoutModel card, final OnItemClickListener listener) {
-            int resourceId = context.getResources().getIdentifier(card.getPath(), "drawable", context.getPackageName());
-
-            if (resourceId != 0) {
-                Glide.with(context)
-                        .load(resourceId)
-                        .into(img);
-            } else {
-                Glide.with(context)
-                        .load(R.drawable.default_image)
-                        .into(img);
-            }
+//            int resourceId = context.getResources().getIdentifier(card.getPath(), "drawable", context.getPackageName());
+//
+//            if (resourceId != 0) {
+//                Glide.with(context)
+//                        .load(resourceId)
+//                        .into(img);
+//            } else {
+//                Glide.with(context)
+//                        .load(R.drawable.default_image)
+//                        .into(img);
+//            }
 
             workoutName.setText(card.getTitle());
             itemView.setOnClickListener(view -> listener.onItemClick(card));

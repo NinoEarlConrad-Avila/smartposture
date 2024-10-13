@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.smartposture.R;
 import com.example.smartposture.adapter.WorkoutCardAdapter;
@@ -29,31 +30,63 @@ public class WorkoutFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
-        recyclerView = view.findViewById(R.id.recyclerViewWorkoutCards);
+        LinearLayout squatCard = view.findViewById(R.id.linearLayoutSquat);
+        LinearLayout pushupCard = view.findViewById(R.id.linearLayoutPushup);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
-        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
-
-        adapter = new WorkoutCardAdapter(getActivity(), new ArrayList<>(), cardData -> {
+        squatCard.setOnClickListener(v -> {
             WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
-                    cardData.getTitle(),
-                    cardData.getPath(),
-                    cardData.getId(),
-                    cardData.getDescription()
+                    "Squats",
+                    "squat",
+                    1,
+                    "A squat is a strength exercise in which the trainee lowers their hips from a standing position and then stands back up."
             );
-
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
             transaction.replace(R.id.frag_workout, detailsFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         });
 
-        recyclerView.setAdapter(adapter);
-
-        cardViewModel.getCardListLiveData().observe(getViewLifecycleOwner(), cardList -> {
-            adapter.updateCardList(cardList);
+        pushupCard.setOnClickListener(v -> {
+            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
+                    "Push Up",
+                    "pushup",
+                    2,
+                    "A push-up is a common strength training exercise performed in a prone position, lying horizontal and face down, raising and lowering the body using the arms."
+            );
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.frag_workout, detailsFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         });
+
+
+
+
+//        recyclerView = view.findViewById(R.id.recyclerViewWorkoutCards);
+
+//        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+
+//        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
+//
+//        adapter = new WorkoutCardAdapter(getActivity(), new ArrayList<>(), cardData -> {
+//            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
+//                    cardData.getTitle(),
+//                    cardData.getPath(),
+//                    cardData.getId(),
+//                    cardData.getDescription()
+//            );
+//
+//            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+//            transaction.replace(R.id.frag_workout, detailsFragment);
+//            transaction.addToBackStack(null);
+//            transaction.commit();
+//        });
+
+//        recyclerView.setAdapter(adapter);
+
+//        cardViewModel.getCardListLiveData().observe(getViewLifecycleOwner(), cardList -> {
+//            adapter.updateCardList(cardList);
+//        });
 
         return view;
     }

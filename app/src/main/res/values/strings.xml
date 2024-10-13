@@ -25,7 +25,8 @@
     <string name="workout_text">WORKOUT</string>
     <string name="workout_image">Workout Image</string>
     <string name="item">Item</string>
-
+    <string name="squat">Squat</string>
+    <string name="push_up">Push-up</string>
     <!-- Room Texts-->
     <string name="room">Room</string>
     <string name="join_room">Join Room</string>
