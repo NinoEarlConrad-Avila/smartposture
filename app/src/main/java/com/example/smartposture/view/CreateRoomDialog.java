@@ -13,36 +13,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.example.smartposture.R;
-
-public class JoinRoomDialog extends DialogFragment {
-
+public class CreateRoomDialog extends DialogFragment{
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_join_room, null);
+        View view = inflater.inflate(R.layout.dialog_create_room, null);
 
         ImageView closeIcon = view.findViewById(R.id.close);
-        EditText roomCodeInput = view.findViewById(R.id.modal_input);
+        EditText roomNameInput = view.findViewById(R.id.input_room_name);
+        EditText roomNameDescription = view.findViewById(R.id.input_room_description);
         Button sendRequestButton = view.findViewById(R.id.btnSendRequest);
 
         closeIcon.setOnClickListener(v -> dismiss());
 
         sendRequestButton.setOnClickListener(v -> {
-            String roomCode = roomCodeInput.getText().toString().trim();
+            String roomName = roomNameInput.getText().toString().trim();
+            String roomDescription = roomNameDescription.getText().toString().trim();
 
-            if (!roomCode.isEmpty()) {
+            if (!roomName.isEmpty() & !roomDescription.isEmpty()) {
 
                 dismiss();
             } else {
-                roomCodeInput.setError("Room code cannot be empty");
+                if(roomName.isEmpty()) {
+                    roomNameInput.setError("Room name cannot be empty");
+                }
+                if(roomDescription.isEmpty()){
+                    roomNameDescription.setError("Room description cannot be empty");
+                }
             }
         });
 
         builder.setView(view)
-                .setPositiveButton(null, null) // Remove default buttons
+                .setPositiveButton(null, null)
                 .setNegativeButton(null, null);
 
         return builder.create();

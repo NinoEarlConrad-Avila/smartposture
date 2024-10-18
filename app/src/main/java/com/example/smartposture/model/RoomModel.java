@@ -5,19 +5,18 @@ import java.io.Serializable;
 public class RoomModel implements Serializable {
     private String roomCode;
     private String roomCreator;
-    private int roomID;
+    private Long roomID;
     private String roomName;
 
     public RoomModel() {}
 
-    public RoomModel(String roomCode, String roomCreator, int roomID, String roomName) {
+    public RoomModel(String roomCode, String roomCreator, Long roomID, String roomName) {
         this.roomCode = roomCode;
         this.roomCreator = roomCreator;
         this.roomID = roomID;
         this.roomName = roomName;
     }
 
-    // Getters and Setters
     public String getRoomCode() {
         return roomCode;
     }
@@ -34,11 +33,11 @@ public class RoomModel implements Serializable {
         this.roomCreator = roomCreator;
     }
 
-    public int getRoomID() {
+    public Long getRoomID() {
         return roomID;
     }
 
-    public void setRoomID(int roomID) {
+    public void setRoomID(Long roomID) {
         this.roomID = roomID;
     }
 

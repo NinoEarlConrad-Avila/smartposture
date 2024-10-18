@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_white_round"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        android:contentDescription="@string/close"
+        app:srcCompat="@drawable/ic_close" />
+
+    <TextView
+        android:id="@+id/modal_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="@string/create_room"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/input_room_name"
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_light_green_border"
+        android:gravity="center"
+        android:hint="@string/hint_enter_room_name"
+        android:autofillHints="text"
+        android:inputType="text"
+        android:textColor="@color/white" />
+    <EditText
+        android:id="@+id/input_room_description"
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_light_green_border"
+        android:gravity="center"
+        android:hint="@string/hint_enter_room_description"
+        android:autofillHints="text"
+        android:inputType="text"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnSendRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/teal"
+        android:textColor="@color/white"
+        android:text="@string/create_room" />
+
+</LinearLayout>
