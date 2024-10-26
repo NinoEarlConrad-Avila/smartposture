@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

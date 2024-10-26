@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;

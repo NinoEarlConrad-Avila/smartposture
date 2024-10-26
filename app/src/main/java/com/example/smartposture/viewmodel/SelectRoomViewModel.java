@@ -10,13 +10,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.model.RoomModel;
 import com.example.smartposture.model.UserModel;
-import com.example.smartposture.view.MainActivity;
+import com.example.smartposture.view.activity.MainActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;

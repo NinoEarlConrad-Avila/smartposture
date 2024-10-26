@@ -1,16 +1,19 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.smartposture.R;
 import com.example.smartposture.model.UserModel;
+import com.example.smartposture.view.fragment.HomeFragment;
+import com.example.smartposture.view.fragment.ProfileFragment;
+import com.example.smartposture.view.fragment.SelectRoomFragment;
+import com.example.smartposture.view.fragment.WorkoutFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void loadFragment(Fragment fragment, boolean addToBackStack, Bundle bundle) {
+    public void loadFragment(Fragment fragment, boolean addToBackStack, Bundle bundle) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         if (bundle != null) {

@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.smartposture.R;

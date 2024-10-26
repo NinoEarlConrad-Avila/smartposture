@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;

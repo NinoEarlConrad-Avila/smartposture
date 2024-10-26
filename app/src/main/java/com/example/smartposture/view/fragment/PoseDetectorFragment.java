@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -39,8 +39,6 @@ import com.example.smartposture.R;
 import com.example.smartposture.posedetector.GraphicOverlay;
 import com.example.smartposture.posedetector.classification.PoseClassifierProcessor;
 import com.example.smartposture.viewmodel.HomeViewModel;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.mlkit.vision.common.InputImage;

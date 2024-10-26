@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.smartposture.R;
 import com.example.smartposture.model.UserModel;
+import com.example.smartposture.view.activity.MainActivity;
 
 public class HomeFragment extends Fragment {
 

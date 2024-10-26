@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;

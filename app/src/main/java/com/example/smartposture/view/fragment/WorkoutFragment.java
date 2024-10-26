@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -6,8 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -17,9 +15,8 @@ import android.widget.LinearLayout;
 
 import com.example.smartposture.R;
 import com.example.smartposture.adapter.WorkoutCardAdapter;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.CardViewModel;
-
-import java.util.ArrayList;
 
 public class WorkoutFragment extends Fragment {
     private RecyclerView recyclerView;

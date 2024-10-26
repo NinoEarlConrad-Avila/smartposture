@@ -1,4 +1,4 @@
-package com.example.smartposture.view;
+package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,9 @@ import android.widget.Button;
 import com.example.smartposture.R;
 import com.example.smartposture.model.RoomModel;
 import com.example.smartposture.model.UserModel;
+import com.example.smartposture.view.activity.MainActivity;
+import com.example.smartposture.view.dialog.CreateRoomDialog;
+import com.example.smartposture.view.dialog.JoinRoomDialog;
 import com.example.smartposture.viewmodel.SelectRoomViewModel;
 import com.example.smartposture.adapter.SelectRoomAdapter;
 

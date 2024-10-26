@@ -4,7 +4,7 @@
 //
 //import androidx.annotation.NonNull;
 //
-//import com.example.smartposture.view.Display;
+//import com.example.smartposture.view.fragment.Display;
 //import com.google.mlkit.vision.pose.Pose;
 //import com.google.mlkit.vision.pose.PoseDetection;
 //import com.google.mlkit.vision.pose.PoseDetector;
