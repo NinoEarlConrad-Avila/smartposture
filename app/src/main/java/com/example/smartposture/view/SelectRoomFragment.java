@@ -56,6 +56,7 @@ public class SelectRoomFragment extends Fragment {
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("roomDetails", selectedRoom);
+                bundle.putLong("roomid", room.getRoomID()); // Pass room ID here
 
                 RoomFragment roomFragment = new RoomFragment();
                 roomFragment.setArguments(bundle);
@@ -67,6 +68,7 @@ public class SelectRoomFragment extends Fragment {
             });
             recyclerView.setAdapter(adapter);
         });
+
 
         return view;
     }
