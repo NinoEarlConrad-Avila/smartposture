@@ -55,6 +55,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginAsGuestButton.setOnClickListener(view -> {
+            clearUserDetails();
+
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USER_NAME", "Guest");
             intent.putExtra("isGuest", true);
@@ -82,6 +84,12 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void clearUserDetails() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear(); // Clears all stored data
+        editor.apply();
     }
 
     private void navigateToMain(UserModel userModel) {

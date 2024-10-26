@@ -3,16 +3,20 @@ package com.example.smartposture.view;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.smartposture.R;
 import com.example.smartposture.model.UserModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "UserDetails";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,12 +32,20 @@ public class MainActivity extends AppCompatActivity {
                 loadFragment(new HomeFragment(), false, addBundle());
                 return true;
             } else if (item.getItemId() == R.id.nav_room) {
+                if (isGuestUser()) {
+                    showSnackbar("Guest users cannot access this feature.");
+                    return false; // Prevent navigation
+                }
                 loadFragment(new SelectRoomFragment(), false, addBundle());
                 return true;
             } else if (item.getItemId() == R.id.nav_workout) {
                 loadFragment(new WorkoutFragment(), false, addBundle());
                 return true;
             } else if (item.getItemId() == R.id.nav_profile) {
+                if (isGuestUser()) {
+                    showSnackbar("Guest users cannot access this feature.");
+                    return false; // Prevent navigation
+                }
                 loadFragment(new ProfileFragment(), false, addBundle());
                 return true;
             } else {
@@ -57,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-
     private Bundle addBundle() {
         Bundle bundle = new Bundle();
         boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
@@ -65,6 +76,20 @@ public class MainActivity extends AppCompatActivity {
         bundle.putBoolean("isGuest", isGuest);
         bundle.putString("USER_NAME", getIntent().getStringExtra("USER_NAME"));
         return bundle;
+    }
+
+    private boolean isGuestUser() {
+        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
+        Log.d("MainActivity", "Is guest user: " + isGuest);
+        return isGuest;
+    }
+
+    private void showSnackbar(String message) {
+        // Use the container view for the Snackbar
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.container), message, Snackbar.LENGTH_SHORT);
+        // Optionally, customize the Snackbar view
+//        snackbar.setAction("OK", v -> snackbar.dismiss());
+        snackbar.show();
     }
 
     public static UserModel getUserDetails(Context context) {

@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class HomeFragment extends Fragment {
         ImageView notification = view.findViewById(R.id.notification);
 
         UserModel user = MainActivity.getUserDetails(requireContext());
+        Log.d("HomeFragment", "User: " +user.getUsername());
         if (user != null && user.getUsername() != null) {
             username.setText(user.getUsername());
         } else {
