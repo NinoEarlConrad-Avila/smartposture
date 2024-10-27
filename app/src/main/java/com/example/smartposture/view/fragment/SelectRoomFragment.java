@@ -41,13 +41,14 @@ public class SelectRoomFragment extends Fragment {
 
         if (user != null) {
             String userType = user.getUsertype();
-            if ("trainer".equals(userType)) {
-                roomButton.setText("Create Room");
-                roomButton.setOnClickListener(v -> showCreateRoomDialog());
-            } else if ("trainee".equals(userType)) {
-                roomButton.setText("Join Room");
-                roomButton.setOnClickListener(v -> showJoinRoomDialog());
-            }
+            roomButton.setText("trainer".equals(userType) ? "Create Room" : "Join Room");
+            roomButton.setOnClickListener(v -> {
+                if ("trainer".equals(userType)) {
+                    showCreateRoomDialog();
+                } else {
+                    showJoinRoomDialog();
+                }
+            });
         }
 
         viewModel.fetchRooms(requireContext());
@@ -74,10 +75,13 @@ public class SelectRoomFragment extends Fragment {
 
         return view;
     }
+
     private void showCreateRoomDialog() {
         CreateRoomDialog dialog = new CreateRoomDialog();
+//        dialog.setViewModel(viewModel); // Pass the ViewModel to the dialog
         dialog.show(getChildFragmentManager(), "CreateRoomDialog");
     }
+
 
     private void showJoinRoomDialog() {
         JoinRoomDialog dialog = new JoinRoomDialog();

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ public class HomeFragment extends Fragment {
     private HomeWorkoutsViewModel workoutsViewModel;
     private HomeActivitiesAdapter activitiesAdapter;
     private HomeWorkoutsAdapter workoutsAdapter;
-    private TextView noActivitiesTextView;
+    private TextView noActivitiesTextView, textActivities;
     private RecyclerView activitiesRecyclerView;
     private LinearLayout activitiesLayout; // Added to handle visibility when userType is null
 
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment {
         RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
         noActivitiesTextView = view.findViewById(R.id.noActivities);
         activitiesLayout = view.findViewById(R.id.activitiesLinearLayout); // Reference to the LinearLayout
+        textActivities = view.findViewById(R.id.textActivities);
 
         UserModel user = MainActivity.getUserDetails(requireContext());
         String usertype = user != null ? user.getUsertype() : null;
@@ -59,7 +61,12 @@ public class HomeFragment extends Fragment {
         } else {
             username.setText("Guest");
         }
-
+        Log.d("Test", "Usertype: " +usertype);
+        if(usertype.equals("trainee")){
+            textActivities.setText("Today's Activities");
+        }else{
+            textActivities.setText("Active Activities");
+        }
         // Initialize ViewModels
         activitiesViewModel = new ViewModelProvider(this).get(HomeActivitiesViewModel.class);
         workoutsViewModel = new ViewModelProvider(this).get(HomeWorkoutsViewModel.class);
