@@ -40,7 +40,9 @@
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
     <string name="add_activity">Add Activity</string>
-    
+    <string name="view_request">View Join Request</string>
+    <string name="room_code">Room Code</string>
+    <string name="code">Code</string>
     <!-- General Texts-->
     <string name="activity_name">Activity Name</string>
     <string name="due_date">Due Date: </string>

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartposture.R;
 import com.example.smartposture.adapter.RoomActivitiesAdapter;
 import com.example.smartposture.model.ActivityModel;
+import com.example.smartposture.model.RoomModel;
 import com.example.smartposture.viewmodel.RoomActivitiesViewModel;
 
 import java.text.ParseException;
@@ -33,7 +34,8 @@ public class RoomFragment extends Fragment {
     private RoomActivitiesAdapter adapter;
     private RoomActivitiesViewModel activityViewModel;
     private Button activeBtn, inactiveBtn;
-    private TextView emptyMessage;
+    private TextView emptyMessage, roomCode;
+    private RoomModel roomDetails;
 
     @Nullable
     @Override
@@ -43,15 +45,22 @@ public class RoomFragment extends Fragment {
         activeBtn = view.findViewById(R.id.activeBtn);
         inactiveBtn = view.findViewById(R.id.inactiveBtn);
         emptyMessage = view.findViewById(R.id.emptyMessage);
+        roomCode = view.findViewById(R.id.roomCode);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RoomActivitiesAdapter();
         recyclerView.setAdapter(adapter);
 
-        activityViewModel = new ViewModelProvider(this).get(RoomActivitiesViewModel.class);
-        long roomId = getArguments().getLong("roomid", -1);
-        if (roomId != -1) {
-            activityViewModel.setRoomId((int) roomId);
+        if (getArguments() != null) {
+            roomDetails = (RoomModel) getArguments().getSerializable("roomDetails");
+            if (roomDetails != null) {
+                roomCode.setText(roomDetails.getRoomCode()); // Display room code
+
+                // Set room ID using roomDetails directly
+                activityViewModel = new ViewModelProvider(this).get(RoomActivitiesViewModel.class);
+                long roomId = getArguments().getLong("roomid", -1);
+                activityViewModel.setRoomId((int) roomId); // Use roomDetails ID
+            }
         }
 
         // Observe activities and set default view to active activities

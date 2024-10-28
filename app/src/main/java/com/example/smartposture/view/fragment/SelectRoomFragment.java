@@ -55,10 +55,9 @@ public class SelectRoomFragment extends Fragment {
 
         viewModel.getRooms().observe(getViewLifecycleOwner(), rooms -> {
             adapter = new SelectRoomAdapter(rooms, room -> {
-                RoomModel selectedRoom = new RoomModel(room.getRoomCode(), room.getRoomCreator(), room.getRoomID(), room.getRoomName());
-
+                // Pass the selected room directly
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("roomDetails", selectedRoom);
+                bundle.putSerializable("roomDetails", room); // Pass the whole RoomModel instance
                 bundle.putLong("roomid", room.getRoomID()); // Pass room ID here
 
                 RoomFragment roomFragment = new RoomFragment();
@@ -69,10 +68,9 @@ public class SelectRoomFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
             });
+
             recyclerView.setAdapter(adapter);
         });
-
-
         return view;
     }
 
