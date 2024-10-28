@@ -46,7 +46,7 @@ public class SelectRoomFragment extends Fragment {
                 if ("trainer".equals(userType)) {
                     showCreateRoomDialog();
                 } else {
-                    showJoinRoomDialog();
+                    showJoinRoomDialog(user.getUsername());
                 }
             });
         }
@@ -55,10 +55,10 @@ public class SelectRoomFragment extends Fragment {
 
         viewModel.getRooms().observe(getViewLifecycleOwner(), rooms -> {
             adapter = new SelectRoomAdapter(rooms, room -> {
-                // Pass the selected room directly
+
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("roomDetails", room); // Pass the whole RoomModel instance
-                bundle.putLong("roomid", room.getRoomID()); // Pass room ID here
+                bundle.putSerializable("roomDetails", room);
+                bundle.putLong("roomid", room.getRoomID());
 
                 RoomFragment roomFragment = new RoomFragment();
                 roomFragment.setArguments(bundle);
@@ -76,13 +76,17 @@ public class SelectRoomFragment extends Fragment {
 
     private void showCreateRoomDialog() {
         CreateRoomDialog dialog = new CreateRoomDialog();
-//        dialog.setViewModel(viewModel); // Pass the ViewModel to the dialog
         dialog.show(getChildFragmentManager(), "CreateRoomDialog");
     }
 
 
-    private void showJoinRoomDialog() {
+    private void showJoinRoomDialog(String username) {
         JoinRoomDialog dialog = new JoinRoomDialog();
+
+        Bundle args = new Bundle();
+        args.putString("username", username);
+        dialog.setArguments(args);
+
         dialog.show(getChildFragmentManager(), "JoinRoomDialog");
     }
 }
