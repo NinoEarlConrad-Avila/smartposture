@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.smartposture.R;
+import com.example.smartposture.data.model.User;
 import com.example.smartposture.model.UserModel;
 import com.example.smartposture.view.fragment.HomeFragment;
 import com.example.smartposture.view.fragment.ProfileFragment;
@@ -104,5 +105,17 @@ public class MainActivity extends AppCompatActivity {
         String birthdate = sharedPreferences.getString("BIRTH_DATE", null);
 
         return new UserModel(username, firstname, lastname, birthdate, userType);
+    }
+
+    public static User getNewUserDetails(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("EMAIL", null);
+        String username = sharedPreferences.getString("USER_NAME", null);
+        String firstname = sharedPreferences.getString("FIRST_NAME", null);
+        String lastname = sharedPreferences.getString("LAST_NAME", null);
+        String userType = sharedPreferences.getString("USER_TYPE", null);
+        String birthdate = sharedPreferences.getString("BIRTH_DATE", null);
+
+        return new User(email, username, firstname, lastname, birthdate, userType);
     }
 }

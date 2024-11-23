@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.model.LoginModel;
 import com.example.smartposture.model.UserModel;
+import com.example.smartposture.model.UserModelMetaData;
 
 public class LoginViewModel extends ViewModel {
     private final LoginModel loginModel;

@@ -3,7 +3,6 @@ package com.example.smartposture.viewmodel;
 import android.app.Application;
 import android.util.Log;
 
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -24,14 +23,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class HomeViewModel extends AndroidViewModel {
+public class HomeViewModel extends ViewModel {
     private HomeModel homeModel;
     private MutableLiveData<Integer> pushupCountLiveData;
     private MutableLiveData<Integer> squatCountLiveData;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     public HomeViewModel(Application application) {
-        super(application);
+        super();
         homeModel = new HomeModel(application);
 
         pushupCountLiveData = new MutableLiveData<>();

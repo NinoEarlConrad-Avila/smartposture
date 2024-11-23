@@ -78,7 +78,7 @@ public class PoseDetectorFragment extends Fragment {
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
         Button done = view.findViewById(R.id.done);
 
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+//        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         PoseDetectorOptions options = new PoseDetectorOptions.Builder()
                 .setDetectorMode(PoseDetectorOptions.STREAM_MODE)

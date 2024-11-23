@@ -48,6 +48,10 @@
     <string name="due_date">Due Date: </string>
     <string name="date">10/23/2023</string>
 
+    <string name="join_request">Join Request</string>
+    <string name="status">Status</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
     <!-- General Texts-->
     <string name="close">Close</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
