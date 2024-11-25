@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="light_green">#C0E6BA</color>
-    <color name="teal">#004D40</color>
-    <color name="green">#4CA771</color>
-    <color name="font_light_green">#BEDEAB</color>
-    <color name="font_dark_green">#013237</color>
-    <color name="bg_color">#EAF9E7</color>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="_bg__log_in_ek2_color">#D8EADA</color>
-    <color name="rectangle_4174_color">#D7E8CE</color>
-    <color name="username_color">#716C6C</color>
-    <color name="rectangle_4172_color">#192126</color>
-    <color name="don_t_have_an_account__sign_up_color">#000000</color>
-    <color name="log_in_ek3_color">#FFFFFF</color>
-    <color name="_bg__register_ek2_color">#D8EADA</color>
-    <color name="already_have_an_account__log_in_color">#FFFFFF</color>
-    <color name="_bg__onboarding_screen_ek2_color">#D8EADA</color>
-    <color name="overlay_color">#ffffff</color>
-    <color name="shape_color">#4CA771</color>
-    <color name="wherever_you_are_health_is_number_one_color">#192126</color>
-    <color name="get_started_color">#FFFFFF</color>
+<color name="black">#FF000000</color>
+<color name="white">#FFFFFFFF</color>
+<color name="light_green">#C0E6BA</color>
+<color name="teal">#004D40</color>
+<color name="green">#4CA771</color>
+<color name="font_light_green">#BEDEAB</color>
+<color name="font_dark_green">#013237</color>
+<color name="bg_color">#EAF9E7</color>
+<color name="colorPrimary">#008577</color>
+<color name="colorPrimaryDark">#00574B</color>
+<color name="colorAccent">#D81B60</color>
+<color name="purple_200">#FFBB86FC</color>
+<color name="purple_500">#FF6200EE</color>
+<color name="purple_700">#FF3700B3</color>
+<color name="teal_200">#FF03DAC5</color>
+<color name="teal_700">#FF018786</color>
+<color name="bg_white_reg">#D8EADA</color>
+<color name="Home_bgcolor">#D7E8CE</color>
+<color name="username_color">#716C6C</color>
+<color name="shape_color">#4CA771</color>
+<color name="_bg__home_ek2_color">#D8EADA</color>
+<color name="Username_Color">#192126</color>
+<color name="bg_ek1_color">#F2F2F2</color>
+<color name="progress_ek1_color">#4CA771</color>
+
 </resources>

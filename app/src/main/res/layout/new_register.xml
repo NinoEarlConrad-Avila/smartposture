@@ -128,7 +128,7 @@
                 android:layout_centerInParent="true"
                 android:fontFamily="Lato"
                 android:text="@string/sign_in_string"
-                android:textColor="@color/already_have_an_account__log_in_color"
+                android:textColor="@color/bg_white_reg"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </RelativeLayout>

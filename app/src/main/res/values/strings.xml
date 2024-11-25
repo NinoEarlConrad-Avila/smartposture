@@ -61,8 +61,8 @@
     <string name="ek_img_content">ExportKit Image</string>
     <string name="username_string">username</string>
     <string name="password_string">password</string>
-    <string name="don_t_have_an_account__sign_up_string">Dont have an account? SIGN UP</string>
-    <string name="log_in_ek3_string">Log in</string>
+    <string name="Signup">Dont have an account? SIGN UP</string>
+    <string name="Login_btn">Log in</string>
 
     <!--register-->
     <string name="register_name">Page 1</string>
@@ -72,7 +72,30 @@
     <string name="sign_in_string">Sign in</string>
     <!--onboarding-->
     <string name="onboarding_name">Page 1</string>
-    <string name="wherever_you_are_health_is_number_one_string">Wherever you are health is number one</string>
-    <string name="there_is_no_instant_way_to_a_healthy_life_string">There is no instant way to a healthy life</string>
+    <string name="motive_string1">Wherever you are health is number one</string>
+    <string name="motive_string2">There is no instant way to a healthy life</string>
     <string name="get_started_string">Get Started</string>
+
+    <!--  home strings  -->
+    <string name="Home">Page 1</string>
+    <string name="Username">Allen Kalbo</string>
+    <string name="Greetings">Good Morning </string>
+    <string name="Searchbar">Search</string>
+    <string name="workout_context">Lower BodyTraining</string>
+    <string name="calories">500 Kcal</string>
+    <string name="workout_duration">50 Min</string>
+    <string name="workout_context2">HandTraining</string>
+    <string name="duration2">40 Min</string>
+    <string name="popularworkout">Popular Workouts</string>
+    <string name="workout_plan">Push Up</string>
+    <string name="workout_reps">100 Push up a day</string>
+    <string name="workout_dificulty">Intermediate</string>
+    <string name="workout_progress">45%</string>
+    <string name="Today_plan">Today Plan</string>
+    <string name="nav_barhome">Home</string>
+    <!--  workout strings  -->
+    <string name="workoutses">Page 1</string>
+    <string name="Title">Workout</string>
+    <string name="Done">Finish Work Out</string>
+    
 </resources>

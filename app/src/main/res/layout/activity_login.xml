@@ -92,7 +92,7 @@
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
-            android:text="@string/don_t_have_an_account__sign_up_string"
+            android:text="@string/Signup"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -105,9 +105,9 @@
             android:layout_below="@id/txtSignUp"
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/rectangle_4172_color"
-            android:text="@string/log_in_ek3_string"
-            android:textColor="@color/log_in_ek3_color"
+            android:backgroundTint="@color/font_dark_green"
+            android:text="@string/login"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
