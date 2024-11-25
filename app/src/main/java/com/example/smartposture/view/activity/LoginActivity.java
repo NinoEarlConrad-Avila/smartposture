@@ -28,10 +28,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Initialize views
-        usernameEditText = findViewById(R.id.user);
-        passwordEditText = findViewById(R.id.pass);
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.btnLogin);
-        registerTextView = findViewById(R.id.textSignUp);
+        registerTextView = findViewById(R.id.txtSignUp);
 
         registerTextView.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setupObservers();
 
-        // Handle login button click
+//         Handle login button click
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
