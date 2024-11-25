@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.example.smartposture.R;
 import com.example.smartposture.adapter.HomeActivitiesAdapter;
 import com.example.smartposture.adapter.HomeWorkoutsAdapter;
+import com.example.smartposture.data.model.User;
 import com.example.smartposture.model.ActivityModel;
 import com.example.smartposture.model.UserModel;
 import com.example.smartposture.model.WorkoutModel;
@@ -47,13 +48,13 @@ public class HomeFragment extends Fragment {
 
         TextView username = view.findViewById(R.id.txtUsername);
         ImageView notification = view.findViewById(R.id.notification);
-        activitiesRecyclerView = view.findViewById(R.id.activitiesRecyclerView);
-        RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
+//        activitiesRecyclerView = view.findViewById(R.id.activitiesRecyclerView);
+//        RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
         noActivitiesTextView = view.findViewById(R.id.noActivities);
         activitiesLayout = view.findViewById(R.id.activitiesLinearLayout); // Reference to the LinearLayout
         textActivities = view.findViewById(R.id.textActivities);
 
-        UserModel user = MainActivity.getUserDetails(requireContext());
+        User user = MainActivity.getNewUserDetails(requireContext());
         String usertype = user != null ? user.getUsertype() : null;
 
         if (user != null && user.getUsername() != null) {
@@ -67,35 +68,35 @@ public class HomeFragment extends Fragment {
         }else{
             textActivities.setText("Active Activities");
         }
-        // Initialize ViewModels
-        activitiesViewModel = new ViewModelProvider(this).get(HomeActivitiesViewModel.class);
-        workoutsViewModel = new ViewModelProvider(this).get(HomeWorkoutsViewModel.class);
+//        // Initialize ViewModels
+//        activitiesViewModel = new ViewModelProvider(this).get(HomeActivitiesViewModel.class);
+//        workoutsViewModel = new ViewModelProvider(this).get(HomeWorkoutsViewModel.class);
 
-        activitiesAdapter = new HomeActivitiesAdapter();
+//        activitiesAdapter = new HomeActivitiesAdapter();
         // Setup RecyclerViews
-        activitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        workoutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+//        activitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+//        workoutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        activitiesRecyclerView.setAdapter(activitiesAdapter);
+//        activitiesRecyclerView.setAdapter(activitiesAdapter);
 
         // Observe activities data
-        activitiesViewModel.getActivities().observe(getViewLifecycleOwner(), new Observer<List<ActivityModel>>() {
-            @Override
-            public void onChanged(List<ActivityModel> updatedActivities) {
-                // Clear the previous activities and set the new ones
-                displayActivities(usertype, updatedActivities); // Call to update UI based on new data
-            }
-        });
+//        activitiesViewModel.getActivities().observe(getViewLifecycleOwner(), new Observer<List<ActivityModel>>() {
+//            @Override
+//            public void onChanged(List<ActivityModel> updatedActivities) {
+//                // Clear the previous activities and set the new ones
+//                displayActivities(usertype, updatedActivities); // Call to update UI based on new data
+//            }
+//        });
 
 
         // Observe workouts data
-        workoutsViewModel.getWorkouts().observe(getViewLifecycleOwner(), new Observer<List<WorkoutModel>>() {
-            @Override
-            public void onChanged(List<WorkoutModel> workoutModels) {
-                workoutsAdapter = new HomeWorkoutsAdapter(workoutModels);
-                workoutRecyclerView.setAdapter(workoutsAdapter);
-            }
-        });
+//        workoutsViewModel.getWorkouts().observe(getViewLifecycleOwner(), new Observer<List<WorkoutModel>>() {
+//            @Override
+//            public void onChanged(List<WorkoutModel> workoutModels) {
+//                workoutsAdapter = new HomeWorkoutsAdapter(workoutModels);
+//                workoutRecyclerView.setAdapter(workoutsAdapter);
+//            }
+//        });
 
         // Handle visibility based on user type
         if (usertype == null) {

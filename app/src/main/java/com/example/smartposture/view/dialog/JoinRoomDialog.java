@@ -32,7 +32,7 @@ public class JoinRoomDialog extends DialogFragment {
         roomCodeInput = view.findViewById(R.id.inputRoomCode);
         sendRequestButton = view.findViewById(R.id.btnSendRequest);
         closeButton = view.findViewById(R.id.close);
-        joinRoomViewModel = new ViewModelProvider(this).get(JoinRoomViewModel.class);
+//        joinRoomViewModel = new ViewModelProvider(this).get(JoinRoomViewModel.class);
         username = getArguments() != null ? getArguments().getString("username") : null;
         return view;
     }

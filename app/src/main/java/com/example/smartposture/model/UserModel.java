@@ -1,9 +1,11 @@
 package com.example.smartposture.model;
 
 public class UserModel {
+    private String email;
     private String username;
     private String firstname;
     private String lastname;
+    private String password;
     private String birthdate;
     private String usertype;
 
@@ -11,11 +13,20 @@ public class UserModel {
         // Default constructor required for Firebase
     }
 
-    public UserModel(String username, String firstname, String lastname, String birthdate, String usertype) {
+    public UserModel(String username, String firstname, String lastname, String birthdate, String userType){
         this.username = username;
-        this.birthdate = birthdate;
         this.firstname = firstname;
         this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.usertype = userType;
+    }
+    public UserModel(String email, String username, String firstname, String lastname, String password, String birthdate, String usertype) {
+        this.email = email;
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.birthdate = birthdate;
         this.usertype = usertype;
     }
     public String getUsername() {
@@ -36,6 +47,18 @@ public class UserModel {
 
     public String getBirthdate() {
         return birthdate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUsertype(String usertype) {
+        this.usertype = usertype;
     }
 
     public void setUsername(String username) {

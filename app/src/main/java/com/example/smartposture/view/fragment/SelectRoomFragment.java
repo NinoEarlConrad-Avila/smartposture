@@ -36,7 +36,9 @@ public class SelectRoomFragment extends Fragment {
         roomButton = view.findViewById(R.id.joinRoom);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Use the correct ViewModelProvider constructor for Fragment lifecycle:
         viewModel = new ViewModelProvider(this).get(SelectRoomViewModel.class);
+        // Use parent activity's lifecycle
         UserModel user = MainActivity.getUserDetails(requireContext());
 
         if (user != null) {

@@ -2,9 +2,9 @@ package com.example.smartposture.viewmodel;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.model.JoinRoomRequestModel;
 import com.example.smartposture.model.RoomModel;
@@ -14,13 +14,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class JoinRoomViewModel extends AndroidViewModel {
+public class JoinRoomViewModel extends ViewModel {
 
     private final DatabaseReference roomsRef;
     private final MutableLiveData<String> joinRoomStatus = new MutableLiveData<>();
 
     public JoinRoomViewModel(@NonNull Application application) {
-        super(application);
+        super();
         roomsRef = FirebaseDatabase.getInstance().getReference("rooms");
     }
 
