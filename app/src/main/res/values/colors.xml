@@ -25,4 +25,7 @@
 <color name="bg_ek1_color">#F2F2F2</color>
 <color name="progress_ek1_color">#4CA771</color>
 
+<color name="nav_selected">#BEDEAB</color>
+<color name="nav_unselected">#FFFFFF</color>
+<color name="nav_icon_color">#FFFFFF</color>
 </resources>

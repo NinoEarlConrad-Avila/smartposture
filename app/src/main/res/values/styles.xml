@@ -11,4 +11,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="NavTextStyle" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/nav_selected</item>
+    </style>
+
+    <style name="NavTextStyleInactive" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">0sp</item>
+        <item name="android:textColor">@color/nav_unselected</item>
+    </style>
+
+    <style name="ActiveIndicatorStyle">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:shape">rectangle</item>
+        <item name="android:radius">16dp</item>
+    </style>
 </resources>
