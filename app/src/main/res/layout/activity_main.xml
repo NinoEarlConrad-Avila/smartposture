@@ -16,7 +16,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -28,10 +29,10 @@
         android:background="@drawable/bg_navbar"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        app:itemBackground="@drawable/bg_bottom_nav_item"
         app:itemActiveIndicatorStyle="@style/ActiveIndicatorStyle"
-        app:itemIconTint="@color/white"
+        app:itemBackground="@drawable/bg_bottom_nav_item"
         app:itemHorizontalTranslationEnabled="true"
+        app:itemIconTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -5,10 +5,12 @@ import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.response.LoginResponse;
 import com.example.smartposture.data.response.RegisterResponse;
+import com.example.smartposture.data.response.WorkoutResponse;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiService {
@@ -17,4 +19,7 @@ public interface ApiService {
 
     @POST("login")
     Call<LoginResponse> loginUser(@Body LoginRequest loginRequest);
+
+    @GET ("home/getWorkouts")
+    Call<WorkoutResponse> getWorkouts();
 }
