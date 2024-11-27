@@ -2,11 +2,13 @@ package com.example.smartposture.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,24 +20,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.StepsAdapter;
-import com.example.smartposture.data.api.ApiClient;
-import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.model.WorkoutDetail;
-import com.example.smartposture.data.request.WorkoutDetailRequest;
-import com.example.smartposture.data.response.WorkoutDetailResponse;
 import com.example.smartposture.viewmodel.WorkoutDetailViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class WorkoutDetailFragment extends Fragment {
-    private WorkoutDetailViewModel workoutDetailViewModel;
 
+    private WorkoutDetailViewModel workoutDetailViewModel;
+    private ScrollView contentScrollView;
     private TextView workoutName, workoutDescription;
     private ImageView workoutImage;
-    RecyclerView stepsRecyclerView;
+    private FrameLayout preloaderFrame;
+    private RecyclerView stepsRecyclerView;
+    private ImageView logoPreloader;
+    private Button startButton;
 
     @Nullable
     @Override
@@ -49,81 +47,68 @@ public class WorkoutDetailFragment extends Fragment {
             }
         }
 
+        // Initialize views
+        preloaderFrame = view.findViewById(R.id.preloaderFrame);
+        contentScrollView = view.findViewById(R.id.workoutDetailScrollView);
+        logoPreloader = view.findViewById(R.id.logoPreloader);
+
         workoutName = view.findViewById(R.id.workoutDetailName);
         workoutDescription = view.findViewById(R.id.workoutDetailDescription);
         workoutImage = view.findViewById(R.id.workoutDetailImage);
         stepsRecyclerView = view.findViewById(R.id.stepsRecyclerView);
+        startButton = view.findViewById(R.id.startButton);
+
+        // Initially hide content and show preloader
+        preloaderFrame.setVisibility(View.VISIBLE);
+        contentScrollView.setVisibility(View.GONE);
+        startButton.setVisibility(View.GONE);
+
+        // Start preloader animation (if any)
+        logoPreloader.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.logo_bounce));
 
         workoutDetailViewModel = new ViewModelProvider(this).get(WorkoutDetailViewModel.class);
-        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Set up RecyclerView
+        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        stepsRecyclerView.setNestedScrollingEnabled(false);
+        stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        // Get the workout ID from arguments and load data
         int workoutId = requireArguments().getInt("workout_id", -1);
         if (workoutId != -1) {
+            // Observing the LiveData from the ViewModel
             workoutDetailViewModel.getWorkoutDetail(workoutId).observe(getViewLifecycleOwner(), response -> {
                 if (response != null && response.getWorkouts() != null) {
+                    // Successfully fetched workout data
                     WorkoutDetail workoutDetail = response.getWorkouts();
                     workoutName.setText(workoutDetail.getName());
                     workoutDescription.setText(workoutDetail.getDescription());
 
+                    // Set image resource dynamically
                     int imageResourceId = getDrawableResourceId(requireContext(), workoutDetail.getPath());
                     workoutImage.setImageResource(imageResourceId != 0 ? imageResourceId : R.drawable.default_image);
 
-                    // Pass dynamic steps to the adapter
+                    // Set up RecyclerView adapter for steps
                     StepsAdapter stepsAdapter = new StepsAdapter(workoutDetail.getSteps());
                     stepsRecyclerView.setAdapter(stepsAdapter);
                     setRecyclerViewHeightBasedOnItems(stepsRecyclerView);
 
-                    stepsRecyclerView.setNestedScrollingEnabled(false);
-                    stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+                    // Hide preloader and show content
+                    preloaderFrame.setVisibility(View.GONE);
+                    contentScrollView.setVisibility(View.VISIBLE);
+                    startButton.setVisibility(View.VISIBLE);
                 } else {
+                    // Handle error case if no data is found
                     workoutName.setText("Error fetching details.");
                     workoutDescription.setText("");
+                    preloaderFrame.setVisibility(View.GONE);
+                    contentScrollView.setVisibility(View.VISIBLE);
+                    startButton.setVisibility(View.VISIBLE);
                 }
             });
         }
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        int workoutId = requireArguments().getInt("workout_id", -1);
-        if (workoutId != -1) {
-            fetchWorkoutDetails(workoutId);
-        }
-    }
-
-    private void fetchWorkoutDetails(int workoutId) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        WorkoutDetailRequest request = new WorkoutDetailRequest(workoutId);
-
-        apiService.getWorkoutDetail(request).enqueue(new Callback<WorkoutDetailResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<WorkoutDetailResponse> call, @NonNull Response<WorkoutDetailResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    displayWorkoutDetails(response.body().getWorkouts());
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<WorkoutDetailResponse> call, @NonNull Throwable t) {
-                Log.e("WorkoutDetail", "Failed to fetch workout details", t);
-            }
-        });
-    }
-
-    private void displayWorkoutDetails(WorkoutDetail detail) {
-        TextView nameTextView = requireView().findViewById(R.id.workoutDetailName);
-        TextView descriptionTextView = requireView().findViewById(R.id.workoutDetailDescription);
-        RecyclerView stepsRecyclerView = requireView().findViewById(R.id.stepsRecyclerView);
-
-        nameTextView.setText(detail.getName());
-        descriptionTextView.setText(detail.getDescription());
-
-        StepsAdapter adapter = new StepsAdapter(detail.getSteps());
-        stepsRecyclerView.setAdapter(adapter);
     }
 
     private void setRecyclerViewHeightBasedOnItems(RecyclerView recyclerView) {
@@ -133,14 +118,12 @@ public class WorkoutDetailFragment extends Fragment {
         }
 
         int totalHeight = 0;
-
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager == null) {
             return;
         }
 
         int recyclerViewPadding = recyclerView.getPaddingTop() + recyclerView.getPaddingBottom();
-
         totalHeight += recyclerViewPadding;
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -154,7 +137,6 @@ public class WorkoutDetailFragment extends Fragment {
             );
 
             int itemHeight = itemView.getMeasuredHeight();
-
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
             int itemMarginTop = layoutParams.topMargin;
             int itemMarginBottom = layoutParams.bottomMargin;
@@ -166,7 +148,6 @@ public class WorkoutDetailFragment extends Fragment {
         params.height = totalHeight + 350;
         recyclerView.setLayoutParams(params);
     }
-
 
     private int getDrawableResourceId(Context context, String fileName) {
         return context.getResources().getIdentifier(fileName, "drawable", context.getPackageName());

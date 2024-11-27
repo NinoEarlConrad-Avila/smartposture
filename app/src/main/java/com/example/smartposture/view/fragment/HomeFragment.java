@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ public class HomeFragment extends Fragment {
     private WorkoutViewModel workoutsViewModel;
     private WorkoutAdapter workoutAdapter;
     private TextView usernameTextView;
+    private ImageView progressBarLogo;
 
     @Nullable
     @Override
@@ -37,6 +40,7 @@ public class HomeFragment extends Fragment {
 
         usernameTextView = view.findViewById(R.id.txtUsername);
         RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
+        progressBarLogo = view.findViewById(R.id.progressBarLogo);
 
         User user = MainActivity.getNewUserDetails(requireContext());
         if (user != null && user.getUsername() != null) {
@@ -50,6 +54,9 @@ public class HomeFragment extends Fragment {
         workoutRecyclerView.setAdapter(workoutAdapter);
 
         workoutsViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
+        progressBarLogo.setVisibility(View.VISIBLE);
+
+        progressBarLogo.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.logo_bounce));
 
         workoutsViewModel.getWorkoutsLiveData().observe(getViewLifecycleOwner(), workouts -> {
             if (workouts != null && !workouts.isEmpty()) {
@@ -57,10 +64,12 @@ public class HomeFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), "No workouts available.", Toast.LENGTH_SHORT).show();
             }
+            progressBarLogo.setVisibility(View.GONE);
         });
 
         workoutsViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), errorMessage -> {
             Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            progressBarLogo.setVisibility(View.GONE);
         });
 
         workoutsViewModel.fetchWorkouts();

@@ -87,23 +87,39 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/textWorkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Available Workouts"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/Username_Color"
+            />
         <LinearLayout
             android:id="@+id/workoutLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginTop="10dp"
             >
 
-            <TextView
-                android:id="@+id/textWorkout"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Available Workouts"
-                android:textSize="20sp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/Username_Color"
-                />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@android:color/transparent"
+                android:padding="15dp">
+
+                <ImageView
+                    android:id="@+id/progressBarLogo"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/logo_sp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/workoutRecyclerView"
@@ -111,6 +127,5 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>
