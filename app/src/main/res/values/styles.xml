@@ -6,9 +6,10 @@
     </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Make status bar transparent -->
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item> <!-- This removes the background color -->
+        <!-- You can also customize other UI elements like action bar, etc. -->
     </style>
 
     <style name="NavTextStyle" parent="TextAppearance.AppCompat.Small">
@@ -25,5 +26,19 @@
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:shape">rectangle</item>
         <item name="android:radius">16dp</item>
+    </style>
+
+    <style name="CustomButtonStyle">
+        <item name="android:background">@drawable/bg_btn_start</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:radius">8dp</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:shadowColor">#000000</item>
     </style>
 </resources>

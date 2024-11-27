@@ -1,12 +1,10 @@
 package com.example.smartposture.data.response;
 
-import com.example.smartposture.data.model.Workout;
+import com.example.smartposture.data.model.WorkoutDetail;
 
-import java.util.List;
-
-public class WorkoutResponse {
+public class WorkoutDetailResponse {
     private String message;
-    private List<Workout> workouts;
+    private WorkoutDetail workout;
 
     public String getMessage() {
         return message;
@@ -16,9 +14,7 @@ public class WorkoutResponse {
         this.message = message;
     }
 
-    public List<Workout> getWorkouts() {
-        return workouts;
+    public WorkoutDetail getWorkouts() {
+        return workout;
     }
-
-
 }

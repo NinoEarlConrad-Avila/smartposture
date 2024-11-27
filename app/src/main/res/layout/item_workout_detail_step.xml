@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="true"
+    >
+
+    <TextView
+        android:id="@+id/workoutDetailStep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card_workout_step"
+        android:text="@string/sample_text_long"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:gravity="start|center_vertical"
+        android:padding="15sp"
+    />
+
+</androidx.cardview.widget.CardView>
