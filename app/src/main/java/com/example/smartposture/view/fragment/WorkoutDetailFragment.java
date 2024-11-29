@@ -1,12 +1,17 @@
 package com.example.smartposture.view.fragment;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -30,9 +35,7 @@ public class WorkoutDetailFragment extends Fragment {
     private ScrollView contentScrollView;
     private TextView workoutName, workoutDescription;
     private ImageView workoutImage;
-    private FrameLayout preloaderFrame;
     private RecyclerView stepsRecyclerView;
-    private ImageView logoPreloader;
     private Button startButton;
 
     @Nullable
@@ -48,23 +51,16 @@ public class WorkoutDetailFragment extends Fragment {
         }
 
         // Initialize views
-        preloaderFrame = view.findViewById(R.id.preloaderFrame);
         contentScrollView = view.findViewById(R.id.workoutDetailScrollView);
-        logoPreloader = view.findViewById(R.id.logoPreloader);
-
         workoutName = view.findViewById(R.id.workoutDetailName);
         workoutDescription = view.findViewById(R.id.workoutDetailDescription);
         workoutImage = view.findViewById(R.id.workoutDetailImage);
         stepsRecyclerView = view.findViewById(R.id.stepsRecyclerView);
         startButton = view.findViewById(R.id.startButton);
 
-        // Initially hide content and show preloader
-        preloaderFrame.setVisibility(View.VISIBLE);
-        contentScrollView.setVisibility(View.GONE);
-        startButton.setVisibility(View.GONE);
-
-        // Start preloader animation (if any)
-        logoPreloader.startAnimation(android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.logo_bounce));
+        // Set up the loading dialog
+        Dialog loadingDialog = createFullScreenLoadingDialog();
+        loadingDialog.show();
 
         workoutDetailViewModel = new ViewModelProvider(this).get(WorkoutDetailViewModel.class);
 
@@ -91,25 +87,39 @@ public class WorkoutDetailFragment extends Fragment {
                     // Set up RecyclerView adapter for steps
                     StepsAdapter stepsAdapter = new StepsAdapter(workoutDetail.getSteps());
                     stepsRecyclerView.setAdapter(stepsAdapter);
+                    stepsRecyclerView.setNestedScrollingEnabled(false);
                     setRecyclerViewHeightBasedOnItems(stepsRecyclerView);
 
-                    // Hide preloader and show content
-                    preloaderFrame.setVisibility(View.GONE);
-                    contentScrollView.setVisibility(View.VISIBLE);
-                    startButton.setVisibility(View.VISIBLE);
+                    // Hide loading dialog and show content
+                    loadingDialog.dismiss();
                 } else {
                     // Handle error case if no data is found
                     workoutName.setText("Error fetching details.");
                     workoutDescription.setText("");
-                    preloaderFrame.setVisibility(View.GONE);
-                    contentScrollView.setVisibility(View.VISIBLE);
-                    startButton.setVisibility(View.VISIBLE);
+                    loadingDialog.dismiss();
                 }
             });
         }
 
         return view;
     }
+    private Dialog createFullScreenLoadingDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_loading);
+        dialog.setCancelable(false);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        ImageView preloaderImage = dialog.findViewById(R.id.preloaderImage);
+        Animation bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
+        preloaderImage.startAnimation(bounceAnimation);
+
+        return dialog;
+    }
+
 
     private void setRecyclerViewHeightBasedOnItems(RecyclerView recyclerView) {
         RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = recyclerView.getAdapter();

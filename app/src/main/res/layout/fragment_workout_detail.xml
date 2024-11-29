@@ -91,7 +91,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sample_text_short"
+                android:text="@string/steps"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -107,23 +107,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout
-        android:id="@+id/preloaderFrame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_dark_blue"
-        android:visibility="gone"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/logoPreloader"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/logo_sp"
-            android:contentDescription="Logo Preloader"
-            android:layout_gravity="center" />
-
-    </FrameLayout>
     <Button
         android:id="@+id/startButton"
         android:layout_width="0dp"
