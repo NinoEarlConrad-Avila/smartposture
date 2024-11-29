@@ -34,4 +34,6 @@ public interface ApiService {
     @POST("room/getTraineeRooms")
     Call<RoomResponse> getTraineeRooms(@Body RoomRequest roomRequest);
 
+    @POST("room/getTraineeAvailableRooms")
+    Call<RoomResponse> getTraineeAvailableRooms(@Body RoomRequest roomRequest);
 }

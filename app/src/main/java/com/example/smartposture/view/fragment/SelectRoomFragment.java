@@ -38,7 +38,6 @@ public class SelectRoomFragment extends Fragment {
         setupRecyclerView();
         observeViewModel();
 
-
         highlightButton(myRooms, availableRooms);
         fetchMyRooms(viewModel);
 
@@ -87,7 +86,12 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private void fetchAvailableRooms(RoomViewModel roomViewModel) {
-        roomViewModel.fetchRooms(0);
+        int userId = getUserId();
+        if (userId != -1) {
+            roomViewModel.fetchAvailableRooms(userId);
+        } else {
+            Toast.makeText(requireContext(), "User ID not found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private int getUserId() {

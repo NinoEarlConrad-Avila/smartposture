@@ -37,4 +37,20 @@ public class RoomViewModel extends ViewModel {
             }
         });
     }
+
+    public void fetchAvailableRooms(int userId) {
+        RoomRequest request = new RoomRequest(userId);
+
+        repository.fetchTraineeAvailableRooms(request, new RoomRepository.RoomCallback() {
+            @Override
+            public void onSuccess(List<Room> rooms) {
+                roomsLiveData.postValue(rooms);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                errorLiveData.postValue(errorMessage);
+            }
+        });
+    }
 }
