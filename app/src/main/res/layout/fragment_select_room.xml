@@ -3,15 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingTop="20dp"
-    android:paddingRight="20dp"
+    android:background="@color/bg_dark_blue"
     android:paddingBottom="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
@@ -22,39 +20,89 @@
             android:layout_weight="2"
             android:text="@string/room"
             android:textAllCaps="true"
-            android:textColor="@color/black"
-            android:textSize="48sp"
+            android:textColor="@color/white"
+            android:textSize="24sp"
             android:textStyle="bold"
+            android:gravity="center"
             android:typeface="normal" />
 
-        <Button
-            android:id="@+id/joinRoom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:backgroundTint="@color/teal"
-            android:textColor="@color/white" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_white_round"
+        >
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/search_room"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="10dp"
+            android:paddingStart="10dp"
+            android:textColor="@color/username_color"
+            android:textSize="18sp" />
 
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:scrollbars="none">
-
+        android:layout_height="match_parent"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_room_rooms"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/myRooms"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/green"
+                android:text="@string/my_rooms"
+                android:textAllCaps="true"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/availableRooms"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/green"
+                android:text="@string/available_rooms"
+                android:textAllCaps="true"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/roomCards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRooms"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                />
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </LinearLayout>

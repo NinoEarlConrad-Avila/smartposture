@@ -1,95 +1,104 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 import com.example.smartposture.R;
-import com.example.smartposture.model.RoomModel;
-import com.example.smartposture.model.UserModel;
-import com.example.smartposture.view.activity.MainActivity;
-import com.example.smartposture.view.dialog.CreateRoomDialog;
-import com.example.smartposture.view.dialog.JoinRoomDialog;
-import com.example.smartposture.viewmodel.SelectRoomViewModel;
-import com.example.smartposture.adapter.SelectRoomAdapter;
+import com.example.smartposture.data.adapter.RoomAdapter;
+import com.example.smartposture.util.AdditionalSpace;
+import com.example.smartposture.viewmodel.RoomViewModel;
 
 public class SelectRoomFragment extends Fragment {
-
-    private SelectRoomViewModel viewModel;
-    private RecyclerView recyclerView;
-    private SelectRoomAdapter adapter;
-    private Button roomButton;
+    private RoomViewModel viewModel;
+    private RecyclerView recyclerViewRooms;
+    private RoomAdapter adapter;
+    private Button myRooms, availableRooms;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_room, container, false);
-        recyclerView = view.findViewById(R.id.recyclerViewRooms);
-        roomButton = view.findViewById(R.id.joinRoom);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Use the correct ViewModelProvider constructor for Fragment lifecycle:
-        viewModel = new ViewModelProvider(this).get(SelectRoomViewModel.class);
-        // Use parent activity's lifecycle
-        UserModel user = MainActivity.getUserDetails(requireContext());
+        recyclerViewRooms = view.findViewById(R.id.recyclerViewRooms);
+        myRooms = view.findViewById(R.id.myRooms);
+        availableRooms = view.findViewById(R.id.availableRooms);
+        viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
 
-        if (user != null) {
-            String userType = user.getUsertype();
-            roomButton.setText("trainer".equals(userType) ? "Create Room" : "Join Room");
-            roomButton.setOnClickListener(v -> {
-                if ("trainer".equals(userType)) {
-                    showCreateRoomDialog();
-                } else {
-                    showJoinRoomDialog(user.getUsername());
-                }
-            });
-        }
+        setupRecyclerView();
+        observeViewModel();
 
-        viewModel.fetchRooms(requireContext());
 
-        viewModel.getRooms().observe(getViewLifecycleOwner(), rooms -> {
-            adapter = new SelectRoomAdapter(rooms, room -> {
+        highlightButton(myRooms, availableRooms);
+        fetchMyRooms(viewModel);
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("roomDetails", room);
-                bundle.putLong("roomid", room.getRoomID());
-
-                RoomFragment roomFragment = new RoomFragment();
-                roomFragment.setArguments(bundle);
-
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, roomFragment)
-                        .addToBackStack(null)
-                        .commit();
-            });
-
-            recyclerView.setAdapter(adapter);
+        myRooms.setOnClickListener(v -> {
+            highlightButton(myRooms, availableRooms);
+            fetchMyRooms(viewModel);
         });
+
+        availableRooms.setOnClickListener(v -> {
+            highlightButton(availableRooms, myRooms);
+            fetchAvailableRooms(viewModel);
+        });
+
         return view;
     }
 
-    private void showCreateRoomDialog() {
-        CreateRoomDialog dialog = new CreateRoomDialog();
-        dialog.show(getChildFragmentManager(), "CreateRoomDialog");
+    private void setupRecyclerView() {
+        int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.recyclerViewSpacing);
+        adapter = new RoomAdapter();
+        recyclerViewRooms.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerViewRooms.setAdapter(adapter);
+        recyclerViewRooms.addItemDecoration(new AdditionalSpace(spaceInPixels));
     }
 
+    private void observeViewModel() {
+        viewModel.getRoomsLiveData().observe(getViewLifecycleOwner(), rooms -> {
+            if (rooms != null) {
+                adapter.submitList(rooms);
+            }
+        });
 
-    private void showJoinRoomDialog(String username) {
-        JoinRoomDialog dialog = new JoinRoomDialog();
+        viewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-        Bundle args = new Bundle();
-        args.putString("username", username);
-        dialog.setArguments(args);
+    private void fetchMyRooms(RoomViewModel roomViewModel) {
+        int userId = getUserId();
+        if (userId != -1) {
+            roomViewModel.fetchRooms(userId);
+        } else {
+            Toast.makeText(requireContext(), "User ID not found", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        dialog.show(getChildFragmentManager(), "JoinRoomDialog");
+    private void fetchAvailableRooms(RoomViewModel roomViewModel) {
+        roomViewModel.fetchRooms(0);
+    }
+
+    private int getUserId() {
+        return 18;
+    }
+
+    private void highlightButton(Button selectedBtn, Button otherBtn) {
+        selectedBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.teal));
+        selectedBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+        otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
+        otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
 }
-

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/bg_green"
+    android:background="@drawable/bg_white_round"
     android:paddingStart="20dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
@@ -26,5 +26,14 @@
         android:text="@string/room_creator"
         android:textColor="@color/black"
         android:textSize="16sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/join_room"
+        android:backgroundTint="@color/bg_dark_blue"
+        android:textColor="@color/white"
+        />
 
 </LinearLayout>

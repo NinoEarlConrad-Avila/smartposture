@@ -43,6 +43,9 @@
     <string name="view_request">View Join Request</string>
     <string name="room_code">Room Code</string>
     <string name="code">Code</string>
+    <string name="my_rooms">My Rooms</string>
+    <string name="available_rooms">Available Rooms</string>
+    <string name="search_room">Search Room</string>
     <!-- General Texts-->
     <string name="activity_name">Activity Name</string>
     <string name="due_date">Due Date: </string>
