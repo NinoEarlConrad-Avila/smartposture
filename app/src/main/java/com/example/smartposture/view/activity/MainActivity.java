@@ -105,26 +105,49 @@ public class MainActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    public static UserModel getUserDetails(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("USER_NAME", null);
-        String firstname = sharedPreferences.getString("FIRST_NAME", null);
-        String lastname = sharedPreferences.getString("LAST_NAME", null);
-        String userType = sharedPreferences.getString("USER_TYPE", null);
-        String birthdate = sharedPreferences.getString("BIRTH_DATE", null);
+//    public static UserModel getUserDetails(Context context) {
+//        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+//        String username = sharedPreferences.getString("USER_NAME", null);
+//        String firstname = sharedPreferences.getString("FIRST_NAME", null);
+//        String lastname = sharedPreferences.getString("LAST_NAME", null);
+//        String userType = sharedPreferences.getString("USER_TYPE", null);
+//        String birthdate = sharedPreferences.getString("BIRTH_DATE", null);
+//
+//        return new UserModel(username, firstname, lastname, birthdate, userType);
+//    }
 
-        return new UserModel(username, firstname, lastname, birthdate, userType);
+//    public static User getNewUserDetails(Context context) {
+//        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+//        int user_id = sharedPreferences.getInt("USER_ID", 0);
+//        String email = sharedPreferences.getString("EMAIL", null);
+//        String userType = sharedPreferences.getString("USER_TYPE", null);
+//
+//        return new User(user_id, email, userType);
+//    }
+
+    public static void saveUserDetails(Context context, User user) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("USER_ID", user.getUser_id());
+        editor.putString("USERNAME", user.getUsername());
+        editor.putString("EMAIL", user.getEmail());
+        editor.putString("FIRSTNAME", user.getFirstname());
+        editor.putString("LASTNAME", user.getLastname());
+        editor.putString("BIRTHDATE", user.getBirthdate());
+        editor.putString("USER_TYPE", user.getUsertype());
+        editor.apply();
     }
 
-    public static User getNewUserDetails(Context context) {
+    public static User getUserDetails(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("USER_ID", 0);
+        String username = sharedPreferences.getString("USERNAME", null);
         String email = sharedPreferences.getString("EMAIL", null);
-        String username = sharedPreferences.getString("USER_NAME", null);
-        String firstname = sharedPreferences.getString("FIRST_NAME", null);
-        String lastname = sharedPreferences.getString("LAST_NAME", null);
+        String firstname = sharedPreferences.getString("FIRSTNAME", null);
+        String lastname = sharedPreferences.getString("LASTNAME", null);
+        String birthdate = sharedPreferences.getString("BIRTHDATE", null);
         String userType = sharedPreferences.getString("USER_TYPE", null);
-        String birthdate = sharedPreferences.getString("BIRTH_DATE", null);
 
-        return new User(email, username, firstname, lastname, birthdate, userType);
+        return new User(userId, email, username, firstname, lastname, birthdate, userType);
     }
 }

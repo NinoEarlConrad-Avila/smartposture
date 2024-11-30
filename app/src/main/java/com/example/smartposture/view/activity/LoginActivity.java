@@ -81,20 +81,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveUserDetails(User user) {
-        getSharedPreferences("user_data", MODE_PRIVATE)
-                .edit()
-                .putString("username", user.getUsername())
-                .putString("email", user.getEmail())
-                .putString("firstname", user.getFirstname())
-                .putString("lastname", user.getLastname())
-                .putString("usertype", user.getUsertype())
-                .putString("birthdate", user.getBirthdate())
-                .apply();
+        MainActivity.saveUserDetails(this, user);
     }
 
     private void navigateToMain(User user) {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.putExtra("user", user);
+//        intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }

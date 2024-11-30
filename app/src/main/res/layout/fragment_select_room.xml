@@ -97,7 +97,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
-
+            <TextView
+                android:id="@+id/noRoomsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No rooms available"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_margin="16dp"
+                android:textSize="16sp" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRooms"
                 android:layout_width="match_parent"

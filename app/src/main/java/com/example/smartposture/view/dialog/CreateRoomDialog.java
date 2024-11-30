@@ -40,9 +40,9 @@ public class CreateRoomDialog extends DialogFragment {
             String roomCode = generateRoomCode();
             // Assuming you have access to ViewModel here
             SelectRoomViewModel viewModel = new ViewModelProvider(requireActivity()).get(SelectRoomViewModel.class);
-            String roomCreator = MainActivity.getUserDetails(requireContext()).getUsername();
-            RoomModel newRoom = new RoomModel(roomCode, roomCreator, null, roomName);
-            viewModel.addRoom(newRoom); // Add this method to ViewModel
+//            String roomCreator = MainActivity.getUserDetails(requireContext()).getUsername();
+//            RoomModel newRoom = new RoomModel(roomCode, roomCreator, null, roomName);
+//            viewModel.addRoom(newRoom); // Add this method to ViewModel
             dismiss();
         });
 

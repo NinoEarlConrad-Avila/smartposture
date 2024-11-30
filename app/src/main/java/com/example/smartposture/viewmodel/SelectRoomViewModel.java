@@ -65,69 +65,69 @@ public class SelectRoomViewModel extends ViewModel {
         });
     }
 
-    public void fetchRooms(Context context) {
-        UserModel user = MainActivity.getUserDetails(context);
-        String userType = user.getUsertype();
-        String userId = user.getUsername();
-
-        if ("trainer".equals(userType)) {
-            roomsRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    List<RoomModel> rooms = new ArrayList<>();
-                    for (DataSnapshot roomSnapshot : snapshot.getChildren()) {
-                        RoomModel room = roomSnapshot.getValue(RoomModel.class);
-                        if (room != null && room.getRoomCreator().equals(userId)) {
-                            rooms.add(room);
-                        }
-                    }
-                    roomList.setValue(rooms);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("SelectRoomViewModel", "Database error: " + error.getMessage());
-                }
-            });
-        } else if ("trainee".equals(userType)) {
-            DatabaseReference roomTraineesRef = FirebaseDatabase.getInstance().getReference("roomtrainees");
-
-            roomTraineesRef.orderByChild("traineeid").equalTo(userId)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            List<RoomModel> rooms = new ArrayList<>();
-                            for (DataSnapshot roomTraineeSnapshot : snapshot.getChildren()) {
-                                Long roomId = roomTraineeSnapshot.child("roomid").getValue(Long.class);
-                                String traineeId = roomTraineeSnapshot.child("traineeid").getValue(String.class);
-
-                                Log.d("SelectRoomViewModel", "roomid: " + roomId + ", traineeid: " + traineeId);
-
-                                if (roomId != null) {
-                                    roomsRef.child(roomId.toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot roomSnapshot) {
-                                            RoomModel room = roomSnapshot.getValue(RoomModel.class);
-                                            if (room != null) {
-                                                rooms.add(room);
-                                                roomList.setValue(rooms);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {}
-                                    });
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("SelectRoomViewModel", "Database error: " + error.getMessage());
-                        }
-                    });
-        }
-    }
+//    public void fetchRooms(Context context) {
+//        UserModel user = MainActivity.getUserDetails(context);
+//        String userType = user.getUsertype();
+//        String userId = user.getUsername();
+//
+//        if ("trainer".equals(userType)) {
+//            roomsRef.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    List<RoomModel> rooms = new ArrayList<>();
+//                    for (DataSnapshot roomSnapshot : snapshot.getChildren()) {
+//                        RoomModel room = roomSnapshot.getValue(RoomModel.class);
+//                        if (room != null && room.getRoomCreator().equals(userId)) {
+//                            rooms.add(room);
+//                        }
+//                    }
+//                    roomList.setValue(rooms);
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//                    Log.e("SelectRoomViewModel", "Database error: " + error.getMessage());
+//                }
+//            });
+//        } else if ("trainee".equals(userType)) {
+//            DatabaseReference roomTraineesRef = FirebaseDatabase.getInstance().getReference("roomtrainees");
+//
+//            roomTraineesRef.orderByChild("traineeid").equalTo(userId)
+//                    .addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            List<RoomModel> rooms = new ArrayList<>();
+//                            for (DataSnapshot roomTraineeSnapshot : snapshot.getChildren()) {
+//                                Long roomId = roomTraineeSnapshot.child("roomid").getValue(Long.class);
+//                                String traineeId = roomTraineeSnapshot.child("traineeid").getValue(String.class);
+//
+//                                Log.d("SelectRoomViewModel", "roomid: " + roomId + ", traineeid: " + traineeId);
+//
+//                                if (roomId != null) {
+//                                    roomsRef.child(roomId.toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot roomSnapshot) {
+//                                            RoomModel room = roomSnapshot.getValue(RoomModel.class);
+//                                            if (room != null) {
+//                                                rooms.add(room);
+//                                                roomList.setValue(rooms);
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError error) {}
+//                                    });
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//                            Log.e("SelectRoomViewModel", "Database error: " + error.getMessage());
+//                        }
+//                    });
+//        }
+//    }
 }
 
 

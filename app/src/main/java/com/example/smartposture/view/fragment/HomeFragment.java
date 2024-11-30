@@ -42,12 +42,13 @@ public class HomeFragment extends Fragment {
         RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
         progressBarLogo = view.findViewById(R.id.progressBarLogo);
 
-        User user = MainActivity.getNewUserDetails(requireContext());
+        User user = MainActivity.getUserDetails(requireContext());
         if (user != null && user.getUsername() != null) {
             usernameTextView.setText(user.getUsername());
         } else {
             usernameTextView.setText("Guest");
         }
+        Log.d("user_id", "ID: "+user.getUser_id());
 
         workoutAdapter = new WorkoutAdapter(new ArrayList<>(), workoutId -> navigateToWorkoutDetails(workoutId));
         workoutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));

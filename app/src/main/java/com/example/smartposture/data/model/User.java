@@ -3,6 +3,7 @@ package com.example.smartposture.data.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private int user_id;
     private String email;
     private String username;
     private String firstname;
@@ -19,7 +20,24 @@ public class User implements Serializable {
         this.usertype = usertype;
     }
 
+    public User(int id, String email, String username, String firstname, String lastname, String birthdate, String usertype) {
+        this.user_id = id;
+        this.email = email;
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.usertype = usertype;
+    }
     // Getters and setters (if needed)
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
 
     public String getEmail() {
         return email;

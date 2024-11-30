@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.RoomAdapter;
+import com.example.smartposture.data.model.User;
 import com.example.smartposture.util.AdditionalSpace;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 
 public class SelectRoomFragment extends Fragment {
@@ -25,6 +28,8 @@ public class SelectRoomFragment extends Fragment {
     private RecyclerView recyclerViewRooms;
     private RoomAdapter adapter;
     private Button myRooms, availableRooms;
+    private User user;
+    TextView noRoomsText;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,7 +38,9 @@ public class SelectRoomFragment extends Fragment {
         recyclerViewRooms = view.findViewById(R.id.recyclerViewRooms);
         myRooms = view.findViewById(R.id.myRooms);
         availableRooms = view.findViewById(R.id.availableRooms);
+        noRoomsText = view.findViewById(R.id.noRoomsText);
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
+        user = MainActivity.getUserDetails(requireContext());
 
         setupRecyclerView();
         observeViewModel();
@@ -63,9 +70,15 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private void observeViewModel() {
+
         viewModel.getRoomsLiveData().observe(getViewLifecycleOwner(), rooms -> {
-            if (rooms != null) {
+            if (rooms != null && !rooms.isEmpty()) {
                 adapter.submitList(rooms);
+                recyclerViewRooms.setVisibility(View.VISIBLE);
+                noRoomsText.setVisibility(View.GONE);
+            } else {
+                recyclerViewRooms.setVisibility(View.GONE);
+                noRoomsText.setVisibility(View.VISIBLE);
             }
         });
 
@@ -77,6 +90,7 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private void fetchMyRooms(RoomViewModel roomViewModel) {
+        adapter.setMode("myRooms");
         int userId = getUserId();
         if (userId != -1) {
             roomViewModel.fetchRooms(userId);
@@ -86,6 +100,7 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private void fetchAvailableRooms(RoomViewModel roomViewModel) {
+        adapter.setMode("availableRooms");
         int userId = getUserId();
         if (userId != -1) {
             roomViewModel.fetchAvailableRooms(userId);
@@ -95,7 +110,8 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private int getUserId() {
-        return 18;
+        int id = user.getUser_id();
+        return id;
     }
 
     private void highlightButton(Button selectedBtn, Button otherBtn) {

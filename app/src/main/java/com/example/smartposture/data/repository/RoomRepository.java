@@ -6,6 +6,7 @@ import com.example.smartposture.data.request.RoomRequest;
 import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.response.RoomResponse;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -34,9 +35,15 @@ public class RoomRepository {
             @Override
             public void onResponse(Call<RoomResponse> call, Response<RoomResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body().getRooms());
+                    RoomResponse roomResponse = response.body();
+
+                    if ("No rooms".equals(roomResponse.getMessage()) || roomResponse.getRooms() == null) {
+                        callback.onSuccess(Collections.emptyList());
+                    } else {
+                        callback.onSuccess(roomResponse.getRooms());
+                    }
                 } else {
-                    callback.onFailure("Failed to fetch workouts: " + response.message());
+                    callback.onFailure("Failed to fetch rooms: " + response.message());
                 }
             }
 
@@ -54,7 +61,13 @@ public class RoomRepository {
             @Override
             public void onResponse(Call<RoomResponse> call, Response<RoomResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body().getRooms());
+                    RoomResponse roomResponse = response.body();
+
+                    if ("No rooms".equals(roomResponse.getMessage()) || roomResponse.getRooms() == null) {
+                        callback.onSuccess(Collections.emptyList());
+                    } else {
+                        callback.onSuccess(roomResponse.getRooms());
+                    }
                 } else {
                     callback.onFailure("Failed to fetch workouts: " + response.message());
                 }
