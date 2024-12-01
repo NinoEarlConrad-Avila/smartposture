@@ -12,81 +12,86 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.User;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.viewmodel.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
-    private LoginViewModel loginViewModel;
-
     private TextView registerTextView;
+
+    private LoginViewModel loginViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize views
+        initViews();
+        setupViewModel();
+        setupListeners();
+    }
+
+    private void initViews() {
         usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.btnLogin);
         registerTextView = findViewById(R.id.txtSignUp);
-
-        registerTextView.setOnClickListener(view -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
-
-        // Initialize ViewModel
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-
-        setupObservers();
-
-//         Handle login button click
-        loginButton.setOnClickListener(v -> {
-            String username = usernameEditText.getText().toString().trim();
-            String password = passwordEditText.getText().toString().trim();
-
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(LoginActivity.this, "Please fill in both fields", Toast.LENGTH_SHORT).show();
-            } else {
-                loginViewModel.loginUser(username, password);
-            }
-        });
     }
 
-    private void setupObservers() {
-        // Observe login success
+    private void setupViewModel() {
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+
         loginViewModel.isLoginSuccessful().observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Observe error messages
         loginViewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Observe logged-in user details
-        loginViewModel.getLoggedInUser().observe(this, user -> {
-            if (user != null) {
-                saveUserDetails(user);
-                navigateToMain(user);
-            }
+        loginViewModel.getLoggedInUser().observe(this, this::handleLoginSuccess);
+    }
+
+    private void setupListeners() {
+        loginButton.setOnClickListener(v -> validateAndLogin());
+
+        registerTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
         });
     }
 
-    private void saveUserDetails(User user) {
-        MainActivity.saveUserDetails(this, user);
+    private void validateAndLogin() {
+        String username = usernameEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please fill in both fields", Toast.LENGTH_SHORT).show();
+        } else {
+            loginViewModel.loginUser(username, password);
+        }
     }
 
-    private void navigateToMain(User user) {
+    private void handleLoginSuccess(User user) {
+        if (user != null) {
+            saveUserDetails(user);
+            navigateToMain();
+        }
+    }
+
+    private void saveUserDetails(User user) {
+        SharedPreferenceManager spManager = SharedPreferenceManager.getInstance(this);
+        spManager.saveSessionData(user);
+    }
+
+    private void navigateToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//        intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }

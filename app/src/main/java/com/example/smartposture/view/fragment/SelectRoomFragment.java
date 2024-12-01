@@ -1,6 +1,7 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +20,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.RoomAdapter;
 import com.example.smartposture.data.model.User;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpace;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 
-public class SelectRoomFragment extends Fragment {
+public class SelectRoomFragment extends BaseFragment {
     private RoomViewModel viewModel;
     private RecyclerView recyclerViewRooms;
     private RoomAdapter adapter;
     private Button myRooms, availableRooms;
-    private User user;
+    private SharedPreferenceManager spManager;
     TextView noRoomsText;
     @Nullable
     @Override
@@ -40,7 +42,8 @@ public class SelectRoomFragment extends Fragment {
         availableRooms = view.findViewById(R.id.availableRooms);
         noRoomsText = view.findViewById(R.id.noRoomsText);
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
-        user = MainActivity.getUserDetails(requireContext());
+
+        spManager = getSharedPreferenceManager();
 
         setupRecyclerView();
         observeViewModel();
@@ -70,7 +73,6 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private void observeViewModel() {
-
         viewModel.getRoomsLiveData().observe(getViewLifecycleOwner(), rooms -> {
             if (rooms != null && !rooms.isEmpty()) {
                 adapter.submitList(rooms);
@@ -110,7 +112,8 @@ public class SelectRoomFragment extends Fragment {
     }
 
     private int getUserId() {
-        int id = user.getUser_id();
+        int id = spManager.getUserId();
+        Log.d("USER ID: ", "user_id: " +id);
         return id;
     }
 

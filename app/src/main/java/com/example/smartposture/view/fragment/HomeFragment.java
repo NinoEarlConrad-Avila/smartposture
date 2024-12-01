@@ -20,18 +20,19 @@ import android.widget.Toast;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
 import com.example.smartposture.data.model.User;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
 import java.util.ArrayList;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
 
     private WorkoutViewModel workoutsViewModel;
     private WorkoutAdapter workoutAdapter;
     private TextView usernameTextView;
     private ImageView progressBarLogo;
-
+    private SharedPreferenceManager spManager;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -42,13 +43,15 @@ public class HomeFragment extends Fragment {
         RecyclerView workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
         progressBarLogo = view.findViewById(R.id.progressBarLogo);
 
-        User user = MainActivity.getUserDetails(requireContext());
-        if (user != null && user.getUsername() != null) {
-            usernameTextView.setText(user.getUsername());
-        } else {
+        spManager = getSharedPreferenceManager();
+        String username = spManager.getUsername();
+        int id = spManager.getUserId();
+        if (username == null) {
             usernameTextView.setText("Guest");
+        } else {
+            usernameTextView.setText(username);
         }
-        Log.d("user_id", "ID: "+user.getUser_id());
+        Log.d("ID", "USER ID: " +id);
 
         workoutAdapter = new WorkoutAdapter(new ArrayList<>(), workoutId -> navigateToWorkoutDetails(workoutId));
         workoutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
