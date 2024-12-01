@@ -20,7 +20,9 @@
     <string name="forgot_pass">Forgot Password</string>
     <string name="hint_enter_email">Enter your email</string>
     <string name="reset_pass">Reset Password</string>
-
+    <string name="smart">Smart</string>
+    <string name="posture">Posture</string>
+    <string name="tag_line">JUST TAP TO UNLOCK YOUR POSTURE PERFECT</string>
     <!-- Workout Texts -->
     <string name="workout_text">WORKOUT</string>
     <string name="workout_image">Workout Image</string>

@@ -2,9 +2,12 @@ package com.example.smartposture.view.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -36,6 +39,10 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         usernameEditText = findViewById(R.id.username);
@@ -49,6 +56,12 @@ public class RegisterActivity extends AppCompatActivity {
         registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
         setupObservers();
+
+        signInTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
 
         birthDateEditText.setOnClickListener(view -> new DatePickerDialog(RegisterActivity.this,
                 this::onDateSet, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
