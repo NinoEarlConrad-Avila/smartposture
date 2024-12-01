@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.User;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.viewmodel.RegisterViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -136,14 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserDetails(User user) {
-        getSharedPreferences("user_data", MODE_PRIVATE)
-                .edit()
-                .putString("username", user.getUsername())
-                .putString("email", user.getEmail())
-                .putString("firstname", user.getFirstname())
-                .putString("lastname", user.getLastname())
-                .putString("usertype", user.getUsertype())
-                .putString("birthdate", user.getBirthdate())
-                .apply();
+        SharedPreferenceManager spManager = SharedPreferenceManager.getInstance(this);
+        spManager.saveSessionData(user);
     }
 }
