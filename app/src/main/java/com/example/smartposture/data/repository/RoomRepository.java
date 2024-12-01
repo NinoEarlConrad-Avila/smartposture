@@ -79,6 +79,31 @@ public class RoomRepository {
             }
         });
     }
+    public void fetchTrainerRooms(RoomRequest request, RoomCallback callback) {
+        Call<RoomResponse> call = apiService.getTrainerRooms(request);
+
+        call.enqueue(new Callback<RoomResponse>() {
+            @Override
+            public void onResponse(Call<RoomResponse> call, Response<RoomResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    RoomResponse roomResponse = response.body();
+
+                    if ("No rooms".equals(roomResponse.getMessage()) || roomResponse.getRooms() == null) {
+                        callback.onSuccess(Collections.emptyList());
+                    } else {
+                        callback.onSuccess(roomResponse.getRooms());
+                    }
+                } else {
+                    callback.onFailure("Failed to fetch rooms: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RoomResponse> call, Throwable t) {
+                callback.onFailure("API call failed: " + t.getMessage());
+            }
+        });
+    }
 
     public interface RoomCallback {
         void onSuccess(List<Room> rooms);

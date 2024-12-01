@@ -22,7 +22,7 @@ public class RoomViewModel extends ViewModel {
         return errorLiveData;
     }
 
-    public void fetchRooms(int userId) {
+    public void fetchTraineeRooms(int userId) {
         RoomRequest request = new RoomRequest(userId);
 
         repository.fetchTraineeRooms(request, new RoomRepository.RoomCallback() {
@@ -38,10 +38,26 @@ public class RoomViewModel extends ViewModel {
         });
     }
 
-    public void fetchAvailableRooms(int userId) {
+    public void fetchTraineeAvailableRooms(int userId) {
         RoomRequest request = new RoomRequest(userId);
 
         repository.fetchTraineeAvailableRooms(request, new RoomRepository.RoomCallback() {
+            @Override
+            public void onSuccess(List<Room> rooms) {
+                roomsLiveData.postValue(rooms);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                errorLiveData.postValue(errorMessage);
+            }
+        });
+    }
+
+    public void fetchTrainerRooms(int userId) {
+        RoomRequest request = new RoomRequest(userId);
+
+        repository.fetchTrainerRooms(request, new RoomRepository.RoomCallback() {
             @Override
             public void onSuccess(List<Room> rooms) {
                 roomsLiveData.postValue(rooms);

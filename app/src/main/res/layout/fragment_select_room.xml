@@ -62,6 +62,7 @@
         android:background="@drawable/bg_room_rooms"
         >
         <LinearLayout
+            android:id="@+id/linearLayoutButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -90,7 +91,37 @@
                 android:textAllCaps="true"
                 android:textColor="@color/white" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearLayoutTrainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                android:text="My Rooms"
+                />
+
+            <Button
+                android:id="@+id/createRoom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="4"
+                android:backgroundTint="@color/green"
+                android:text="Create Room"
+                android:textAllCaps="true"
+                android:textColor="@color/white" />
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/roomCards"
             android:layout_width="match_parent"

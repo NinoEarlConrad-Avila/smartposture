@@ -18,6 +18,12 @@ public class Room {
         this.creator_username = creator_username;
     }
 
+    public Room(int room_id, String room_name, String room_code){
+        this.room_id = room_id;
+        this.room_name = room_name;
+        this.room_code = room_code;
+    }
+
     public int getRoom_id() {
         return room_id;
     }

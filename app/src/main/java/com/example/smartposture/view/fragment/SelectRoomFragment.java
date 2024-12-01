@@ -6,23 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.RoomAdapter;
-import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpace;
-import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 
 public class SelectRoomFragment extends BaseFragment {
@@ -31,7 +29,9 @@ public class SelectRoomFragment extends BaseFragment {
     private RoomAdapter adapter;
     private Button myRooms, availableRooms;
     private SharedPreferenceManager spManager;
-    TextView noRoomsText;
+    private TextView noRoomsText;
+    private String usertype;
+    private LinearLayout layoutButtons, layoutTrainer;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,25 +41,34 @@ public class SelectRoomFragment extends BaseFragment {
         myRooms = view.findViewById(R.id.myRooms);
         availableRooms = view.findViewById(R.id.availableRooms);
         noRoomsText = view.findViewById(R.id.noRoomsText);
+        layoutButtons = view.findViewById(R.id.linearLayoutButtons);
+        layoutTrainer = view.findViewById(R.id.linearLayoutTrainer);
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
 
         spManager = getSharedPreferenceManager();
-
+        usertype = spManager.getUserType();
+        Log.d("Type", "User Type: " +usertype);
         setupRecyclerView();
         observeViewModel();
 
-        highlightButton(myRooms, availableRooms);
-        fetchMyRooms(viewModel);
-
-        myRooms.setOnClickListener(v -> {
+        if (usertype.equals("trainee")) {
             highlightButton(myRooms, availableRooms);
             fetchMyRooms(viewModel);
-        });
 
-        availableRooms.setOnClickListener(v -> {
-            highlightButton(availableRooms, myRooms);
-            fetchAvailableRooms(viewModel);
-        });
+            myRooms.setOnClickListener(v -> {
+                highlightButton(myRooms, availableRooms);
+                fetchMyRooms(viewModel);
+            });
+
+            availableRooms.setOnClickListener(v -> {
+                highlightButton(availableRooms, myRooms);
+                fetchAvailableRooms(viewModel);
+            });
+        } else if (usertype.equals("trainer")){
+            layoutButtons.setVisibility(View.GONE);
+            layoutTrainer.setVisibility(View.VISIBLE);
+            fetchMyRooms(viewModel);
+        }
 
         return view;
     }
@@ -95,7 +104,11 @@ public class SelectRoomFragment extends BaseFragment {
         adapter.setMode("myRooms");
         int userId = getUserId();
         if (userId != -1) {
-            roomViewModel.fetchRooms(userId);
+            if (usertype.equals("trainee")) {
+                roomViewModel.fetchTraineeRooms(userId);
+            } else if(usertype.equals("trainer")){
+                roomViewModel.fetchTrainerRooms(userId);
+            }
         } else {
             Toast.makeText(requireContext(), "User ID not found", Toast.LENGTH_SHORT).show();
         }
@@ -105,7 +118,7 @@ public class SelectRoomFragment extends BaseFragment {
         adapter.setMode("availableRooms");
         int userId = getUserId();
         if (userId != -1) {
-            roomViewModel.fetchAvailableRooms(userId);
+            roomViewModel.fetchTraineeAvailableRooms(userId);
         } else {
             Toast.makeText(requireContext(), "User ID not found", Toast.LENGTH_SHORT).show();
         }
