@@ -4,33 +4,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:background="@color/bg_dark_blue"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="30dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/roomNameTextView"
+        <ImageButton
+            android:id="@+id/back_to_workout_fragment"
+            android:layout_width="62dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:padding="8dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_back"
+            app:tint="@color/white" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:text="@string/room"
-            android:textAllCaps="true"
-            android:textColor="@color/black"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:typeface="normal" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/roomNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/room"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/roomCreatorTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/room"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:typeface="normal" />
+        </LinearLayout>
+
 
         <ImageView
             android:id="@+id/notification"
             android:layout_width="10dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            app:srcCompat="@drawable/ic_notification" />
+            app:srcCompat="@drawable/ic_notification"
+            app:tint="@color/white"/>
 
     </LinearLayout>
 
@@ -38,6 +73,8 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_marginBottom="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -110,61 +147,66 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp">
-
-        <Button
-            android:id="@+id/activeBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:layout_marginRight="5dp"
-            android:text="@string/active"
-            android:backgroundTint="@color/teal"
-            android:textColor="@color/white"/>
-
-        <Button
-            android:id="@+id/inactiveBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:layout_marginLeft="5dp"
-            android:text="@string/inactive"
-            android:backgroundTint="@color/teal"
-            android:textColor="@color/white" />
-    </LinearLayout>
-    <TextView
-        android:id="@+id/emptyMessage"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="center"
-        android:textSize="24sp"
-        android:text=""
-        android:textAlignment="center"
-        android:visibility="gone"/>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:paddingLeft="20dp"
+        android:layout_height="match_parent"
         android:paddingRight="20dp"
-        android:layout_marginTop="10dp"
-        android:scrollbars="none">
-
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_room_rooms"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            >
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerRoomActivities"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/activeBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_marginRight="5dp"
+                android:text="@string/active"
+                android:backgroundTint="@color/teal"
+                android:textColor="@color/white"/>
+
+            <Button
+                android:id="@+id/inactiveBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_marginLeft="5dp"
+                android:text="@string/inactive"
+                android:backgroundTint="@color/teal"
+                android:textColor="@color/white" />
         </LinearLayout>
-    </ScrollView>
+        <TextView
+            android:id="@+id/emptyMessage"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:text=""
+            android:textAlignment="center"
+            android:visibility="gone"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:layout_marginTop="10dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerRoomActivities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 </LinearLayout>
 

@@ -1,8 +1,5 @@
 package com.example.smartposture.data.model;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-
 public class Room {
     private int room_id;
     private String room_name;
@@ -62,30 +59,5 @@ public class Room {
 
     public void setCreator_username(String creator_username) {
         this.creator_username = creator_username;
-    }
-
-    public static final DiffUtil.ItemCallback<Room> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<Room>() {
-                @Override
-                public boolean areItemsTheSame(@NonNull Room oldItem, @NonNull Room newItem) {
-                    return oldItem.room_id == newItem.room_id;
-                }
-
-                @Override
-                public boolean areContentsTheSame(@NonNull Room oldItem, @NonNull Room newItem) {
-                    return oldItem.equals(newItem);
-                }
-            };
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Room room = (Room) o;
-        return room_id == room.room_id &&
-                room_creator == room.room_creator &&
-                room_name.equals(room.room_name) &&
-                room_code.equals(room.room_code) &&
-                creator_username.equals(room.creator_username);
     }
 }

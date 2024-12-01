@@ -1,21 +1,16 @@
 package com.example.smartposture.view.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.smartposture.R;
-import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
-import com.example.smartposture.model.UserModel;
 import com.example.smartposture.view.fragment.HomeFragment;
 import com.example.smartposture.view.fragment.ProfileFragment;
 import com.example.smartposture.view.fragment.SelectRoomFragment;

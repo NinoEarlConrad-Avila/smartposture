@@ -1,7 +1,6 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.RoomAdapter;
+import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpace;
 import com.example.smartposture.viewmodel.RoomViewModel;
 
-public class SelectRoomFragment extends BaseFragment {
+public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRoomClickListener {
     private RoomViewModel viewModel;
     private RecyclerView recyclerViewRooms;
     private RoomAdapter adapter;
     private Button myRooms, availableRooms;
     private SharedPreferenceManager spManager;
     private TextView noRoomsText;
-    private String usertype;
+    private String userType;
     private LinearLayout layoutButtons, layoutTrainer;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,15 +44,16 @@ public class SelectRoomFragment extends BaseFragment {
         noRoomsText = view.findViewById(R.id.noRoomsText);
         layoutButtons = view.findViewById(R.id.linearLayoutButtons);
         layoutTrainer = view.findViewById(R.id.linearLayoutTrainer);
+
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
 
         spManager = getSharedPreferenceManager();
-        usertype = spManager.getUserType();
-        Log.d("Type", "User Type: " +usertype);
+        userType = spManager.getUserType();
+
         setupRecyclerView();
         observeViewModel();
 
-        if (usertype.equals("trainee")) {
+        if ("trainee".equals(userType)) {
             highlightButton(myRooms, availableRooms);
             fetchMyRooms(viewModel);
 
@@ -64,7 +66,7 @@ public class SelectRoomFragment extends BaseFragment {
                 highlightButton(availableRooms, myRooms);
                 fetchAvailableRooms(viewModel);
             });
-        } else if (usertype.equals("trainer")){
+        } else if ("trainer".equals(userType)) {
             layoutButtons.setVisibility(View.GONE);
             layoutTrainer.setVisibility(View.VISIBLE);
             fetchMyRooms(viewModel);
@@ -73,9 +75,22 @@ public class SelectRoomFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onRoomClick(int roomId, String mode) {
+        if (roomId != -1) {
+            Room selectedRoom = adapter.getRoomById(roomId);
+            if (selectedRoom != null) {
+                viewModel.selectRoom(selectedRoom);
+            }
+        } else {
+            Toast.makeText(requireContext(), "Invalid Room ID", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     private void setupRecyclerView() {
         int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.recyclerViewSpacing);
-        adapter = new RoomAdapter();
+        adapter = new RoomAdapter(this);
         recyclerViewRooms.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewRooms.setAdapter(adapter);
         recyclerViewRooms.addItemDecoration(new AdditionalSpace(spaceInPixels));
@@ -84,12 +99,19 @@ public class SelectRoomFragment extends BaseFragment {
     private void observeViewModel() {
         viewModel.getRoomsLiveData().observe(getViewLifecycleOwner(), rooms -> {
             if (rooms != null && !rooms.isEmpty()) {
-                adapter.submitList(rooms);
+                adapter.updateRooms(rooms);
                 recyclerViewRooms.setVisibility(View.VISIBLE);
                 noRoomsText.setVisibility(View.GONE);
             } else {
                 recyclerViewRooms.setVisibility(View.GONE);
                 noRoomsText.setVisibility(View.VISIBLE);
+            }
+        });
+
+        viewModel.getSelectedRoomLiveData().observe(getViewLifecycleOwner(), room -> {
+            if (room != null) {
+                navigateToRoomDetails(room.getRoom_id());
+                viewModel.selectRoom(null);
             }
         });
 
@@ -104,9 +126,9 @@ public class SelectRoomFragment extends BaseFragment {
         adapter.setMode("myRooms");
         int userId = getUserId();
         if (userId != -1) {
-            if (usertype.equals("trainee")) {
+            if ("trainee".equals(userType)) {
                 roomViewModel.fetchTraineeRooms(userId);
-            } else if(usertype.equals("trainer")){
+            } else if ("trainer".equals(userType)) {
                 roomViewModel.fetchTrainerRooms(userId);
             }
         } else {
@@ -125,9 +147,7 @@ public class SelectRoomFragment extends BaseFragment {
     }
 
     private int getUserId() {
-        int id = spManager.getUserId();
-        Log.d("USER ID: ", "user_id: " +id);
-        return id;
+        return spManager.getUserId();
     }
 
     private void highlightButton(Button selectedBtn, Button otherBtn) {
@@ -136,5 +156,19 @@ public class SelectRoomFragment extends BaseFragment {
 
         otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
         otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+    }
+
+    private void navigateToRoomDetails(int roomId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("room_id", roomId);
+
+        RoomDetailFragment fragment = new RoomDetailFragment();
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
     }
 }

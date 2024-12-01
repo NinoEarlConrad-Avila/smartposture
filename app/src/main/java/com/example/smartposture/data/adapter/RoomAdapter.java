@@ -7,23 +7,46 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.Room;
 
-public class RoomAdapter extends ListAdapter<Room, RoomAdapter.RoomViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
+    private static OnRoomClickListener onRoomClickListener;
 
     private static String mode = "myRooms";
+    private List<Room> rooms;
+
+    public interface OnRoomClickListener {
+        void onRoomClick(int roomId, String mode);
+    }
+
+    public RoomAdapter(OnRoomClickListener onRoomClickListener) {
+        this.onRoomClickListener = onRoomClickListener;
+        rooms = new ArrayList<>();
+    }
 
     public void setMode(String mode) {
         this.mode = mode;
         notifyDataSetChanged();
     }
 
-    public RoomAdapter() {
-        super(Room.DIFF_CALLBACK);
+    public void updateRooms(List<Room> newRooms) {
+        this.rooms = newRooms;
+        notifyDataSetChanged();
+    }
+
+    public Room getRoomById(int roomId) {
+        for (Room room : rooms) {
+            if (room.getRoom_id() == roomId) {
+                return room;
+            }
+        }
+        return null;
     }
 
     @NonNull
@@ -36,16 +59,23 @@ public class RoomAdapter extends ListAdapter<Room, RoomAdapter.RoomViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
-        Room room = getItem(position);
+        Room room = rooms.get(position);
         if (room != null) {
             holder.bind(room);
+            holder.itemView.setOnClickListener(v -> onRoomClickListener.onRoomClick(room.getRoom_id(), mode));
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return rooms != null ? rooms.size() : 0;
     }
 
     static class RoomViewHolder extends RecyclerView.ViewHolder {
         private final TextView roomNameTextView;
         private final TextView roomCreatorTextView;
         private Button actionButton;
+
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
             roomNameTextView = itemView.findViewById(R.id.roomName);
@@ -55,7 +85,7 @@ public class RoomAdapter extends ListAdapter<Room, RoomAdapter.RoomViewHolder> {
 
         public void bind(Room room) {
             roomNameTextView.setText(room.getRoom_name());
-            roomCreatorTextView .setText(room.getCreator_username());
+            roomCreatorTextView.setText(room.getCreator_username());
 
             if (mode.equals("myRooms")) {
                 actionButton.setText("View Room");
@@ -63,12 +93,15 @@ public class RoomAdapter extends ListAdapter<Room, RoomAdapter.RoomViewHolder> {
                 actionButton.setText("Request Join");
             }
 
-            // Handle button click (optional)
             actionButton.setOnClickListener(v -> {
                 if (mode.equals("myRooms")) {
-                    // Handle "View Room" action
+                    if (onRoomClickListener != null) {
+                        onRoomClickListener.onRoomClick(room.getRoom_id(), mode);
+                    }
                 } else if (mode.equals("availableRooms")) {
-                    // Handle "Request Join" action
+                    if (onRoomClickListener != null) {
+                        onRoomClickListener.onRoomClick(room.getRoom_id(), mode);
+                    }
                 }
             });
         }
