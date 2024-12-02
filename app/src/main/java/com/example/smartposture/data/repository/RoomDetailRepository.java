@@ -93,4 +93,30 @@ public class RoomDetailRepository {
         });
         return liveData;
     }
+
+    public LiveData<String> rejectJoinRequest(int roomId, int userId) {
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+
+        JoinReqRequest request = new JoinReqRequest(roomId, userId);
+        apiService.acceptJoinRequest(request).enqueue(new Callback<JoinRequestResponse>() {
+            @Override
+            public void onResponse(Call<JoinRequestResponse> call, Response<JoinRequestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
+                        liveData.postValue("Success");
+                    }else {
+                        liveData.postValue(response.body().getMessage());
+                    }
+                } else {
+                    liveData.postValue("Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JoinRequestResponse> call, Throwable t) {
+                liveData.postValue("Error: " + t.getMessage());
+            }
+        });
+        return liveData;
+    }
 }

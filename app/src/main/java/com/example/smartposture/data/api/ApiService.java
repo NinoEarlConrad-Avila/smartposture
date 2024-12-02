@@ -60,4 +60,7 @@ public interface ApiService {
 
     @POST("room/acceptJoinRequest")
     Call<JoinRequestResponse> acceptJoinRequest(@Body JoinReqRequest joinRequest);
+
+    @POST("room/rejectJoinRequest")
+    Call<JoinRequestResponse> rejectJoinRequest(@Body JoinReqRequest joinRequest);
 }

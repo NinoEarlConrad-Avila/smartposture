@@ -146,6 +146,11 @@ public class RoomDetailFragment extends Fragment {
                     @Override
                     public void onReject(JoinRequest request) {
                         // Handle reject logic here
+                        viewModel.rejectJoinRequest(roomId, request.getUser_id()).observe(getViewLifecycleOwner(), result -> {
+                            Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show();
+                            // Optionally refresh the list
+                            viewModel.fetchJoinRequests(roomId);
+                        });
                     }
                 });
 
