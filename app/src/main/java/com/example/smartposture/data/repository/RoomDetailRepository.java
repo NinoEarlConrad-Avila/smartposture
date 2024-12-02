@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.request.RoomDetailsRequest;
+import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 
 import retrofit2.Call;
@@ -42,5 +43,27 @@ public class RoomDetailRepository {
             }
         });
         return data;
+    }
+
+    public LiveData<JoinRequestResponse> fetchJoinRequests(int roomId) {
+        MutableLiveData<JoinRequestResponse> liveData = new MutableLiveData<>();
+
+        RoomDetailsRequest request = new RoomDetailsRequest(roomId);
+        apiService.getRoomJoinRequests(request).enqueue(new Callback<JoinRequestResponse>() {
+                @Override
+                public void onResponse(Call<JoinRequestResponse> call, Response<JoinRequestResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        liveData.postValue(response.body());
+                    } else {
+                        liveData.postValue(null);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JoinRequestResponse> call, Throwable t) {
+                    liveData.postValue(null);
+                }
+            });
+        return liveData;
     }
 }

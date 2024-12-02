@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -18,14 +19,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
+import com.example.smartposture.data.adapter.JoinRequestAdapter;
+import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class RoomDetailFragment extends Fragment {
     private RoomDetailViewModel roomViewModel;
+    private LinearLayout viewJoinRequest;
     private TextView roomName, roomCreator, roomCode;
     @Nullable
     @Override
@@ -47,10 +53,10 @@ public class RoomDetailFragment extends Fragment {
                 }
             });
 
-
         roomName = view.findViewById(R.id.roomNameTextView);
         roomCreator = view.findViewById(R.id.roomCreatorTextView);
         roomCode = view.findViewById(R.id.roomCode);
+        viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
 
         view.setVisibility(View.INVISIBLE);
         Dialog loadingDialog = createFullScreenLoadingDialog();
@@ -59,6 +65,10 @@ public class RoomDetailFragment extends Fragment {
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
 
         int roomId = requireArguments().getInt("room_id", -1);
+
+        viewJoinRequest.setOnClickListener(v -> {
+            showJoinRequestDialog(roomId);
+        });
 
         roomViewModel.fetchRoomDetails(roomId).observe(getViewLifecycleOwner(), response -> {
             Room room = response.getRoom();
@@ -99,5 +109,45 @@ public class RoomDetailFragment extends Fragment {
         preloaderImage.startAnimation(bounceAnimation);
 
         return dialog;
+    }
+
+    private void showJoinRequestDialog(int roomId) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_join_request);
+        dialog.setCancelable(true);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.5f);
+        }
+        ImageView closeButton = dialog.findViewById(R.id.close);
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        RoomDetailViewModel viewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+
+        viewModel.fetchJoinRequests(roomId).observe(getViewLifecycleOwner(), response -> {
+            if (response != null && response.getRequests() != null) {
+                JoinRequestAdapter adapter = new JoinRequestAdapter(response.getRequests(), new JoinRequestAdapter.OnItemActionListener() {
+                    @Override
+                    public void onAccept(JoinRequest request) {
+                        // Handle accept logic here
+                    }
+
+                    @Override
+                    public void onReject(JoinRequest request) {
+                        // Handle reject logic here
+                    }
+                });
+
+                recyclerView.setAdapter(adapter);
+            }
+        });
+
+        dialog.show();
     }
 }

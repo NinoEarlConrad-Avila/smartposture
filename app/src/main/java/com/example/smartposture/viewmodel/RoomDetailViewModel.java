@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.data.repository.RoomDetailRepository;
+import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 
 public class RoomDetailViewModel extends ViewModel {
@@ -14,7 +15,11 @@ public class RoomDetailViewModel extends ViewModel {
         roomDetailRepository = new RoomDetailRepository();
     }
 
-    public LiveData<RoomDetailsResponse> fetchRoomDetails(int workoutId) {
-        return roomDetailRepository.fetchRoomDetails(workoutId);
+    public LiveData<RoomDetailsResponse> fetchRoomDetails(int roomId) {
+        return roomDetailRepository.fetchRoomDetails(roomId);
+    }
+
+    public LiveData<JoinRequestResponse> fetchJoinRequests(int roomId) {
+        return roomDetailRepository.fetchJoinRequests(roomId);
     }
 }

@@ -28,4 +28,6 @@
 <color name="nav_selected">#BEDEAB</color>
 <color name="nav_unselected">#FFFFFF</color>
 <color name="nav_icon_color">#FFFFFF</color>
+<color name="red">#800000</color>
+<color name="green_med">#014421</color>
 </resources>
