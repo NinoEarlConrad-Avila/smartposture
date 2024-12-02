@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -135,7 +136,11 @@ public class RoomDetailFragment extends Fragment {
                 JoinRequestAdapter adapter = new JoinRequestAdapter(response.getRequests(), new JoinRequestAdapter.OnItemActionListener() {
                     @Override
                     public void onAccept(JoinRequest request) {
-                        // Handle accept logic here
+                        viewModel.acceptJoinRequest(roomId, request.getUser_id()).observe(getViewLifecycleOwner(), result -> {
+                            Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show();
+                            // Optionally refresh the list
+                            viewModel.fetchJoinRequests(roomId);
+                        });
                     }
 
                     @Override

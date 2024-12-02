@@ -1,5 +1,7 @@
 package com.example.smartposture.data.api;
 
+import com.example.smartposture.data.model.JoinRequest;
+import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.LoginRequest;
 import com.example.smartposture.data.request.LogoutRequest;
 import com.example.smartposture.data.request.RegisterRequest;
@@ -54,5 +56,8 @@ public interface ApiService {
     Call<RoomDetailsResponse> getRoomDetails(@Body RoomDetailsRequest roomDetailsRequest);
 
     @POST("room/getRoomJoinRequests")
-    Call<JoinRequestResponse> getRoomJoinRequests(@Body RoomDetailsRequest joinRequest);
+    Call<JoinRequestResponse> getRoomJoinRequests(@Body JoinReqRequest joinRequest);
+
+    @POST("room/acceptJoinRequest")
+    Call<JoinRequestResponse> acceptJoinRequest(@Body JoinReqRequest joinRequest);
 }

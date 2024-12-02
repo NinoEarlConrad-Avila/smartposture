@@ -22,4 +22,8 @@ public class RoomDetailViewModel extends ViewModel {
     public LiveData<JoinRequestResponse> fetchJoinRequests(int roomId) {
         return roomDetailRepository.fetchJoinRequests(roomId);
     }
+
+    public LiveData<String> acceptJoinRequest(int roomId, int userId) {
+        return roomDetailRepository.acceptJoinRequest(roomId, userId);
+    }
 }
