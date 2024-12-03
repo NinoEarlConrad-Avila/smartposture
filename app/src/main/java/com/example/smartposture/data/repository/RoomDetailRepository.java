@@ -48,29 +48,27 @@ public class RoomDetailRepository {
 
     public LiveData<JoinRequestResponse> fetchJoinRequests(int roomId) {
         MutableLiveData<JoinRequestResponse> liveData = new MutableLiveData<>();
-
         JoinReqRequest request = new JoinReqRequest(roomId);
         apiService.getRoomJoinRequests(request).enqueue(new Callback<JoinRequestResponse>() {
-                @Override
-                public void onResponse(Call<JoinRequestResponse> call, Response<JoinRequestResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        liveData.postValue(response.body());
-                    } else {
-                        liveData.postValue(null);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JoinRequestResponse> call, Throwable t) {
+            @Override
+            public void onResponse(Call<JoinRequestResponse> call, Response<JoinRequestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
                     liveData.postValue(null);
                 }
-            });
+            }
+
+            @Override
+            public void onFailure(Call<JoinRequestResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
         return liveData;
     }
 
     public LiveData<String> acceptJoinRequest(int roomId, int userId) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
-
         JoinReqRequest request = new JoinReqRequest(roomId, userId);
         apiService.acceptJoinRequest(request).enqueue(new Callback<JoinRequestResponse>() {
             @Override
@@ -78,7 +76,7 @@ public class RoomDetailRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
                         liveData.postValue("Success");
-                    }else {
+                    } else {
                         liveData.postValue(response.body().getMessage());
                     }
                 } else {
@@ -96,15 +94,14 @@ public class RoomDetailRepository {
 
     public LiveData<String> rejectJoinRequest(int roomId, int userId) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
-
         JoinReqRequest request = new JoinReqRequest(roomId, userId);
-        apiService.acceptJoinRequest(request).enqueue(new Callback<JoinRequestResponse>() {
+        apiService.rejectJoinRequest(request).enqueue(new Callback<JoinRequestResponse>() {
             @Override
             public void onResponse(Call<JoinRequestResponse> call, Response<JoinRequestResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
                         liveData.postValue("Success");
-                    }else {
+                    } else {
                         liveData.postValue(response.body().getMessage());
                     }
                 } else {

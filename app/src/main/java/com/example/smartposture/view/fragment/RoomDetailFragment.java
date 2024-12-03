@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -113,6 +114,66 @@ public class RoomDetailFragment extends Fragment {
     }
 
     private void showJoinRequestDialog(int roomId) {
+        Dialog dialog = createJoinRequestDialog();
+
+        RelativeLayout layout = dialog.findViewById(R.id.preloaderLayout);
+        RelativeLayout noRequest = dialog.findViewById(R.id.noJoinRequest);
+        RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
+        ImageView preloaderImage = dialog.findViewById(R.id.preloaderImage);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        layout.setVisibility(View.VISIBLE);
+        preloaderImage.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        noRequest.setVisibility(View.GONE);
+
+        Animation animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
+        preloaderImage.startAnimation(animation);
+
+        RoomDetailViewModel viewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+
+        viewModel.fetchJoinRequests(roomId).observe(getViewLifecycleOwner(), joinRequests -> {
+            if (joinRequests == null || joinRequests.isEmpty()) {
+                noRequest.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                recyclerView.setAdapter(new JoinRequestAdapter(joinRequests, new JoinRequestAdapter.OnItemActionListener() {
+                    @Override
+                    public void onAccept(JoinRequest request) {
+                        showConfirmationDialog("Accept Request", "Are you sure you want to accept this request?",
+                                () -> viewModel.acceptJoinRequest(roomId, request.getUser_id()));
+                    }
+
+                    @Override
+                    public void onReject(JoinRequest request) {
+                        showConfirmationDialog("Reject Request", "Are you sure you want to reject this request?",
+                                () -> viewModel.rejectJoinRequest(roomId, request.getUser_id()));
+                    }
+                }));
+                recyclerView.setVisibility(View.VISIBLE);
+                noRequest.setVisibility(View.GONE);
+            }
+        });
+
+        viewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                recyclerView.setVisibility(View.GONE);
+                noRequest.setVisibility(View.GONE);
+                layout.setVisibility(View.VISIBLE);
+                preloaderImage.setVisibility(View.VISIBLE);
+                preloaderImage.startAnimation(animation);
+            } else {
+                layout.setVisibility(View.GONE);
+                preloaderImage.clearAnimation();
+                preloaderImage.setVisibility(View.GONE);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private Dialog createJoinRequestDialog() {
         Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_join_request);
@@ -123,40 +184,40 @@ public class RoomDetailFragment extends Fragment {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().setDimAmount(0.5f);
         }
+
         ImageView closeButton = dialog.findViewById(R.id.close);
         closeButton.setOnClickListener(v -> dialog.dismiss());
 
-        RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        return dialog;
+    }
 
-        RoomDetailViewModel viewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+    private void showConfirmationDialog(String title, String message, Runnable onConfirm) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        viewModel.fetchJoinRequests(roomId).observe(getViewLifecycleOwner(), response -> {
-            if (response != null && response.getRequests() != null) {
-                JoinRequestAdapter adapter = new JoinRequestAdapter(response.getRequests(), new JoinRequestAdapter.OnItemActionListener() {
-                    @Override
-                    public void onAccept(JoinRequest request) {
-                        viewModel.acceptJoinRequest(roomId, request.getUser_id()).observe(getViewLifecycleOwner(), result -> {
-                            Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show();
-                            // Optionally refresh the list
-                            viewModel.fetchJoinRequests(roomId);
-                        });
-                    }
+        dialog.setContentView(R.layout.dialog_confirmation);
+        dialog.setCancelable(true);
 
-                    @Override
-                    public void onReject(JoinRequest request) {
-                        // Handle reject logic here
-                        viewModel.rejectJoinRequest(roomId, request.getUser_id()).observe(getViewLifecycleOwner(), result -> {
-                            Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show();
-                            // Optionally refresh the list
-                            viewModel.fetchJoinRequests(roomId);
-                        });
-                    }
-                });
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.5f);
+        }
 
-                recyclerView.setAdapter(adapter);
-            }
+        TextView titleTextView = dialog.findViewById(R.id.alertTitle);
+        TextView messageTextView = dialog.findViewById(R.id.alertMessage);
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            onConfirm.run();
         });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }

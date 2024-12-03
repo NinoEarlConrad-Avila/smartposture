@@ -27,9 +27,46 @@
         android:textColor="@android:color/black"
         android:textSize="24sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
         android:layout_width="250dp"
-        android:layout_height="280dp"
-        tools:listitem="@layout/item_join_request"/>
+        android:layout_height="250dp"
+        android:gravity="center">
+        <RelativeLayout
+            android:id="@+id/noJoinRequest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            android:padding="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No join request"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/preloaderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/preloaderImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:src="@drawable/logo_sp" />
+        </RelativeLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_join_request"/>
+    </FrameLayout>
 </LinearLayout>
