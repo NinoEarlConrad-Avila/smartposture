@@ -30,12 +30,11 @@
 
         <Button
             android:id="@+id/actionButton"
-            android:backgroundTint="@color/red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="REMOVE"
-            android:textSize="7sp"
+            android:backgroundTint="@color/red"
+            android:text="@string/action"
             android:textColor="@color/white"
-            />
+            android:textSize="7sp" />
     </LinearLayout>
 </LinearLayout>

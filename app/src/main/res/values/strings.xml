@@ -104,6 +104,14 @@
     <string name="Done">Finish Work Out</string>
     <string name="steps">Steps</string>
 
+    <string name="action">Action</string>
+    <string name="trainees">Trainees</string>
+    <string name="add_trainees">Add Trainees</string>
+    <string name="no_room_trainees">No Room Trainees</string>
+    <string name="no_join_requests">No Join Requests</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string name="sample_text_short">This is a sample short text.</string>
     <string name="sample_text_long">This is a sample short text. This is a sample short text.This is a sample short text.This is a sample short text.This is a sample short text.</string>
 </resources>

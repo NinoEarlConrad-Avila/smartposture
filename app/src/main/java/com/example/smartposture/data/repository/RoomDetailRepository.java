@@ -140,6 +140,27 @@ public class RoomDetailRepository {
         return liveData;
     }
 
+    public LiveData<RoomTraineesResponse> fetchAvailableTrainees(int roomId) {
+        MutableLiveData<RoomTraineesResponse> liveData = new MutableLiveData<>();
+        RoomDetailsRequest request = new RoomDetailsRequest(roomId);
+        apiService.getAvailableTrainees(request).enqueue(new Callback<RoomTraineesResponse>() {
+            @Override
+            public void onResponse(Call<RoomTraineesResponse> call, Response<RoomTraineesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RoomTraineesResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
     public LiveData<String> removeTrainee(int roomId, int userId) {
         MutableLiveData<String> liveData = new MutableLiveData<>();
         JoinReqRequest request = new JoinReqRequest(roomId, userId);

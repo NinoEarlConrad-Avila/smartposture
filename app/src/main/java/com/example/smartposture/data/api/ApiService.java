@@ -60,8 +60,14 @@ public interface ApiService {
     @POST("room/getRoomJoinRequests")
     Call<JoinRequestResponse> getRoomJoinRequests(@Body JoinReqRequest joinRequest);
 
+    @POST("room/createRoom")
+    Call<ApiResponse> createRoom(@Body CreateRoomRequest createRoom);
+
     @POST("room/getRoomTrainees")
     Call<RoomTraineesResponse> getRoomTrainees(@Body RoomDetailsRequest request);
+
+    @POST("room/getAvailableTrainees")
+    Call<RoomTraineesResponse> getAvailableTrainees(@Body RoomDetailsRequest request);
 
     @POST("room/acceptJoinRequest")
     Call<JoinRequestResponse> acceptJoinRequest(@Body JoinReqRequest joinRequest);
@@ -72,6 +78,4 @@ public interface ApiService {
     @POST("room/removeRoomTrainee")
     Call<ApiResponse> removeTrainee(@Body JoinReqRequest request);
     
-    @POST("room/createRoom")
-    Call<ApiResponse> createRoom(@Body CreateRoomRequest createRoom);
 }

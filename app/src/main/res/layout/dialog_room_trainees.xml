@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_gravity="center"
-        android:text="Room Trainees"
+        android:text="@string/action"
         android:textAllCaps="true"
         android:textColor="@android:color/black"
         android:textSize="24sp" />
@@ -42,7 +42,7 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:backgroundTint="@color/green"
-            android:text="Trainees"
+            android:text="@string/trainees"
             android:textSize="8sp"
             android:textAllCaps="true"
             android:textColor="@color/white" />
@@ -54,7 +54,7 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:backgroundTint="@color/green"
-            android:text="Add Trainees"
+            android:text="@string/add_trainees"
             android:textSize="8sp"
             android:textAllCaps="true"
             android:textColor="@color/white" />
@@ -75,7 +75,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No Room Trainees"
+                android:text="@string/no_room_trainees"
                 />
         </RelativeLayout>
         <RelativeLayout

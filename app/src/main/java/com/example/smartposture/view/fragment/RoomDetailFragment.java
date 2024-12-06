@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -220,7 +221,7 @@ public class RoomDetailFragment extends Fragment {
 
         addTrainees.setOnClickListener(v -> {
             highlightButton(addTrainees, viewTrainees);
-//            fetchRoomTrainees(roomId);
+            fetchAvailableTrainees(roomId);
         });
 
         loadingStateObserver();
@@ -281,19 +282,40 @@ public class RoomDetailFragment extends Fragment {
         dialog.show();
     }
 
-    private void fetchRoomTrainees(int roomId){
+    private void fetchRoomTrainees(int roomId) {
         roomViewModel.fetchRoomTrainees(roomId).observe(getViewLifecycleOwner(), roomTrainees -> {
             if (roomTrainees == null || roomTrainees.isEmpty()) {
                 noRequest.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
             } else {
-                recyclerView.setAdapter(new RoomTraineesAdapter(roomTrainees, new RoomTraineesAdapter.OnItemActionListener() {
+                recyclerView.setAdapter(new RoomTraineesAdapter(getContext(), roomTrainees, new RoomTraineesAdapter.OnItemActionListener() {
                     @Override
-                    public void removeTrainee(Trainee request) {
-                        showConfirmationDialog("Remove Trainee", "Are you sure you want to remove trainee in room?",
+                    public void onAction(Trainee request) {
+                        showConfirmationDialog("Remove Trainee", "Are you sure you want to remove this trainee?",
                                 () -> roomViewModel.removeTrainee(roomId, request.getId()));
                     }
-                }));
+                }, false));
+                recyclerView.setVisibility(View.VISIBLE);
+                noRequest.setVisibility(View.GONE);
+            }
+        });
+
+        loadingStateObserver();
+    }
+
+    private void fetchAvailableTrainees(int roomId) {
+        roomViewModel.fetchAvailableTrainees(roomId).observe(getViewLifecycleOwner(), availableTrainees -> {
+            if (availableTrainees == null || availableTrainees.isEmpty()) {
+                noRequest.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                recyclerView.setAdapter(new RoomTraineesAdapter(getContext(), availableTrainees, new RoomTraineesAdapter.OnItemActionListener() {
+                    @Override
+                    public void onAction(Trainee request) {
+                        showConfirmationDialog("Add Trainee", "Are you sure you want to add this trainee?",
+                                () -> Toast.makeText(getContext(), "Trainee Added", Toast.LENGTH_SHORT).show());
+                    }
+                }, true));
                 recyclerView.setVisibility(View.VISIBLE);
                 noRequest.setVisibility(View.GONE);
             }

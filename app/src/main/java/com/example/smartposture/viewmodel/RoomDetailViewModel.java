@@ -17,6 +17,7 @@ public class RoomDetailViewModel extends ViewModel {
     private final RoomDetailRepository roomDetailRepository;
     private final MutableLiveData<List<JoinRequest>> joinRequestsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Trainee>> roomTraineesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Trainee>> availableTraineesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
 
     public RoomDetailViewModel() {
@@ -72,6 +73,19 @@ public class RoomDetailViewModel extends ViewModel {
             loadingStateLiveData.setValue(false);
         });
         return roomTraineesLiveData;
+    }
+
+    public LiveData<List<Trainee>> fetchAvailableTrainees(int roomId) {
+        loadingStateLiveData.setValue(true);
+        roomDetailRepository.fetchAvailableTrainees(roomId).observeForever(response -> {
+            if (response != null && response.getTrainees() != null) {
+                availableTraineesLiveData.setValue(response.getTrainees());
+            } else {
+                availableTraineesLiveData.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+        return availableTraineesLiveData;
     }
 
     public void removeTrainee(int roomId, int userId) {
