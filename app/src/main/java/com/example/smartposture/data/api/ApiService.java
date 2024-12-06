@@ -1,6 +1,6 @@
 package com.example.smartposture.data.api;
 
-import com.example.smartposture.data.model.JoinRequest;
+import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.LoginRequest;
 import com.example.smartposture.data.request.LogoutRequest;
@@ -13,6 +13,7 @@ import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.LoginResponse;
 import com.example.smartposture.data.response.LogoutResponse;
 import com.example.smartposture.data.response.RegisterResponse;
+import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 import com.example.smartposture.data.response.RoomResponse;
 import com.example.smartposture.data.response.ValidateSessionResponse;
@@ -63,4 +64,7 @@ public interface ApiService {
 
     @POST("room/rejectJoinRequest")
     Call<JoinRequestResponse> rejectJoinRequest(@Body JoinReqRequest joinRequest);
+    
+    @POST("room/createRoom")
+    Call<ApiResponse> createRoom(@Body CreateRoomRequest createRoom);
 }

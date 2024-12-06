@@ -2,8 +2,10 @@ package com.example.smartposture.data.repository;
 
 import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.model.Room;
+import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.request.RoomRequest;
 import com.example.smartposture.data.api.ApiClient;
+import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomResponse;
 
 import java.util.Collections;
@@ -103,6 +105,34 @@ public class RoomRepository {
                 callback.onFailure("API call failed: " + t.getMessage());
             }
         });
+    }
+
+    public void createRoom(CreateRoomRequest request, CreateRoomCallback callback) {
+        apiService.createRoom(request).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse apiResponse = response.body();
+                    if (apiResponse.getStatus() == 0) {
+                        callback.onFailure(apiResponse.getMessage());
+                    } else {
+                        callback.onSuccess(apiResponse.getMessage());
+                    }
+                } else {
+                    callback.onFailure("Failed to create room: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                callback.onFailure("API call failed: " + t.getMessage());
+            }
+        });
+    }
+
+    public interface CreateRoomCallback {
+        void onSuccess(String message);
+        void onFailure(String errorMessage);
     }
 
     public interface RoomCallback {

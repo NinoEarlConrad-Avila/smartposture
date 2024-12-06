@@ -1,17 +1,23 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,31 +25,42 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.RoomAdapter;
 import com.example.smartposture.data.model.Room;
+import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpace;
 import com.example.smartposture.viewmodel.RoomViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.util.Random;
 
 public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRoomClickListener {
-    private RoomViewModel viewModel;
-    private RecyclerView recyclerViewRooms;
-    private RoomAdapter adapter;
-    private Button myRooms, availableRooms;
     private SharedPreferenceManager spManager;
-    private TextView noRoomsText;
-    private String userType;
+    private RoomViewModel viewModel;
+    private RoomAdapter adapter;
+    private RecyclerView recyclerViewRooms;
+    private RelativeLayout layoutNoRooms, layoutPreLoader;
     private LinearLayout layoutButtons, layoutTrainer;
+    private Button myRoomsButton, availableRoomsButton;
+    private String userType;
+    private ImageView preloaderImage;
+    private Animation animation;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_room, container, false);
 
-        recyclerViewRooms = view.findViewById(R.id.recyclerViewRooms);
-        myRooms = view.findViewById(R.id.myRooms);
-        availableRooms = view.findViewById(R.id.availableRooms);
-        noRoomsText = view.findViewById(R.id.noRoomsText);
         layoutButtons = view.findViewById(R.id.linearLayoutButtons);
         layoutTrainer = view.findViewById(R.id.linearLayoutTrainer);
+        layoutPreLoader = view.findViewById(R.id.preloaderLayout);
+        layoutNoRooms = view.findViewById(R.id.noRooms);
+
+        myRoomsButton = view.findViewById(R.id.myRooms);
+        availableRoomsButton = view.findViewById(R.id.availableRooms);
+
+        preloaderImage = view.findViewById(R.id.preloaderImage);
+        recyclerViewRooms = view.findViewById(R.id.recyclerViewRooms);
+        animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
 
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
 
@@ -54,21 +71,25 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         observeViewModel();
 
         if ("trainee".equals(userType)) {
-            highlightButton(myRooms, availableRooms);
+            highlightButton(myRoomsButton, availableRoomsButton);
             fetchMyRooms(viewModel);
 
-            myRooms.setOnClickListener(v -> {
-                highlightButton(myRooms, availableRooms);
+            myRoomsButton.setOnClickListener(v -> {
+                highlightButton(myRoomsButton, availableRoomsButton);
                 fetchMyRooms(viewModel);
             });
 
-            availableRooms.setOnClickListener(v -> {
-                highlightButton(availableRooms, myRooms);
+            availableRoomsButton.setOnClickListener(v -> {
+                highlightButton(availableRoomsButton, myRoomsButton);
                 fetchAvailableRooms(viewModel);
             });
         } else if ("trainer".equals(userType)) {
             layoutButtons.setVisibility(View.GONE);
             layoutTrainer.setVisibility(View.VISIBLE);
+
+            Button createRoomButton = view.findViewById(R.id.createRoom);
+            createRoomButton.setOnClickListener(v -> showBottomDialog());
+
             fetchMyRooms(viewModel);
         }
 
@@ -101,10 +122,24 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
             if (rooms != null && !rooms.isEmpty()) {
                 adapter.updateRooms(rooms);
                 recyclerViewRooms.setVisibility(View.VISIBLE);
-                noRoomsText.setVisibility(View.GONE);
+                layoutNoRooms.setVisibility(View.GONE);
             } else {
                 recyclerViewRooms.setVisibility(View.GONE);
-                noRoomsText.setVisibility(View.VISIBLE);
+                layoutNoRooms.setVisibility(View.VISIBLE);
+            }
+        });
+
+        viewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                recyclerViewRooms.setVisibility(View.GONE);
+                layoutNoRooms.setVisibility(View.GONE);
+                layoutPreLoader.setVisibility(View.VISIBLE);
+                preloaderImage.setVisibility(View.VISIBLE);
+                preloaderImage.startAnimation(animation);
+            } else {
+                layoutPreLoader.setVisibility(View.GONE);
+                preloaderImage.clearAnimation();
+                preloaderImage.setVisibility(View.GONE);
             }
         });
 
@@ -156,6 +191,67 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
 
         otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
         otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+    }
+
+    private void showBottomDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_room, null);
+        dialog.setContentView(dialogView);
+
+        Button createRoomButton = dialogView.findViewById(R.id.btnSendRequest);
+        EditText roomNameEditText = dialogView.findViewById(R.id.input_room_name);
+
+        Observer<String> statusObserver = new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                if (status != null) {
+                    if (status.equals("Use another room name")) {
+                        roomNameEditText.setError(status);
+                    } else if (status.equals("Room successfully created")) {
+                        dialog.dismiss();
+                        Toast.makeText(requireContext(), "Room created successfully!", Toast.LENGTH_SHORT).show();
+                        viewModel.fetchTrainerRooms(getUserId());
+                    } else {
+                        Log.d("Error", "An error occurred: " + status);
+                    }
+                    viewModel.updateRoomCreationStatus(null);
+                }
+            }
+        };
+
+        viewModel.getRoomCreationStatus().observe(getViewLifecycleOwner(), statusObserver);
+
+        createRoomButton.setOnClickListener(v -> {
+            String roomName = roomNameEditText.getText().toString();
+            String roomCode = generateRoomCode();
+            int creatorId = getUserId();
+            String creatorUsername = spManager.getUsername();
+
+            if (!roomName.isEmpty()) {
+                CreateRoomRequest request = new CreateRoomRequest(roomName, roomCode, creatorId, creatorUsername);
+                viewModel.createRoom(request);
+            } else {
+                roomNameEditText.setError("Room name cannot be empty.");
+            }
+        });
+
+        dialog.setOnDismissListener(dialogInterface -> {
+            viewModel.getRoomCreationStatus().removeObserver(statusObserver);
+        });
+
+        dialog.show();
+    }
+
+    private static String generateRoomCode() {
+        Random random = new Random();
+
+        char firstLetter = (char) ('A' + random.nextInt(26));
+        char secondLetter = (char) ('A' + random.nextInt(26));
+
+        int digits = random.nextInt(10000);
+        String formattedDigits = String.format("%04d", digits);
+
+        return "" + firstLetter + secondLetter + formattedDigits;
     }
 
     private void navigateToRoomDetails(int roomId) {
