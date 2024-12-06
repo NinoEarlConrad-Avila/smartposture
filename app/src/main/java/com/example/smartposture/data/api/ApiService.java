@@ -75,6 +75,9 @@ public interface ApiService {
     @POST("room/rejectJoinRequest")
     Call<JoinRequestResponse> rejectJoinRequest(@Body JoinReqRequest joinRequest);
 
+    @POST("room/addTraineeRoom")
+    Call<ApiResponse> addTrainee(@Body JoinReqRequest request);
+
     @POST("room/removeRoomTrainee")
     Call<ApiResponse> removeTrainee(@Body JoinReqRequest request);
     

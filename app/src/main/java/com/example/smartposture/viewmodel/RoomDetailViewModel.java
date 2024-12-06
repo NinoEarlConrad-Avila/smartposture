@@ -96,4 +96,13 @@ public class RoomDetailViewModel extends ViewModel {
             }
         });
     }
+
+    public void addTrainee(int roomId, int userId) {
+        loadingStateLiveData.setValue(true);
+        roomDetailRepository.addTrainee(roomId, userId).observeForever(result -> {
+            if ("Success".equals(result)) {
+                fetchAvailableTrainees(roomId);
+            }
+        });
+    }
 }

@@ -313,7 +313,7 @@ public class RoomDetailFragment extends Fragment {
                     @Override
                     public void onAction(Trainee request) {
                         showConfirmationDialog("Add Trainee", "Are you sure you want to add this trainee?",
-                                () -> Toast.makeText(getContext(), "Trainee Added", Toast.LENGTH_SHORT).show());
+                                () -> roomViewModel.addTrainee(roomId, request.getId()));
                     }
                 }, true));
                 recyclerView.setVisibility(View.VISIBLE);
