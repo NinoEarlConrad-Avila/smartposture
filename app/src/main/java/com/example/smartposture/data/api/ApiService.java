@@ -16,6 +16,7 @@ import com.example.smartposture.data.response.RegisterResponse;
 import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 import com.example.smartposture.data.response.RoomResponse;
+import com.example.smartposture.data.response.RoomTraineesResponse;
 import com.example.smartposture.data.response.ValidateSessionResponse;
 import com.example.smartposture.data.response.WorkoutDetailResponse;
 import com.example.smartposture.data.response.WorkoutResponse;
@@ -58,6 +59,9 @@ public interface ApiService {
 
     @POST("room/getRoomJoinRequests")
     Call<JoinRequestResponse> getRoomJoinRequests(@Body JoinReqRequest joinRequest);
+
+    @POST("room/getRoomTrainees")
+    Call<RoomTraineesResponse> getRoomTrainees(@Body RoomDetailsRequest request);
 
     @POST("room/acceptJoinRequest")
     Call<JoinRequestResponse> acceptJoinRequest(@Body JoinReqRequest joinRequest);

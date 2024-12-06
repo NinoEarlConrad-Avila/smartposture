@@ -11,6 +11,7 @@ import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
+import com.example.smartposture.data.response.RoomTraineesResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -112,6 +113,27 @@ public class RoomDetailRepository {
             @Override
             public void onFailure(Call<JoinRequestResponse> call, Throwable t) {
                 liveData.postValue("Error: " + t.getMessage());
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<RoomTraineesResponse> fetchRoomTrainees(int roomId) {
+        MutableLiveData<RoomTraineesResponse> liveData = new MutableLiveData<>();
+        RoomDetailsRequest request = new RoomDetailsRequest(roomId);
+        apiService.getRoomTrainees(request).enqueue(new Callback<RoomTraineesResponse>() {
+            @Override
+            public void onResponse(Call<RoomTraineesResponse> call, Response<RoomTraineesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RoomTraineesResponse> call, Throwable t) {
+                liveData.postValue(null);
             }
         });
         return liveData;

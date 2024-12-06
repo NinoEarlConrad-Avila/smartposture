@@ -80,7 +80,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="5"
+            android:layout_weight="3"
             android:background="@drawable/bg_add_activity"
             android:layout_marginEnd="10dp"
             android:padding="5dp">
@@ -98,7 +98,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.5"
+            android:layout_weight="2"
             android:orientation="vertical"
             android:gravity="center"
             android:padding="5dp"
@@ -128,21 +128,44 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/viewJoinRequest"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2.5"
-            android:padding="10dp"
-            android:background="@drawable/bg_add_activity">
+            android:orientation="vertical"
+            >
 
-            <TextView
-                android:id="@+id/textViewJoinRequest"
+            <LinearLayout
+                android:id="@+id/viewJoinRequest"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/view_request"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="12sp"/>
+                android:layout_weight="2.5"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/bg_add_activity">
+                <TextView
+                    android:id="@+id/textViewJoinRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="View Requests"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/viewRoomTrainees"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/bg_add_activity">
+                <TextView
+                    android:id="@+id/textViewTrainees"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="View Trainees"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textSize="12sp"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

@@ -15,10 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,15 +28,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.JoinRequestAdapter;
+import com.example.smartposture.data.adapter.RoomTraineesAdapter;
 import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
+import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class RoomDetailFragment extends Fragment {
     private RoomDetailViewModel roomViewModel;
-    private LinearLayout viewJoinRequest;
+    private LinearLayout viewJoinRequest, viewRoomTrainees;
     private TextView roomName, roomCreator, roomCode;
+    private String dialogType;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,6 +64,7 @@ public class RoomDetailFragment extends Fragment {
         roomCreator = view.findViewById(R.id.roomCreatorTextView);
         roomCode = view.findViewById(R.id.roomCode);
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
+        viewRoomTrainees = view.findViewById(R.id.viewRoomTrainees);
 
         view.setVisibility(View.INVISIBLE);
         Dialog loadingDialog = createFullScreenLoadingDialog();
@@ -69,7 +75,13 @@ public class RoomDetailFragment extends Fragment {
         int roomId = requireArguments().getInt("room_id", -1);
 
         viewJoinRequest.setOnClickListener(v -> {
+            dialogType = "joinRequest";
             showJoinRequestDialog(roomId);
+        });
+
+        viewRoomTrainees.setOnClickListener(v -> {
+            dialogType = "roomTrainees";
+            showRoomTraineesDialog(roomId);
         });
 
         roomViewModel.fetchRoomDetails(roomId).observe(getViewLifecycleOwner(), response -> {
@@ -114,7 +126,7 @@ public class RoomDetailFragment extends Fragment {
     }
 
     private void showJoinRequestDialog(int roomId) {
-        Dialog dialog = createJoinRequestDialog();
+        Dialog dialog = createDialog();
 
         RelativeLayout layout = dialog.findViewById(R.id.preloaderLayout);
         RelativeLayout noRequest = dialog.findViewById(R.id.noJoinRequest);
@@ -173,10 +185,68 @@ public class RoomDetailFragment extends Fragment {
         dialog.show();
     }
 
-    private Dialog createJoinRequestDialog() {
+    private void showRoomTraineesDialog(int roomId) {
+        Dialog dialog = createDialog();
+
+        RelativeLayout layout = dialog.findViewById(R.id.preloaderLayout);
+        RelativeLayout noRequest = dialog.findViewById(R.id.noJoinRequest);
+        RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
+        ImageView preloaderImage = dialog.findViewById(R.id.preloaderImage);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        layout.setVisibility(View.VISIBLE);
+        preloaderImage.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        noRequest.setVisibility(View.GONE);
+
+        Animation animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
+        preloaderImage.startAnimation(animation);
+
+        RoomDetailViewModel viewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+
+        viewModel.fetchRoomTrainees(roomId).observe(getViewLifecycleOwner(), joinRequests -> {
+            if (joinRequests == null || joinRequests.isEmpty()) {
+                noRequest.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                recyclerView.setAdapter(new RoomTraineesAdapter(joinRequests, new RoomTraineesAdapter.OnItemActionListener() {
+                    @Override
+                    public void addTrainee(Trainee request) {
+                        showConfirmationDialog("Remove Trainee", "Are you sure you want to remove trainee in room?",
+                                () -> Toast.makeText(requireContext(), "Trainee Removed", Toast.LENGTH_SHORT).show());
+                    }
+                }));
+                recyclerView.setVisibility(View.VISIBLE);
+                noRequest.setVisibility(View.GONE);
+            }
+        });
+
+        viewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                recyclerView.setVisibility(View.GONE);
+                noRequest.setVisibility(View.GONE);
+                layout.setVisibility(View.VISIBLE);
+                preloaderImage.setVisibility(View.VISIBLE);
+                preloaderImage.startAnimation(animation);
+            } else {
+                layout.setVisibility(View.GONE);
+                preloaderImage.clearAnimation();
+                preloaderImage.setVisibility(View.GONE);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private Dialog createDialog() {
         Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_join_request);
+        if (dialogType.equals("joinRequest")){
+            dialog.setContentView(R.layout.dialog_join_request);
+        } else if (dialogType.equals("roomTrainees")){
+            dialog.setContentView(R.layout.dialog_room_trainees);
+        }
         dialog.setCancelable(true);
 
         if (dialog.getWindow() != null) {
@@ -220,5 +290,13 @@ public class RoomDetailFragment extends Fragment {
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void highlightButton(Button selectedBtn, Button otherBtn) {
+        selectedBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.teal));
+        selectedBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+        otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
+        otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
 }

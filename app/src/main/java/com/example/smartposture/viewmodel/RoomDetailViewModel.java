@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.repository.RoomDetailRepository;
 import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.response.RoomDetailsResponse;
@@ -15,6 +16,7 @@ public class RoomDetailViewModel extends ViewModel {
 
     private final RoomDetailRepository roomDetailRepository;
     private final MutableLiveData<List<JoinRequest>> joinRequestsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Trainee>> roomTraineesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
 
     public RoomDetailViewModel() {
@@ -42,6 +44,7 @@ public class RoomDetailViewModel extends ViewModel {
     }
 
     public void acceptJoinRequest(int roomId, int userId) {
+        loadingStateLiveData.setValue(true);
         roomDetailRepository.acceptJoinRequest(roomId, userId).observeForever(result -> {
             if ("Success".equals(result)) {
                 fetchJoinRequests(roomId);
@@ -50,10 +53,24 @@ public class RoomDetailViewModel extends ViewModel {
     }
 
     public void rejectJoinRequest(int roomId, int userId) {
+        loadingStateLiveData.setValue(true);
         roomDetailRepository.rejectJoinRequest(roomId, userId).observeForever(result -> {
             if ("Success".equals(result)) {
                 fetchJoinRequests(roomId);
             }
         });
+    }
+
+    public LiveData<List<Trainee>> fetchRoomTrainees(int roomId) {
+        loadingStateLiveData.setValue(true);
+        roomDetailRepository.fetchRoomTrainees(roomId).observeForever(response -> {
+            if (response != null && response.getTrainees() != null) {
+                roomTraineesLiveData.setValue(response.getTrainees());
+            } else {
+                roomTraineesLiveData.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+        return roomTraineesLiveData;
     }
 }
