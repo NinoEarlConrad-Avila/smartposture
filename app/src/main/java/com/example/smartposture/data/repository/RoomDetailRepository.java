@@ -9,6 +9,7 @@ import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
+import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 import com.example.smartposture.data.response.RoomTraineesResponse;
@@ -134,6 +135,31 @@ public class RoomDetailRepository {
             @Override
             public void onFailure(Call<RoomTraineesResponse> call, Throwable t) {
                 liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<String> removeTrainee(int roomId, int userId) {
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+        JoinReqRequest request = new JoinReqRequest(roomId, userId);
+        apiService.removeTrainee(request).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
+                        liveData.postValue("Success");
+                    } else {
+                        liveData.postValue(response.body().getMessage());
+                    }
+                } else {
+                    liveData.postValue("Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                liveData.postValue("Error: " + t.getMessage());
             }
         });
         return liveData;

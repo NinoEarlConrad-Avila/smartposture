@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -38,7 +37,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class RoomDetailFragment extends Fragment {
     private RoomDetailViewModel roomViewModel;
     private LinearLayout viewJoinRequest, viewRoomTrainees;
+    private RelativeLayout layout, noRequest;
+    private RecyclerView recyclerView;
+    private ImageView preloaderImage;
     private TextView roomName, roomCreator, roomCode;
+    private Animation animation;
     private String dialogType;
     @Nullable
     @Override
@@ -188,10 +191,12 @@ public class RoomDetailFragment extends Fragment {
     private void showRoomTraineesDialog(int roomId) {
         Dialog dialog = createDialog();
 
-        RelativeLayout layout = dialog.findViewById(R.id.preloaderLayout);
-        RelativeLayout noRequest = dialog.findViewById(R.id.noJoinRequest);
-        RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
-        ImageView preloaderImage = dialog.findViewById(R.id.preloaderImage);
+        layout = dialog.findViewById(R.id.preloaderLayout);
+        noRequest = dialog.findViewById(R.id.noJoinRequest);
+        recyclerView = dialog.findViewById(R.id.recyclerView);
+        preloaderImage = dialog.findViewById(R.id.preloaderImage);
+        Button viewTrainees = dialog.findViewById(R.id.trainees);
+        Button addTrainees = dialog.findViewById(R.id.addTrainees);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -200,41 +205,25 @@ public class RoomDetailFragment extends Fragment {
         recyclerView.setVisibility(View.GONE);
         noRequest.setVisibility(View.GONE);
 
-        Animation animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
+        animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
         preloaderImage.startAnimation(animation);
 
-        RoomDetailViewModel viewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+        roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
 
-        viewModel.fetchRoomTrainees(roomId).observe(getViewLifecycleOwner(), joinRequests -> {
-            if (joinRequests == null || joinRequests.isEmpty()) {
-                noRequest.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
-            } else {
-                recyclerView.setAdapter(new RoomTraineesAdapter(joinRequests, new RoomTraineesAdapter.OnItemActionListener() {
-                    @Override
-                    public void addTrainee(Trainee request) {
-                        showConfirmationDialog("Remove Trainee", "Are you sure you want to remove trainee in room?",
-                                () -> Toast.makeText(requireContext(), "Trainee Removed", Toast.LENGTH_SHORT).show());
-                    }
-                }));
-                recyclerView.setVisibility(View.VISIBLE);
-                noRequest.setVisibility(View.GONE);
-            }
+        highlightButton(viewTrainees, addTrainees);
+        fetchRoomTrainees(roomId);
+
+        viewTrainees.setOnClickListener(v -> {
+            highlightButton(viewTrainees, addTrainees);
+            fetchRoomTrainees(roomId);
         });
 
-        viewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
-            if (isLoading) {
-                recyclerView.setVisibility(View.GONE);
-                noRequest.setVisibility(View.GONE);
-                layout.setVisibility(View.VISIBLE);
-                preloaderImage.setVisibility(View.VISIBLE);
-                preloaderImage.startAnimation(animation);
-            } else {
-                layout.setVisibility(View.GONE);
-                preloaderImage.clearAnimation();
-                preloaderImage.setVisibility(View.GONE);
-            }
+        addTrainees.setOnClickListener(v -> {
+            highlightButton(addTrainees, viewTrainees);
+//            fetchRoomTrainees(roomId);
         });
+
+        loadingStateObserver();
 
         dialog.show();
     }
@@ -290,6 +279,43 @@ public class RoomDetailFragment extends Fragment {
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+    private void fetchRoomTrainees(int roomId){
+        roomViewModel.fetchRoomTrainees(roomId).observe(getViewLifecycleOwner(), roomTrainees -> {
+            if (roomTrainees == null || roomTrainees.isEmpty()) {
+                noRequest.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                recyclerView.setAdapter(new RoomTraineesAdapter(roomTrainees, new RoomTraineesAdapter.OnItemActionListener() {
+                    @Override
+                    public void removeTrainee(Trainee request) {
+                        showConfirmationDialog("Remove Trainee", "Are you sure you want to remove trainee in room?",
+                                () -> roomViewModel.removeTrainee(roomId, request.getId()));
+                    }
+                }));
+                recyclerView.setVisibility(View.VISIBLE);
+                noRequest.setVisibility(View.GONE);
+            }
+        });
+
+        loadingStateObserver();
+    }
+
+    private void loadingStateObserver(){
+        roomViewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                recyclerView.setVisibility(View.GONE);
+                noRequest.setVisibility(View.GONE);
+                layout.setVisibility(View.VISIBLE);
+                preloaderImage.setVisibility(View.VISIBLE);
+                preloaderImage.startAnimation(animation);
+            } else {
+                layout.setVisibility(View.GONE);
+                preloaderImage.clearAnimation();
+                preloaderImage.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void highlightButton(Button selectedBtn, Button otherBtn) {

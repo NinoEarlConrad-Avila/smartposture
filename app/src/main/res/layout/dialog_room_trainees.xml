@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/green"
             android:text="Trainees"
-            android:textSize="10sp"
+            android:textSize="8sp"
             android:textAllCaps="true"
             android:textColor="@color/white" />
 
@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/green"
             android:text="Add Trainees"
-            android:textSize="10sp"
+            android:textSize="8sp"
             android:textAllCaps="true"
             android:textColor="@color/white" />
     </LinearLayout>
@@ -75,7 +75,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No join request"
+                android:text="No Room Trainees"
                 />
         </RelativeLayout>
         <RelativeLayout

@@ -73,4 +73,13 @@ public class RoomDetailViewModel extends ViewModel {
         });
         return roomTraineesLiveData;
     }
+
+    public void removeTrainee(int roomId, int userId) {
+        loadingStateLiveData.setValue(true);
+        roomDetailRepository.removeTrainee(roomId, userId).observeForever(result -> {
+            if ("Success".equals(result)) {
+                fetchRoomTrainees(roomId);
+            }
+        });
+    }
 }

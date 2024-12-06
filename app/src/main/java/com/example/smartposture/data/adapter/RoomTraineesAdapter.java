@@ -20,7 +20,7 @@ public class RoomTraineesAdapter extends RecyclerView.Adapter<RoomTraineesAdapte
     private final RoomTraineesAdapter.OnItemActionListener listener;
 
     public interface OnItemActionListener {
-        void addTrainee(Trainee request);
+        void removeTrainee(Trainee request);
     }
 
     public RoomTraineesAdapter(List<Trainee> roomTrainees, RoomTraineesAdapter.OnItemActionListener listener) {
@@ -40,7 +40,7 @@ public class RoomTraineesAdapter extends RecyclerView.Adapter<RoomTraineesAdapte
         Trainee request = roomTrainees.get(position);
         holder.username.setText(request.getUsername());
 
-        holder.actionButton.setOnClickListener(v -> listener.addTrainee(request));
+        holder.actionButton.setOnClickListener(v -> listener.removeTrainee(request));
     }
 
     @Override
