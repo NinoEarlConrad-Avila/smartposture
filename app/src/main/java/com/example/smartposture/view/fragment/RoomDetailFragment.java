@@ -32,10 +32,11 @@ import com.example.smartposture.data.adapter.RoomTraineesAdapter;
 import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.model.Trainee;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class RoomDetailFragment extends Fragment {
+public class RoomDetailFragment extends BaseFragment {
     private RoomDetailViewModel roomViewModel;
     private LinearLayout viewJoinRequest, viewRoomTrainees;
     private RelativeLayout layout, noRequest;
@@ -44,6 +45,7 @@ public class RoomDetailFragment extends Fragment {
     private TextView roomName, roomCreator, roomCode;
     private Animation animation;
     private String dialogType;
+    private SharedPreferenceManager spManager;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,6 +71,14 @@ public class RoomDetailFragment extends Fragment {
         roomCode = view.findViewById(R.id.roomCode);
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
         viewRoomTrainees = view.findViewById(R.id.viewRoomTrainees);
+
+        View optionsTrainer = view.findViewById(R.id.optionsTrainer);
+        spManager = getSharedPreferenceManager();
+        String userType = spManager.getUserType();
+
+        if ("trainee".equalsIgnoreCase(userType)) {
+            optionsTrainer.setVisibility(View.GONE);
+        }
 
         view.setVisibility(View.INVISIBLE);
         Dialog loadingDialog = createFullScreenLoadingDialog();
