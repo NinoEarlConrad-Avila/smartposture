@@ -4,117 +4,113 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.smartposture.R;
-import com.example.smartposture.adapter.WorkoutCardAdapter;
-import com.example.smartposture.view.activity.MainActivity;
-import com.example.smartposture.viewmodel.CardViewModel;
+import com.example.smartposture.data.adapter.WorkoutAdapter;
+import com.example.smartposture.viewmodel.WorkoutViewModel;
+
+import java.util.ArrayList;
 
 public class WorkoutFragment extends Fragment {
-    private RecyclerView recyclerView;
-    private CardViewModel cardViewModel;
-    private WorkoutCardAdapter adapter;
-    LinearLayout squatCard;
-    LinearLayout pushupCard;
+
+    private WorkoutViewModel workoutsViewModel;
+    private WorkoutAdapter workoutAdapter;
+    private RelativeLayout layoutPreLoader, layoutNoWorkouts;
+    private ImageView preloaderImage;
+    private Animation bounceAnimation;
+    private RecyclerView workoutRecyclerView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
-        squatCard = view.findViewById(R.id.linearLayoutSquat);
-        pushupCard = view.findViewById(R.id.linearLayoutPushup);
 
-        squatCard.setEnabled(true);
-        pushupCard.setEnabled(true);
+        layoutPreLoader = view.findViewById(R.id.preloaderLayout);
+        preloaderImage = view.findViewById(R.id.preloaderImage);
+        layoutNoWorkouts = view.findViewById(R.id.noWorkout);
+        workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
 
-        squatCard.setOnClickListener(v -> {
-            squatCard.setEnabled(false);
-            pushupCard.setEnabled(false);
-            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
-                    "Squats",
-                    "squat",
-                    1,
-                    "A squat is a strength exercise in which the trainee lowers their hips from a standing position and then stands back up.",
-                    "1.Stand with feet shoulder-width apart, toes facing forward.\n2.Engage your core and hinge at the hips.\n3.Drive the hips back, bend at the knees and ankles, and press your knees slightly open.\n4.Sit down into a squat position, keeping your heels and toes on the ground, chest up, and shoulders back.\n5.Repeat the movement several times."
-            );
-            ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
-        });
+        bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
 
-        pushupCard.setOnClickListener(v -> {
-            squatCard.setEnabled(false);
-            pushupCard.setEnabled(false);
-            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
-                    "Push Up",
-                    "pushup",
-                    2,
-                    "A push-up is a common strength training exercise performed in a prone position, lying horizontal and face down, raising and lowering the body using the arms.",
-                    "1.Place your hands shoulder-width apart, body straight from head to heels, and engage your core.\n2.Slowly bend your elbows, lowering yourself until your chest nearly touches the ground.\n3.Press through your palms to lift your body back to the starting position, keeping your core tight.\n4.Perform the movement for your desired number of repetitions, maintaining proper form throughout."
-            );
-            ((MainActivity) requireActivity()).loadFragment(detailsFragment, true, null);
-        });
+        workoutAdapter = new WorkoutAdapter(new ArrayList<>(), this::navigateToWorkoutDetails);
+        workoutRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        workoutRecyclerView.setAdapter(workoutAdapter);
 
+        workoutsViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
 
+        showPreloader();
+        observeViewModel();
 
-
-//        recyclerView = view.findViewById(R.id.recyclerViewWorkoutCards);
-
-//        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
-//        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
-//
-//        adapter = new WorkoutCardAdapter(getActivity(), new ArrayList<>(), cardData -> {
-//            WorkoutDetailsStartFragment detailsFragment = WorkoutDetailsStartFragment.newInstance(
-//                    cardData.getTitle(),
-//                    cardData.getPath(),
-//                    cardData.getId(),
-//                    cardData.getDescription()
-//            );
-//
-//            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-//            transaction.replace(R.id.frag_workout, detailsFragment);
-//            transaction.addToBackStack(null);
-//            transaction.commit();
-//        });
-
-//        recyclerView.setAdapter(adapter);
-
-//        cardViewModel.getCardListLiveData().observe(getViewLifecycleOwner(), cardList -> {
-//            adapter.updateCardList(cardList);
-//        });
+        workoutsViewModel.fetchWorkouts();
 
         return view;
     }
-    @Override
-    public void onResume(){
-        super.onResume();
-        enableWorkoutCards();
+
+    private void observeViewModel() {
+        workoutsViewModel.getWorkoutsLiveData().observe(getViewLifecycleOwner(), workouts -> {
+            if (workouts != null && !workouts.isEmpty()) {
+                workoutAdapter.setWorkouts(workouts);
+                workoutRecyclerView.setVisibility(View.VISIBLE);
+                layoutNoWorkouts.setVisibility(View.GONE);
+            } else {
+                workoutRecyclerView.setVisibility(View.GONE);
+                layoutNoWorkouts.setVisibility(View.VISIBLE);
+            }
+            hidePreloader();
+        });
+
+        workoutsViewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                workoutRecyclerView.setVisibility(View.GONE);
+                layoutNoWorkouts.setVisibility(View.GONE);
+                showPreloader();
+            } else {
+                hidePreloader();
+            }
+        });
+
+        workoutsViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), errorMessage -> {
+            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            hidePreloader();
+            workoutRecyclerView.setVisibility(View.GONE);
+            layoutNoWorkouts.setVisibility(View.VISIBLE);
+        });
     }
 
-    public void enableWorkoutCards() {
-        if (squatCard != null) {
-            squatCard.setEnabled(true);
-        }
-        if (pushupCard != null) {
-            pushupCard.setEnabled(true);
-        }
+    private void showPreloader() {
+        layoutPreLoader.setVisibility(View.VISIBLE);
+        preloaderImage.startAnimation(bounceAnimation);
     }
-    private void navigateToFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getParentFragmentManager();
-        boolean fragmentPopped = fragmentManager.popBackStackImmediate(fragment.getClass().getName(), 0);
 
-        if (!fragmentPopped) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.frag_workout, fragment, "WorkoutFragment");
-            transaction.addToBackStack("WorkoutFragment");
-            transaction.commit();
-        }
+    private void hidePreloader() {
+        layoutPreLoader.setVisibility(View.GONE);
+        preloaderImage.clearAnimation();
+    }
+
+    private void navigateToWorkoutDetails(int workoutId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("workout_id", workoutId);
+
+        WorkoutDetailFragment fragment = new WorkoutDetailFragment();
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

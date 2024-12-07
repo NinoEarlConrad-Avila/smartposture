@@ -105,20 +105,35 @@
             >
 
             <RelativeLayout
+                android:id="@+id/noWorkout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:visibility="gone"
+                android:background="@android:color/transparent"
+                android:padding="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Workouts"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/preloaderLayout"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:gravity="center"
+                android:visibility="gone"
                 android:background="@android:color/transparent"
                 android:padding="15dp">
 
                 <ImageView
-                    android:id="@+id/progressBarLogo"
+                    android:id="@+id/preloaderImage"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/logo_sp"
-                    android:visibility="gone" />
-
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo_sp" />
             </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
