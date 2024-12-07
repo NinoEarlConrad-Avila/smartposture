@@ -84,5 +84,7 @@ public interface ApiService {
 
     @POST("room/requestJoinRoom")
     Call<ApiResponse> requestJoinRoom(@Body JoinRoomRequest request);
-    
+
+    @POST("room/cancelJoinRequest")
+    Call<ApiResponse> cancelJoinRequest(@Body JoinReqRequest request);
 }

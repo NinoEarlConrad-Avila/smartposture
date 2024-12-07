@@ -161,6 +161,31 @@ public class RoomRepository {
         });
     }
 
+    public void cancelJoinRequest(JoinReqRequest request, CreateRoomCallback callback) {
+        Call<ApiResponse> call = apiService.cancelJoinRequest(request);
+
+        call.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse apiResponse = response.body();
+                    if (apiResponse.getStatus() == 0) {
+                        callback.onFailure(apiResponse.getMessage());
+                    } else {
+                        callback.onSuccess(apiResponse.getMessage());
+                    }
+                } else {
+                    callback.onFailure("Failed to cancel join request: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                callback.onFailure("API call failed: " + t.getMessage());
+            }
+        });
+    }
+
     public interface CreateRoomCallback {
         void onSuccess(String message);
         void onFailure(String errorMessage);

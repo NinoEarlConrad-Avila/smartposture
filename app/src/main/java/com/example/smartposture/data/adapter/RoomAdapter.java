@@ -54,6 +54,20 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         return null;
     }
 
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public int getPosition(int roomId) {
+        List<Room> rooms = getRooms();
+        for (int i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getRoom_id() == roomId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @NonNull
     @Override
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -96,16 +110,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             if (mode.equals("myRooms")) {
                 actionButton.setText("View Room");
                 actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
-                actionButton.setEnabled(true);
             } else if (mode.equals("availableRooms")) {
                 if (room.getRequest_status() == 0) {
                     actionButton.setText("Requested");
                     actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
-                    actionButton.setEnabled(false);
                 } else {
                     actionButton.setText("Request Join");
                     actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.green_med));
-                    actionButton.setEnabled(true);
                 }
             }
 

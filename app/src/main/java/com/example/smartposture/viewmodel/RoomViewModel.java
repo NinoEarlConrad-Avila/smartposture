@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.repository.RoomRepository;
 import com.example.smartposture.data.request.CreateRoomRequest;
+import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.JoinRoomRequest;
 import com.example.smartposture.data.request.RoomRequest;
 
@@ -20,6 +21,7 @@ public class RoomViewModel extends ViewModel {
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private MutableLiveData<String> roomCreationStatus = new MutableLiveData<>();
     private MutableLiveData<String> joinRequestStatus = new MutableLiveData<>();
+    private MutableLiveData<String> cancelRequestStatus = new MutableLiveData<>();
 
     public LiveData<Room> getSelectedRoomLiveData() {
         return selectedRoomLiveData;
@@ -44,6 +46,9 @@ public class RoomViewModel extends ViewModel {
 
     public LiveData<String> getJoinRequestStatus() {
         return joinRequestStatus;
+    }
+    public LiveData<String> getCancelRequestStatus() {
+        return cancelRequestStatus;
     }
 
     public void updateRoomCreationStatus(String status) {
@@ -131,6 +136,21 @@ public class RoomViewModel extends ViewModel {
             @Override
             public void onFailure(String errorMessage) {
                 joinRequestStatus.postValue(errorMessage);
+            }
+        });
+    }
+
+    public void cancelJoinRequest(int roomId, int userId) {
+        JoinReqRequest request = new JoinReqRequest(roomId, userId);
+        repository.cancelJoinRequest(request, new RoomRepository.CreateRoomCallback() {
+            @Override
+            public void onSuccess(String message) {
+                cancelRequestStatus.postValue(message);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                cancelRequestStatus.postValue(errorMessage);
             }
         });
     }

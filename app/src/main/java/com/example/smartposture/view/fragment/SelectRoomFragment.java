@@ -109,18 +109,25 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
                 if ("myRooms".equals(mode)) {
                     viewModel.selectRoom(selectedRoom);
                 } else if ("availableRooms".equals(mode)) {
-                    showConfirmationDialog(
-                            "Confirm Join Request",
-                            "Are you sure you want to request to join this room?",
-                            () -> submitJoinRequest(selectedRoom.getRoom_id(), actionButton)
-                    );
+                    if (selectedRoom.getRequest_status() == 0) {
+                        showConfirmationDialog(
+                                "Cancel Join Request",
+                                "Are you sure you want to cancel your join request for this room?",
+                                () -> cancelJoinRequest(selectedRoom, actionButton)
+                        );
+                    } else {
+                        showConfirmationDialog(
+                                "Confirm Join Request",
+                                "Are you sure you want to request to join this room?",
+                                () -> submitJoinRequest(selectedRoom, actionButton)
+                        );
+                    }
                 }
             }
         } else {
             Toast.makeText(requireContext(), "Invalid Room ID", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void setupRecyclerView() {
         int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.recyclerViewSpacing);
@@ -153,6 +160,22 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
                 layoutPreLoader.setVisibility(View.GONE);
                 preloaderImage.clearAnimation();
                 preloaderImage.setVisibility(View.GONE);
+            }
+        });
+
+        viewModel.getJoinRequestStatus().observe(getViewLifecycleOwner(), response -> {
+            if ("Success".equals(response)) {
+                Toast.makeText(requireContext(), "Join request sent", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Failed to send join request: " + response, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.getCancelRequestStatus().observe(getViewLifecycleOwner(), response -> {
+            if ("Success".equals(response)) {
+                Toast.makeText(requireContext(), "Join request canceled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Failed to cancel join request: " + response, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -194,25 +217,38 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         }
     }
 
-    private void submitJoinRequest(int roomId, Button actionButton) {
+    private void submitJoinRequest(Room selectedRoom, Button actionButton) {
+        int roomId = selectedRoom.getRoom_id();
         int userId = getUserId();
         String username = spManager.getUsername();
 
         if (userId != -1) {
             viewModel.requestJoinRoom(userId, username, roomId);
-            viewModel.getJoinRequestStatus().observe(getViewLifecycleOwner(), response -> {
-                if (response.equals("Success")) {
-                    Toast.makeText(requireContext(), "Join request sent successfully.", Toast.LENGTH_SHORT).show();
 
-                    actionButton.setText("Requested");
-                    actionButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_dark_blue));
-                    actionButton.setEnabled(false);
-                } else {
-                    Toast.makeText(requireContext(), "Failed to send join request: " + response, Toast.LENGTH_SHORT).show();
-                }
-            });
+            actionButton.setText("Requested");
+            actionButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_dark_blue));
+
+            selectedRoom.setRequest_status(0);
+            adapter.notifyItemChanged(adapter.getPosition(selectedRoom.getRoom_id()));
         } else {
             Toast.makeText(requireContext(), "User not logged in. Failed to send join request.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void cancelJoinRequest(Room selectedRoom, Button actionButton) {
+        int roomId = selectedRoom.getRoom_id();
+        int userId = getUserId();
+
+        if (userId != -1) {
+            viewModel.cancelJoinRequest(roomId, userId);
+
+            actionButton.setText("Request Join");
+            actionButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_med));
+
+            selectedRoom.setRequest_status(1);
+            adapter.notifyItemChanged(adapter.getPosition(selectedRoom.getRoom_id()));
+        } else {
+            Toast.makeText(requireContext(), "User not logged in. Failed to cancel join request.", Toast.LENGTH_SHORT).show();
         }
     }
 
