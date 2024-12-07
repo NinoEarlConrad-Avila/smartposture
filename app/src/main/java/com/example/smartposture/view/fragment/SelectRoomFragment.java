@@ -1,10 +1,14 @@
 package com.example.smartposture.view.fragment;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -12,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -97,11 +102,19 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
     }
 
     @Override
-    public void onRoomClick(int roomId, String mode) {
+    public void onRoomClick(int roomId, String mode, Button actionButton) {
         if (roomId != -1) {
             Room selectedRoom = adapter.getRoomById(roomId);
             if (selectedRoom != null) {
-                viewModel.selectRoom(selectedRoom);
+                if ("myRooms".equals(mode)) {
+                    viewModel.selectRoom(selectedRoom);
+                } else if ("availableRooms".equals(mode)) {
+                    showConfirmationDialog(
+                            "Confirm Join Request",
+                            "Are you sure you want to request to join this room?",
+                            () -> submitJoinRequest(selectedRoom.getRoom_id(), actionButton)
+                    );
+                }
             }
         } else {
             Toast.makeText(requireContext(), "Invalid Room ID", Toast.LENGTH_SHORT).show();
@@ -111,7 +124,7 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
 
     private void setupRecyclerView() {
         int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.recyclerViewSpacing);
-        adapter = new RoomAdapter(this);
+        adapter = new RoomAdapter(this, getContext());
         recyclerViewRooms.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewRooms.setAdapter(adapter);
         recyclerViewRooms.addItemDecoration(new AdditionalSpace(spaceInPixels));
@@ -181,6 +194,28 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         }
     }
 
+    private void submitJoinRequest(int roomId, Button actionButton) {
+        int userId = getUserId();
+        String username = spManager.getUsername();
+
+        if (userId != -1) {
+            viewModel.requestJoinRoom(userId, username, roomId);
+            viewModel.getJoinRequestStatus().observe(getViewLifecycleOwner(), response -> {
+                if (response.equals("Success")) {
+                    Toast.makeText(requireContext(), "Join request sent successfully.", Toast.LENGTH_SHORT).show();
+
+                    actionButton.setText("Requested");
+                    actionButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_dark_blue));
+                    actionButton.setEnabled(false);
+                } else {
+                    Toast.makeText(requireContext(), "Failed to send join request: " + response, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(requireContext(), "User not logged in. Failed to send join request.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private int getUserId() {
         return spManager.getUserId();
     }
@@ -238,6 +273,37 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         dialog.setOnDismissListener(dialogInterface -> {
             viewModel.getRoomCreationStatus().removeObserver(statusObserver);
         });
+
+        dialog.show();
+    }
+
+    private void showConfirmationDialog(String title, String message, Runnable onConfirm) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.setContentView(R.layout.dialog_confirmation);
+        dialog.setCancelable(true);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.5f);
+        }
+
+        TextView titleTextView = dialog.findViewById(R.id.alertTitle);
+        TextView messageTextView = dialog.findViewById(R.id.alertMessage);
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            onConfirm.run();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }

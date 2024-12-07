@@ -1,5 +1,6 @@
 package com.example.smartposture.data.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
@@ -21,12 +23,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private static String mode = "myRooms";
     private List<Room> rooms;
 
+    private final Context context;
+
     public interface OnRoomClickListener {
-        void onRoomClick(int roomId, String mode);
+        void onRoomClick(int roomId, String mode, Button actionButton);
     }
 
-    public RoomAdapter(OnRoomClickListener onRoomClickListener) {
+    public RoomAdapter(OnRoomClickListener onRoomClickListener, Context context) {
         this.onRoomClickListener = onRoomClickListener;
+        this.context = context;
         rooms = new ArrayList<>();
     }
 
@@ -54,7 +59,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_room, parent, false);
-        return new RoomViewHolder(view);
+        return new RoomViewHolder(view, context);
     }
 
     @Override
@@ -62,7 +67,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         Room room = rooms.get(position);
         if (room != null) {
             holder.bind(room);
-            holder.itemView.setOnClickListener(v -> onRoomClickListener.onRoomClick(room.getRoom_id(), mode));
         }
     }
 
@@ -75,9 +79,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         private final TextView roomNameTextView;
         private final TextView roomCreatorTextView;
         private Button actionButton;
+        private final Context context;
 
-        public RoomViewHolder(@NonNull View itemView) {
+        public RoomViewHolder(@NonNull View itemView, Context context) {
             super(itemView);
+            this.context = context;
             roomNameTextView = itemView.findViewById(R.id.roomName);
             roomCreatorTextView = itemView.findViewById(R.id.roomCreator);
             actionButton = itemView.findViewById(R.id.roomActionButton);
@@ -89,19 +95,23 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
             if (mode.equals("myRooms")) {
                 actionButton.setText("View Room");
+                actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
+                actionButton.setEnabled(true);
             } else if (mode.equals("availableRooms")) {
-                actionButton.setText("Request Join");
+                if (room.getRequest_status() == 0) {
+                    actionButton.setText("Requested");
+                    actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
+                    actionButton.setEnabled(false);
+                } else {
+                    actionButton.setText("Request Join");
+                    actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.green_med));
+                    actionButton.setEnabled(true);
+                }
             }
 
             actionButton.setOnClickListener(v -> {
-                if (mode.equals("myRooms")) {
-                    if (onRoomClickListener != null) {
-                        onRoomClickListener.onRoomClick(room.getRoom_id(), mode);
-                    }
-                } else if (mode.equals("availableRooms")) {
-                    if (onRoomClickListener != null) {
-                        onRoomClickListener.onRoomClick(room.getRoom_id(), mode);
-                    }
+                if (onRoomClickListener != null) {
+                    onRoomClickListener.onRoomClick(room.getRoom_id(), mode, actionButton);
                 }
             });
         }

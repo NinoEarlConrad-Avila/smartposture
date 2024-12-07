@@ -7,12 +7,15 @@ public class Room {
     private int room_creator;
     private String creator_username;
 
-    public Room(int room_id, String room_name, String room_code, int room_creator, String creator_username) {
+    private int request_status;
+
+    public Room(int room_id, String room_name, String room_code, int room_creator, String creator_username, int request_status) {
         this.room_id = room_id;
         this.room_name = room_name;
         this.room_code = room_code;
         this.room_creator = room_creator;
         this.creator_username = creator_username;
+        this.request_status = request_status;
     }
 
     public Room(int room_id, String room_name, String room_code){
@@ -59,5 +62,13 @@ public class Room {
 
     public void setCreator_username(String creator_username) {
         this.creator_username = creator_username;
+    }
+
+    public int getRequest_status() {
+        return request_status;
+    }
+
+    public void setRequest_status(int request_status) {
+        this.request_status = request_status;
     }
 }

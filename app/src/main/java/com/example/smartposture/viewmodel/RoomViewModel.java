@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.repository.RoomRepository;
 import com.example.smartposture.data.request.CreateRoomRequest;
+import com.example.smartposture.data.request.JoinRoomRequest;
 import com.example.smartposture.data.request.RoomRequest;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class RoomViewModel extends ViewModel {
     private final MutableLiveData<List<Room>> roomsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private MutableLiveData<String> roomCreationStatus = new MutableLiveData<>();
+    private MutableLiveData<String> joinRequestStatus = new MutableLiveData<>();
 
     public LiveData<Room> getSelectedRoomLiveData() {
         return selectedRoomLiveData;
@@ -38,6 +40,10 @@ public class RoomViewModel extends ViewModel {
 
     public LiveData<String> getRoomCreationStatus() {
         return roomCreationStatus;
+    }
+
+    public LiveData<String> getJoinRequestStatus() {
+        return joinRequestStatus;
     }
 
     public void updateRoomCreationStatus(String status) {
@@ -110,6 +116,21 @@ public class RoomViewModel extends ViewModel {
             public void onFailure(String errorMessage) {
                 errorLiveData.postValue(errorMessage);
                 loadingStateLiveData.setValue(false);
+            }
+        });
+    }
+
+    public void requestJoinRoom(int userId, String username, int roomId) {
+        JoinRoomRequest request = new JoinRoomRequest(userId, username, roomId);
+        repository.requestJoinRoom(request, new RoomRepository.CreateRoomCallback() {
+            @Override
+            public void onSuccess(String message) {
+                joinRequestStatus.postValue(message);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                joinRequestStatus.postValue(errorMessage);
             }
         });
     }
