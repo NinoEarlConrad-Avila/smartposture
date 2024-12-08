@@ -33,6 +33,7 @@ import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpace;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -354,6 +355,14 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         String formattedDigits = String.format("%04d", digits);
 
         return "" + firstLetter + secondLetter + formattedDigits;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+        }
     }
 
     private void navigateToRoomDetails(int roomId) {

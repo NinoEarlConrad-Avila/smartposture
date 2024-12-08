@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,9 +44,7 @@ public class NotificationFragment extends BaseFragment {
         notificationType = requireArguments().getString("notification_type", "");
 
         if (getActivity() != null) {
-            if (notificationType.equals("user") || notificationType.equals("room")) {
-                ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
-            }
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
 
         spManager = getSharedPreferenceManager();

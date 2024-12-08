@@ -44,14 +44,11 @@ public class RoomDetailFragment extends BaseFragment {
     private Animation animation;
     private String dialogType;
     private SharedPreferenceManager spManager;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room, container, false);
-
-        if (getActivity() != null) {
-            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
-        }
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
             new OnBackPressedCallback(true) {
@@ -112,10 +109,18 @@ public class RoomDetailFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (getActivity() != null) {
-            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
     }
 

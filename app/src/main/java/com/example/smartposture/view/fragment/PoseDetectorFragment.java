@@ -237,10 +237,18 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (getActivity() != null) {
-            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
     }
 

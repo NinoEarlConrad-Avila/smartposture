@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
 import java.util.ArrayList;
@@ -128,6 +129,14 @@ public class HomeFragment extends BaseFragment {
                 .replace(R.id.container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+        }
     }
 
     private void navigateToNotification() {

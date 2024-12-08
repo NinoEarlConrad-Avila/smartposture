@@ -164,6 +164,14 @@ public class WorkoutDetailFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (getActivity() != null) {

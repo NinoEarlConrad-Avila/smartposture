@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "UserDetails";
     private SharedPreferenceManager sharedPreferenceManager;
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment(), false, addBundle());
         }
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_home) {
                 loadFragment(new HomeFragment(), false, addBundle());
@@ -82,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
         transaction.commit();
+
+        setNavBarVisibilityForFragment(fragment);
     }
 
     private Bundle addBundle() {
@@ -108,9 +112,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setBottomNavVisibility(int visibility) {
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        if (bottomNav != null) {
-            bottomNav.setVisibility(visibility);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setVisibility(visibility);
         }
     }
+
+    public void setNavBarVisibilityForFragment(Fragment fragment) {
+        if (fragment instanceof HomeFragment || fragment instanceof SelectRoomFragment ||
+                fragment instanceof WorkoutFragment || fragment instanceof ProfileFragment) {
+            setBottomNavVisibility(View.VISIBLE); // Show navbar
+        } else {
+            setBottomNavVisibility(View.GONE); // Hide navbar
+        }
+    }
+
 }
