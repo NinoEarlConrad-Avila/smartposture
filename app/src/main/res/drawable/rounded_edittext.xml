@@ -8,5 +8,5 @@
         android:color="#000000" />
 
     <!-- Set the background color (transparent or a specific color) -->
-    <solid android:color="#6D91C373" />
+    <solid android:color="@color/white" />
 </shape>

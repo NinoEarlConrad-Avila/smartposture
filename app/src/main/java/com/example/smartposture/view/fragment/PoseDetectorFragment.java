@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.smartposture.R;
 import com.example.smartposture.posedetector.GraphicOverlay;
 import com.example.smartposture.posedetector.classification.PoseClassifierProcessor;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.HomeViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class PoseDetectorFragment extends Fragment {
+public class PoseDetectorFragment extends BaseFragment {
     private static final String TAG = "PoseDetectorFragment";
     private static final int PERMISSION_REQUESTS = 1;
 
@@ -72,6 +73,10 @@ public class PoseDetectorFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pose_detector, container, false);
+
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
 
         ImageButton returnBtn = view.findViewById(R.id.returnBtn);
         previewView = view.findViewById(R.id.previewView);
@@ -234,15 +239,11 @@ public class PoseDetectorFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (poseClassifierProcessor != null) {
-            poseClassifierProcessor.cleanup();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
         }
-        if (handlerThread != null) {
-            handlerThread.quitSafely();
-        }
-        BottomNavigationView bottomNavigation = requireActivity().findViewById(R.id.bottom_navigation);
-        bottomNavigation.setVisibility(View.VISIBLE);
     }
+
     public void showBadPosturePopup(String alert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Posture Alert");

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.StepsAdapter;
 import com.example.smartposture.data.model.WorkoutDetail;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutDetailViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -44,10 +45,7 @@ public class WorkoutDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_workout_detail, container, false);
 
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.GONE);
-            }
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
 
         // Initialize views
@@ -68,6 +66,8 @@ public class WorkoutDetailFragment extends Fragment {
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         stepsRecyclerView.setNestedScrollingEnabled(false);
         stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        startButton.setOnClickListener(v -> navigateToPoseDetector(workoutName.getText().toString().toLowerCase()));
 
         // Get the workout ID from arguments and load data
         int workoutId = requireArguments().getInt("workout_id", -1);
@@ -166,12 +166,22 @@ public class WorkoutDetailFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.VISIBLE);
-            }
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
         }
+    }
+
+    private void navigateToPoseDetector(String name) {
+        Bundle bundle = new Bundle();
+        bundle.putString("exer", name);
+
+        PoseDetectorFragment fragment = new PoseDetectorFragment();
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

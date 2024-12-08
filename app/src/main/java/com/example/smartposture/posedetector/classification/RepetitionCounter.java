@@ -71,9 +71,9 @@ public class RepetitionCounter {
     if (poseConfidence < exitThreshold) {
       numRepeats++;
       if(type != null && type.trim().equals("pushup")){
-        homeViewModel.incrementPushupCount();
+//        homeViewModel.incrementPushupCount();
       }else if(type != null && type.trim().equals("squat")){
-        homeViewModel.incrementSquatCount();
+//        homeViewModel.incrementSquatCount();
       }
 
       poseEntered = false;

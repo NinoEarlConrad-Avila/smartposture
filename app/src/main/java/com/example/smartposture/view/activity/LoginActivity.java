@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.view.fragment.WorkoutDetailFragment;
 import com.example.smartposture.viewmodel.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity {
@@ -25,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView registerTextView;
 
     private LoginViewModel loginViewModel;
-
+    private Animation animation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,10 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.btnLogin);
         registerTextView = findViewById(R.id.txtSignUp);
+
+        ImageView logo = findViewById(R.id.logo);
+        animation = AnimationUtils.loadAnimation(this, R.anim.logo_bounce);
+        logo.startAnimation(animation);
     }
 
     private void setupViewModel() {
