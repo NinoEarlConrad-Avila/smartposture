@@ -7,6 +7,7 @@ import com.example.smartposture.data.request.LoginRequest;
 import com.example.smartposture.data.request.LogoutRequest;
 import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
+import com.example.smartposture.data.request.RoomIdRequest;
 import com.example.smartposture.data.request.RoomRequest;
 import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
@@ -96,4 +97,7 @@ public interface ApiService {
     // Notification API endpoints
     @POST("notif/getUserNotifications")
     Call<NotificationResponse> getUserNotification(@Body UserIdRequest request);
+
+    @POST("notif/getRoomNotifications")
+    Call<NotificationResponse> getRoomNotification(@Body RoomIdRequest request);
 }

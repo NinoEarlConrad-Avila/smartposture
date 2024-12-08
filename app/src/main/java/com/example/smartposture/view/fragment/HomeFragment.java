@@ -131,7 +131,11 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void navigateToNotification() {
+        Bundle bundle = new Bundle();
+        bundle.putString("notification_type", "user");
+
         NotificationFragment fragment = new NotificationFragment();
+        fragment.setArguments(bundle);
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()

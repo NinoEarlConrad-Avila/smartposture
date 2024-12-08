@@ -15,13 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,15 +31,15 @@ import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class RoomDetailFragment extends BaseFragment {
     private RoomDetailViewModel roomViewModel;
     private LinearLayout viewJoinRequest, viewRoomTrainees;
     private RelativeLayout layout, noRequest;
     private RecyclerView recyclerView;
-    private ImageView preloaderImage;
+    private ImageView preloaderImage, notification;
     private TextView roomName, roomCreator, roomCode;
     private Animation animation;
     private String dialogType;
@@ -52,10 +50,7 @@ public class RoomDetailFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_room, container, false);
 
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.GONE);
-            }
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
@@ -71,6 +66,7 @@ public class RoomDetailFragment extends BaseFragment {
         roomCode = view.findViewById(R.id.roomCode);
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
         viewRoomTrainees = view.findViewById(R.id.viewRoomTrainees);
+        notification = view.findViewById(R.id.notification);
 
         View optionsTrainer = view.findViewById(R.id.optionsTrainer);
         spManager = getSharedPreferenceManager();
@@ -87,6 +83,10 @@ public class RoomDetailFragment extends BaseFragment {
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
 
         int roomId = requireArguments().getInt("room_id", -1);
+
+        notification.setOnClickListener(v -> {
+            navigateToNotification(roomId);
+        });
 
         viewJoinRequest.setOnClickListener(v -> {
             dialogType = "joinRequest";
@@ -115,10 +115,7 @@ public class RoomDetailFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.VISIBLE);
-            }
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
         }
     }
 
@@ -356,5 +353,20 @@ public class RoomDetailFragment extends BaseFragment {
 
         otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
         otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+    }
+
+    private void navigateToNotification(int roomId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("notification_type", "room");
+        bundle.putInt("room_id", roomId);
+
+        NotificationFragment fragment = new NotificationFragment();
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
     }
 }

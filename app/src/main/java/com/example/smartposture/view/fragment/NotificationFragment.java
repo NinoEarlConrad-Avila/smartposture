@@ -1,6 +1,7 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,8 +19,8 @@ import android.widget.RelativeLayout;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.NotificationAdapter;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.NotificationViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ public class NotificationFragment extends BaseFragment {
     private Animation bounceAnimation;
     private RecyclerView notificationRecyclerView;
     private SharedPreferenceManager spManager;
-    private int userId;
+    private String notificationType;
 
     @Nullable
     @Override
@@ -39,15 +40,15 @@ public class NotificationFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
+        notificationType = requireArguments().getString("notification_type", "");
+
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.GONE);
+            if (notificationType.equals("user") || notificationType.equals("room")) {
+                ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
             }
         }
 
         spManager = getSharedPreferenceManager();
-        userId = spManager.getUserId();
 
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
         preloaderImage = view.findViewById(R.id.preloaderImage);
@@ -64,7 +65,13 @@ public class NotificationFragment extends BaseFragment {
         notificationRecyclerView.setAdapter(notificationAdapter);
 
         observeViewModel();
-        fetchNotifications();
+        if(notificationType.equals("user")){
+            int userId = spManager.getUserId();
+            fetchUserNotifications(userId);
+        }else if(notificationType.equals("room")){
+            int roomId = requireArguments().getInt("room_id", -1);
+            fetchRoomNotifications(roomId);
+        }
 
         return view;
     }
@@ -87,20 +94,36 @@ public class NotificationFragment extends BaseFragment {
                 layoutNoNotifications.setVisibility(View.VISIBLE);
             }
         });
+
+        notificationViewModel.getRoomNotifications().observe(getViewLifecycleOwner(), notifications -> {
+            if (notifications != null && !notifications.isEmpty()) {
+                notificationAdapter = new NotificationAdapter(notifications);
+                notificationRecyclerView.setAdapter(notificationAdapter);
+                notificationRecyclerView.setVisibility(View.VISIBLE);
+                layoutNoNotifications.setVisibility(View.GONE);
+            } else {
+                notificationRecyclerView.setVisibility(View.GONE);
+                layoutNoNotifications.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
-    private void fetchNotifications() {
+    private void fetchUserNotifications(int userId) {
         notificationViewModel.fetchUserNotification(userId);
+    }
+
+    private void fetchRoomNotifications(int roomId) {
+        notificationViewModel.fetchRoomNotification(roomId);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         if (getActivity() != null) {
-            BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNav != null) {
-                bottomNav.setVisibility(View.VISIBLE);
+            if (notificationType.equals("room")){
+                ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+            }else if (notificationType.equals("user")){
+                ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
             }
         }
     }

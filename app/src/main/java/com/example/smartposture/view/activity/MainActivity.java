@@ -106,4 +106,11 @@ public class MainActivity extends AppCompatActivity {
 //        snackbar.setAction("OK", v -> snackbar.dismiss());
         snackbar.show();
     }
+
+    public void setBottomNavVisibility(int visibility) {
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        if (bottomNav != null) {
+            bottomNav.setVisibility(visibility);
+        }
+    }
 }

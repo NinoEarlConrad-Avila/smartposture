@@ -14,6 +14,7 @@ public class NotificationViewModel extends ViewModel {
     private final NotificationRepository notificationRepository;
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Notification>> userNotificationLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Notification>> roomNotificationLiveData = new MutableLiveData<>();
     public NotificationViewModel() {
         notificationRepository = new NotificationRepository();
     }
@@ -25,6 +26,11 @@ public class NotificationViewModel extends ViewModel {
 
         return userNotificationLiveData;
     }
+    public LiveData<List<Notification>> getRoomNotifications(){
+
+        return roomNotificationLiveData;
+    }
+
     public void fetchUserNotification(int userId) {
         loadingStateLiveData.setValue(true);
         notificationRepository.fetchUserNotifications(userId).observeForever(response -> {
@@ -32,6 +38,18 @@ public class NotificationViewModel extends ViewModel {
                 userNotificationLiveData.setValue(response.getNotifications());
             } else {
                 userNotificationLiveData.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void fetchRoomNotification(int roomId) {
+        loadingStateLiveData.setValue(true);
+        notificationRepository.fetchRoomNotifications(roomId).observeForever(response -> {
+            if (response != null && response.getNotifications() != null) {
+                roomNotificationLiveData.setValue(response.getNotifications());
+            } else {
+                roomNotificationLiveData.setValue(new ArrayList<>());
             }
             loadingStateLiveData.setValue(false);
         });
