@@ -8,11 +8,13 @@ import com.example.smartposture.data.request.LogoutRequest;
 import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.request.RoomRequest;
+import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
 import com.example.smartposture.data.request.WorkoutDetailRequest;
 import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.LoginResponse;
 import com.example.smartposture.data.response.LogoutResponse;
+import com.example.smartposture.data.response.NotificationResponse;
 import com.example.smartposture.data.response.RegisterResponse;
 import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
@@ -28,6 +30,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiService {
+    // Auth API endpoints
     @POST("register")
     Call<RegisterResponse> registerUser(@Body RegisterRequest registerRequest);
 
@@ -40,12 +43,14 @@ public interface ApiService {
     @POST("logout")
     Call<LogoutResponse> logoutUser(@Body LogoutRequest request);
 
+    // Home API endpoints
     @GET ("home/getWorkouts")
     Call<WorkoutResponse> getWorkouts();
 
     @POST("home/getWorkoutDetail")
     Call<WorkoutDetailResponse> getWorkoutDetail(@Body WorkoutDetailRequest workoutDetailRequest);
 
+    // Room API endpoints
     @POST("room/getTraineeRooms")
     Call<RoomResponse> getTraineeRooms(@Body RoomRequest roomRequest);
 
@@ -87,4 +92,8 @@ public interface ApiService {
 
     @POST("room/cancelJoinRequest")
     Call<ApiResponse> cancelJoinRequest(@Body JoinReqRequest request);
+
+    // Notification API endpoints
+    @POST("notif/getUserNotifications")
+    Call<NotificationResponse> getUserNotification(@Body UserIdRequest request);
 }

@@ -31,7 +31,7 @@ public class HomeFragment extends BaseFragment {
     private WorkoutAdapter workoutAdapter;
     private TextView usernameTextView;
     private RelativeLayout layoutPreLoader, layoutNoWorkouts;
-    private ImageView preloaderImage;
+    private ImageView preloaderImage, notification;
     private Animation bounceAnimation;
     private SharedPreferenceManager spManager;
     private RecyclerView workoutRecyclerView;
@@ -46,6 +46,7 @@ public class HomeFragment extends BaseFragment {
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
         preloaderImage = view.findViewById(R.id.preloaderImage);
         layoutNoWorkouts = view.findViewById(R.id.noWorkout);
+        notification = view.findViewById(R.id.notification);
 
         bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
 
@@ -60,6 +61,8 @@ public class HomeFragment extends BaseFragment {
 
         showPreloader();
         observeViewModel();
+
+        notification.setOnClickListener(v -> navigateToNotification());
 
         workoutsViewModel.fetchWorkouts();
 
@@ -124,6 +127,16 @@ public class HomeFragment extends BaseFragment {
                 .beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack(null)
+                .commit();
+    }
+
+    private void navigateToNotification() {
+        NotificationFragment fragment = new NotificationFragment();
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("HomeFragment")
                 .commit();
     }
 }
