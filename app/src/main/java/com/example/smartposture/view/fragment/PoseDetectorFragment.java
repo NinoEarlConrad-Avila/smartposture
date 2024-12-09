@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.smartposture.R;
 import com.example.smartposture.posedetector.GraphicOverlay;
 import com.example.smartposture.posedetector.classification.PoseClassifierProcessor;
+import com.example.smartposture.posedetector.classification.PoseCorrection;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.HomeViewModel;
 import com.google.android.gms.tasks.Task;
@@ -57,9 +58,9 @@ import java.util.concurrent.ExecutionException;
 public class PoseDetectorFragment extends BaseFragment {
     private static final String TAG = "PoseDetectorFragment";
     private static final int PERMISSION_REQUESTS = 1;
-
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
+    private PoseCorrection poseCorrection;
     private GraphicOverlay graphicOverlay;
     private PoseDetector poseDetector;
     private PoseClassifierProcessor poseClassifierProcessor;
@@ -89,6 +90,8 @@ public class PoseDetectorFragment extends BaseFragment {
                 .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
                 .build();
         poseDetector = PoseDetection.getClient(options);
+
+        poseCorrection = new PoseCorrection(requireContext(),"pose/pose_landmarks2.csv");
 
         handlerThread = new HandlerThread("PoseClassifierProcessorThread");
         handlerThread.start();
@@ -176,6 +179,7 @@ public class PoseDetectorFragment extends BaseFragment {
                                     if (poseClassifierProcessor != null && runClassification) {
                                         handler.post(() -> {
                                             classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
+                                            poseCorrection.generateGuidance(pose);
                                             requireActivity().runOnUiThread(() -> {
                                                 // Adjust based on back camera flip
                                                 graphicOverlay.setImageSourceInfo(imageProxy.getHeight(), imageProxy.getWidth(), !isBackCamera);

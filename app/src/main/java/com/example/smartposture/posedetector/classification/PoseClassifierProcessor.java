@@ -63,6 +63,8 @@ public class PoseClassifierProcessor {
   private String lastRepResult;
   private HomeViewModel homeViewModel;
   private String type;
+  private ArrayList<Float> scores = new ArrayList<>(); // Acts as a stack to hold scores
+  boolean repetitionCompleted = false;
   private Context context;
 
 
@@ -156,7 +158,6 @@ public class PoseClassifierProcessor {
         PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
         PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
 
-
         if (rightHip != null && rightKnee != null && rightAnkle != null && leftHip != null && leftKnee != null && leftAnkle != null) {
           float[] rightHipCoords = {rightHip.getPosition3D().getX(), rightHip.getPosition3D().getY(), rightHip.getPosition3D().getZ()};
           float[] rightKneeCoords = {rightKnee.getPosition3D().getX(), rightKnee.getPosition3D().getY(), rightKnee.getPosition3D().getZ()};
@@ -173,31 +174,41 @@ public class PoseClassifierProcessor {
 
           // Calculate mean angle
           float kneeAngle = (rightKneeAngle + leftKneeAngle) / 2;
+          if (isSquattingDown) {
+            // Update the lowest squat angle while squatting down
+            lowestSquatAngle = Math.min(lowestSquatAngle, kneeAngle);
+          } else {
+            // Evaluate squat once transitioning up
+            if (lowestSquatAngle != Float.MAX_VALUE) { // Ensure a squat phase occurred
+              float scoreToAdd = 0;
 
-          // Check if the angle meets the squat threshold (e.g., 30 degrees)
-          // Determine if squatting down or up
-          if (!isSquattingDown) {
-            lowestSquatAngle = Float.MAX_VALUE;
-          }else{
-            if (kneeAngle < lowestSquatAngle) {
-              lowestSquatAngle = kneeAngle;
-            }
-//            Log.d("Squat Posture:", "Lowest Angle: " + lowestSquatAngle);
-            // Check for bad posture based on knee angle
-            if (lowestSquatAngle > SQUAT_DOWN_ANGLE_THRESHOLD && kneeAngle > lowestSquatAngle + 20) {
-              badPostureDetected = true;
-              if (!squatlower.isPlaying()) {
-                squatlower.start();
+              if (lowestSquatAngle > 90) {
+                scoreToAdd = 0.25f;
+              } else if (lowestSquatAngle <= 90 && lowestSquatAngle >= 50) {
+                scoreToAdd = 0.5f;
+              } else if (lowestSquatAngle < 50) {
+                scoreToAdd = 1f;
               }
-            }else if (lowestSquatAngle < SQUAT_DOWN_ANGLE_THRESHOLD){
-              badPostureDetected = false;
+              // Only add the score once per repetition
+
+              if (!repetitionCompleted) {
+                // Add score to list
+                if (scores.isEmpty()) {
+                  scores.add(0f);  // Initialize the total score if the list is empty
+                }
+                scores.add(scoreToAdd);
+
+                // Update total score
+//              float totalScore = scores.stream().reduce(0f, Float::sum);
+                scores.set(0, scores.get(0) + scoreToAdd);
+                result.add(String.format(Locale.US, "Score for repetition %.2f: ", scores.get(0)));
+
+                // Mark the repetition as completed
+                repetitionCompleted = true;
+              }
             }
-          }
-          if(badPostureDetected){
-            result.add("Bad Posture: Squat Lower");
           }
         }
-
       } else if (type.equals("pushup")) {
         // Pushup posture correction
         PoseLandmark shoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER); // Or RIGHT_SHOULDER
@@ -254,19 +265,11 @@ public class PoseClassifierProcessor {
           break;
         }
       }
-//      result.add(lastRepResult);
+      if (isSquattingDown) {
+        repetitionCompleted = false;
+      }
+      result.add(lastRepResult);
     }
-
-//    if (!pose.getAllPoseLandmarks().isEmpty()) {
-//      String maxConfidenceClass = classification.getMaxConfidenceClass();
-//      String maxConfidenceClassResult = String.format(
-//              Locale.US,
-//              "%s : %.2f confidence",
-//              maxConfidenceClass,
-//              classification.getClassConfidence(maxConfidenceClass)
-//                      / poseClassifier.confidenceRange());
-//      result.add(maxConfidenceClassResult);
-//    }
     return result;
   }
 
