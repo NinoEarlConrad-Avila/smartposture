@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,11 +73,26 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
             categoryTextView = itemView.findViewById(R.id.workoutCategory);
 
             // Handle clicks
+//            itemView.setOnClickListener(v -> {
+//                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+//                    int workoutId = (int) v.getTag();
+//                    Log.d("Adapter", "Id: " +workoutId);
+//                    listener.onWorkoutClick(workoutId);
+//                }
+//            });
             itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
                     int workoutId = (int) v.getTag();
-                    Log.d("Adapter", "Id: " +workoutId);
-                    listener.onWorkoutClick(workoutId);
+                    String category = nameTextView.getText().toString(); // Get the category text
+
+                    if ("squat".equalsIgnoreCase(category)) {
+                        // Proceed if the category is "squat"
+                        Log.d("Adapter", "Id: " + workoutId);
+                        listener.onWorkoutClick(workoutId);
+                    } else {
+                        // Show a toast if the category is not "squat"
+                        Toast.makeText(v.getContext(), "Feature not yet available. Coming Soon", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }

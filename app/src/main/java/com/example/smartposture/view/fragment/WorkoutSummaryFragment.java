@@ -12,6 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
@@ -21,12 +24,21 @@ import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import java.util.ArrayList;
 
 public class WorkoutSummaryFragment extends Fragment {
-
+    private TextView repCount, totalScore;
+    private Button submit;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout_summary, container, false);
+
+        repCount = view.findViewById(R.id.repCount);
+        totalScore = view.findViewById(R.id.totalScore);
+        submit = view.findViewById(R.id.submit);
+
+        submit.setOnClickListener(v -> {
+            navigateToHome();
+        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -42,11 +54,16 @@ public class WorkoutSummaryFragment extends Fragment {
             for (Float value : floatList) {
                 Log.d("WorkoutSummaryFragment", "Value: " + value);
             }
+
+            // Set rep count and total score
+            repCount.setText(String.valueOf(floatList.size()-1));  // Display size of list
+            totalScore.setText(String.valueOf(floatList.get(0))); // Display the first element in the list
+
+            // Set graph view data (ensure the method is defined correctly)
+            setGraphViewData(view, floatList);
         } else {
             Log.d("WorkoutSummaryFragment", "No data found in floatList.");
         }
-
-        setGraphViewData(view, floatList);
         return view;
     }
 
@@ -117,5 +134,16 @@ public class WorkoutSummaryFragment extends Fragment {
         } else {
             Log.d("GraphView", "No data available in the floatList.");
         }
+    }
+    private void navigateToHome() {
+        Bundle bundle = new Bundle();
+
+        HomeFragment fragment = new HomeFragment();
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
     }
 }
