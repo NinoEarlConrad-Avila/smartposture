@@ -189,7 +189,7 @@ public class WorkoutDetailFragment extends Fragment {
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, fragment)
-                .addToBackStack(null)
+                .addToBackStack("WorkoutDetailFragment")
                 .commit();
     }
 }

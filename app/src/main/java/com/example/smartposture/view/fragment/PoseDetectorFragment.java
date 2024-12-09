@@ -1,11 +1,14 @@
 package com.example.smartposture.view.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -13,9 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -68,7 +76,11 @@ public class PoseDetectorFragment extends BaseFragment {
     private Handler handler;
     private final boolean runClassification = true;
     private HomeViewModel homeViewModel;
-
+    private boolean isBackCamera = false;
+    private boolean isInitialCam = true;
+    private ImageView switchCameraBtn;
+    private ProcessCameraProvider cameraProvider;
+    private String type;
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Nullable
     @Override
@@ -79,11 +91,19 @@ public class PoseDetectorFragment extends BaseFragment {
             ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                    }
+                });
         ImageButton returnBtn = view.findViewById(R.id.returnBtn);
         previewView = view.findViewById(R.id.previewView);
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
         Button done = view.findViewById(R.id.done);
+        Button goHome = view.findViewById(R.id.goHome);
 
+        switchCameraBtn = view.findViewById(R.id.switchCam);
 //        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         PoseDetectorOptions options = new PoseDetectorOptions.Builder()
@@ -98,31 +118,60 @@ public class PoseDetectorFragment extends BaseFragment {
         handler = new Handler(handlerThread.getLooper());
 
         Bundle args = getArguments();
-        String type = args != null ? args.getString("exer") : "squat";
+        type = args != null ? args.getString("exer") : "squat";
         poseClassifierProcessor = new PoseClassifierProcessor(getContext(), true, homeViewModel, type);
 
-        returnBtn.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().popBackStack();
+
+        goHome.setOnClickListener(v -> {
+            navigateToHome();
         });
 
         done.setOnClickListener(v -> {
             ArrayList<Float> floatList = poseClassifierProcessor.getScores();
-            WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
 
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("floatList", floatList);
-            summary.setArguments(bundle);
+            if (floatList == null || floatList.isEmpty()) {
+                // Show dialog for no available data
+                showCustomDialog(
+                        "No Data Available",
+                        "No scores were recorded. Please try the exercise again.",
+                        true, // Hide cancel button
+                        null, // No action needed on confirm
+                        null // No action needed for cancel (since button is hidden)
+                );
+            } else {
+                // Show confirmation dialog to proceed
+                showCustomDialog(
+                        "Confirm Action",
+                        "Scores are available. Do you want to proceed?",
+                        true, // Hide cancel button (since no action is needed for cancel)
+                        () -> {
+                            // Action on "Yes": Navigate to the WorkoutSummaryFragment
+                            WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("floatList", floatList);
+                            summary.setArguments(bundle);
 
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, summary)
-                    .addToBackStack("WorkoutSummary")
-                    .commit();
+                            requireActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.container, summary)
+                                    .addToBackStack("WorkoutSummary")
+                                    .commit();
+                        },
+                        null // No action needed for cancel
+                );
+            }
         });
+
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBarsInsets.left, systemBarsInsets.top, systemBarsInsets.right, systemBarsInsets.bottom);
             return insets;
+        });
+
+        switchCameraBtn.setOnClickListener(v -> {
+            isBackCamera = !isBackCamera; // Toggle camera
+            isInitialCam = false;
+            startCamera(); // Restart camera with the new lens facing
         });
 
         if (!allPermissionsGranted()) {
@@ -138,7 +187,7 @@ public class PoseDetectorFragment extends BaseFragment {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                cameraProvider = cameraProviderFuture.get();
                 bindPreview(cameraProvider);
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Error starting camera", e);
@@ -147,15 +196,20 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+        if (!isInitialCam){
+            cameraProvider.unbindAll();
+        }
+
+        // Create a Preview use case
         Preview preview = new Preview.Builder().build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
-        boolean isBackCamera = true; // or false for front camera
 
-
+        // Set the default to back camera
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(isBackCamera ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT)
                 .build();
 
+        // Create an ImageAnalysis use case
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -245,6 +299,63 @@ public class PoseDetectorFragment extends BaseFragment {
         }
     }
 
+    private void showCustomDialog(String title, String message, boolean hideCancel, Runnable onConfirm, Runnable onCancel) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.setContentView(R.layout.dialog_confirmation);
+        dialog.setCancelable(true);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.5f);
+        }
+
+        TextView titleTextView = dialog.findViewById(R.id.alertTitle);
+        TextView messageTextView = dialog.findViewById(R.id.alertMessage);
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+        if (hideCancel) {
+            btnCancel.setVisibility(View.GONE);
+        } else {
+            btnCancel.setVisibility(View.VISIBLE);
+        }
+
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (onConfirm != null) {
+                onConfirm.run();
+            }
+        });
+
+        btnCancel.setOnClickListener(v -> {
+            dialog.dismiss();
+            // No action needed for cancel
+        });
+
+        dialog.show();
+    }
+
+
+    private void resetCamera() {
+        // Logic to reset the camera
+        poseClassifierProcessor.resetScores();
+        poseClassifierProcessor.resetRepCount();
+        startCamera();
+        Toast.makeText(requireContext(), "Camera reset.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetPoseClassifierProcessor() {
+        // Reinitialize the PoseClassifierProcessor
+        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), true, homeViewModel, type);
+        Toast.makeText(requireContext(), "Pose Classifier Processor has been reset", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -259,6 +370,18 @@ public class PoseDetectorFragment extends BaseFragment {
         if (getActivity() != null) {
             ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
+    }
+
+    private void navigateToHome() {
+        Bundle bundle = new Bundle();
+
+        HomeFragment fragment = new HomeFragment();
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
     }
 
     public void showBadPosturePopup(String alert) {

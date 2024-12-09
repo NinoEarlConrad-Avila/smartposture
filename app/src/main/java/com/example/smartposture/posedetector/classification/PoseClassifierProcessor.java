@@ -93,6 +93,13 @@ public class PoseClassifierProcessor {
   public ArrayList<Float> getScores(){
     return scores;
   }
+  public void resetScores(){
+    scores = new ArrayList<>();
+  }
+
+  public void resetRepCount(){
+    repCounters = new ArrayList<>();
+  }
   private void loadPoseSamplesAsync(final Context context) {
     new Thread(() -> loadPoseSamples(context)).start();
   }

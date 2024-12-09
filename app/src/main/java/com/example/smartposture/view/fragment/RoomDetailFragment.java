@@ -50,15 +50,15 @@ public class RoomDetailFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room, container, false);
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    requireActivity().getSupportFragmentManager().popBackStack();
-                }
-            });
 
-        roomName = view.findViewById(R.id.roomNameTextView);
+
+        roomName = view.findViewById(R.id.roomNameTextView);requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        requireActivity().getSupportFragmentManager().popBackStack();
+                    }
+                });
         roomCreator = view.findViewById(R.id.roomCreatorTextView);
         roomCode = view.findViewById(R.id.roomCode);
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
@@ -359,6 +359,8 @@ public class RoomDetailFragment extends BaseFragment {
         otherBtn.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
         otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
+
+
 
     private void navigateToNotification(int roomId) {
         Bundle bundle = new Bundle();

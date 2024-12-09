@@ -1,6 +1,8 @@
 package com.example.smartposture.view.fragment;
 
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -38,6 +40,12 @@ public class WorkoutFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                }
+            });
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
         preloaderImage = view.findViewById(R.id.preloaderImage);
         layoutNoWorkouts = view.findViewById(R.id.noWorkout);
