@@ -3,138 +3,119 @@ package com.example.smartposture.view.fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.TextView;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 import com.example.smartposture.R;
-
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class WorkoutSummaryFragment extends Fragment {
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout_summary, container, false);
-        setGraphViewData(view);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                    }
+                });
+
+        ArrayList<Float> floatList = (ArrayList<Float>) getArguments().getSerializable("floatList");
+
+        if (floatList != null) {
+            // Loop through the list and log each element
+            for (Float value : floatList) {
+                Log.d("WorkoutSummaryFragment", "Value: " + value);
+            }
+        } else {
+            Log.d("WorkoutSummaryFragment", "No data found in floatList.");
+        }
+
+        setGraphViewData(view, floatList);
         return view;
     }
 
-    private void setGraphViewData(View view) {
+    private void setGraphViewData(View view, ArrayList<Float> floatList) {
         // Get the GraphView from the layout
-        GraphView graphView = (GraphView) view.findViewById(R.id.idGraphView);
+        GraphView graphView = view.findViewById(R.id.idGraphView);
 
-        // Create two series (lines)
-        LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(0, 0),
-                new DataPoint(1, 40),
-                new DataPoint(2, 70),
-                new DataPoint(3, 30),
-                new DataPoint(4, 30),
-                new DataPoint(5, 30),
-        });
+        if (floatList != null && !floatList.isEmpty()) {
+            // Create counters for each squat type
+            int partialSquatCount = 0;
+            int parallelSquatCount = 0;
+            int deepSquatCount = 0;
 
-//        LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>(new DataPoint[]{
-//                new DataPoint(1, 5),
-//                new DataPoint(2, 6),
-//                new DataPoint(3, 7),
-//        });
+            // Classify the squat types based on the float values
+            for (int i = 1; i < floatList.size(); i++) {
+                Float value = floatList.get(i);
+                if (value <= 0.25) {
+                    partialSquatCount++;
+                } else if (value <= 0.5) {
+                    parallelSquatCount++;
+                } else {
+                    deepSquatCount++;
+                }
+            }
 
-        // Add both series to the graph
-        graphView.addSeries(series1);
-//        graphView.addSeries(series2);
+            // Prepare data for the BarGraph (X: Squat Types, Y: Count)
+            DataPoint[] dataPoints = new DataPoint[3];
+            dataPoints[0] = new DataPoint(0, partialSquatCount);
+            dataPoints[1] = new DataPoint(1, parallelSquatCount);
+            dataPoints[2] = new DataPoint(2, deepSquatCount);
 
-        // Customize the appearance of both series
-        series1.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-        series1.setDrawDataPoints(true);
-        series1.setDataPointsRadius(1);
-        series1.setThickness(8);
-        series1.setColor(Color.BLUE);
+            // Create a BarGraphSeries with the dataPoints
+            BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
+            graphView.addSeries(series);
 
+            // Customize the appearance of the series
+            series.setColor(ContextCompat.getColor(getContext(), R.color.teal));
+            series.setSpacing(20);  // Reduced spacing to avoid cutting off bars
 
-//        series2.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//        series2.setDrawDataPoints(true);
-//        series2.setDataPointsRadius(1);
-//        series2.setThickness(3);
+            // Set the number of labels on the Y and X axis
+            graphView.getGridLabelRenderer().setNumVerticalLabels(5);  // Adjust as necessary
+            graphView.getGridLabelRenderer().setNumHorizontalLabels(3);  // 3 squat types
 
-        // Get the CheckBoxes from the layout
-//        CheckBox checkBox1 = view.findViewById(R.id.checkBox2);
-//        CheckBox checkBox2 = view.findViewById(R.id.checkBox1);
-//
-//        checkBox1.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-//
-//                checkBox2.setChecked(false);
-//
-//                series1.setThickness(8);
-//                series1.setColor(Color.RED);
-//
-//                series2.setThickness(3);
-//                series2.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//            } else {
-//                if (!checkBox2.isChecked()) {
-//                    series1.setThickness(3);
-//                    series1.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//                    series2.setThickness(3);
-//                    series2.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//                }
-//            }
-//            graphView.invalidate();
-//        });
-//
-//        checkBox2.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-//                checkBox1.setChecked(false);
-//
-//                series2.setThickness(8);
-//                series2.setColor(Color.GREEN);
-//
-//                series1.setThickness(3);
-//                series1.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//            } else {
-//                if (!checkBox1.isChecked()) {
-//                    series1.setThickness(3);
-//                    series1.setColor(ContextCompat.getColor(getContext(), R.color.teal));
-//                    series2.setThickness(3);
-//                    series2.setColor(Color.RED);
-//                }
-//            }
-//            graphView.invalidate();
-//        });
+            // Set titles for the axes
+            graphView.getGridLabelRenderer().setVerticalAxisTitle("Count");
+            graphView.getGridLabelRenderer().setVerticalAxisTitleColor(ContextCompat.getColor(getContext(), R.color.teal));
+            graphView.getGridLabelRenderer().setHorizontalAxisTitle("Squat Type");
+            graphView.getGridLabelRenderer().setHorizontalAxisTitleColor(ContextCompat.getColor(getContext(), R.color.teal));
 
-        graphView.getGridLabelRenderer().setNumVerticalLabels(5);   // Set number of labels on Y axis
-        graphView.getGridLabelRenderer().setNumHorizontalLabels(6);
-// Set manual bounds for the viewport (to control the min and max values on X and Y axes)
-        graphView.getViewport().setYAxisBoundsManual(true);
-        graphView.getViewport().setMinY(0);   // Set minimum Y value
-        graphView.getViewport().setMaxY(100);  // Set maximum Y value
+            // Use StaticLabelsFormatter to set custom X-axis labels
+            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graphView);
+            staticLabelsFormatter.setHorizontalLabels(new String[] { "Partial\nSquat", "Parallel\nSquat", "Deep\nSquat" });
+            graphView.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
-        graphView.getViewport().setXAxisBoundsManual(true);
-        graphView.getViewport().setMinX(0);   // Set minimum X value
-        graphView.getViewport().setMaxX(5);  // Set maximum X value
+            // Customize grid and label colors
+            graphView.getGridLabelRenderer().setGridColor(ContextCompat.getColor(getContext(), R.color.teal));
+            graphView.getGridLabelRenderer().setHorizontalLabelsColor(ContextCompat.getColor(getContext(), R.color.teal));
+            graphView.getGridLabelRenderer().setVerticalLabelsColor(ContextCompat.getColor(getContext(), R.color.teal));
 
-        graphView.getGridLabelRenderer().setVerticalAxisTitle("Angle");
-        graphView.getGridLabelRenderer().setVerticalAxisTitleColor(ContextCompat.getColor(getContext(), R.color.teal));
-        graphView.getGridLabelRenderer().setHorizontalAxisTitle("Repetition");
-        graphView.getGridLabelRenderer().setHorizontalAxisTitleColor(ContextCompat.getColor(getContext(), R.color.teal));
-        graphView.getGridLabelRenderer().setGridColor(ContextCompat.getColor(getContext(), R.color.teal));
-        graphView.getGridLabelRenderer().setHorizontalLabelsColor(ContextCompat.getColor(getContext(), R.color.teal));
-        graphView.getGridLabelRenderer().setVerticalLabelsColor(ContextCompat.getColor(getContext(), R.color.teal));
-        graphView.getViewport().setScalable(true);
-        graphView.getViewport().setScrollable(true);
+            // Enable scrolling and scaling
+            graphView.getViewport().setScalable(true);  // Enables zooming and scrolling
+            graphView.getViewport().setScrollable(true);  // Enables scrolling in both directions
+
+            // Set X-axis bounds based on the data
+            graphView.getViewport().setXAxisBoundsManual(true);
+            graphView.getViewport().setMinX(0); // Start from 0 on the X-axis
+            graphView.getViewport().setMaxX(2); // Set max X value to 2 (since you have 3 categories)
+        } else {
+            Log.d("GraphView", "No data available in the floatList.");
+        }
     }
-
 }

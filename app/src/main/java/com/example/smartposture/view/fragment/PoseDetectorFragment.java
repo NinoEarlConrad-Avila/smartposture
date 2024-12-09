@@ -106,7 +106,12 @@ public class PoseDetectorFragment extends BaseFragment {
         });
 
         done.setOnClickListener(v -> {
+            ArrayList<Float> floatList = poseClassifierProcessor.getScores();
             WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("floatList", floatList);
+            summary.setArguments(bundle);
 
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, summary)

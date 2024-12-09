@@ -90,6 +90,9 @@ public class PoseClassifierProcessor {
     lowerbody = MediaPlayer.create(context, R.raw.loweryourbody);
   }
 
+  public ArrayList<Float> getScores(){
+    return scores;
+  }
   private void loadPoseSamplesAsync(final Context context) {
     new Thread(() -> loadPoseSamples(context)).start();
   }
