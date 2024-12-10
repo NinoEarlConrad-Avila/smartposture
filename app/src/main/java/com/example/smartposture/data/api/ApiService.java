@@ -105,4 +105,7 @@ public interface ApiService {
     // Activity API endpoints
     @POST("activity/getActiveActivities")
     Call<ActivityResponse> getActiveActivities(@Body RoomIdRequest request);
+
+    @POST("activity/getInactiveActivities")
+    Call<ActivityResponse> getInactiveActivities(@Body RoomIdRequest request);
 }

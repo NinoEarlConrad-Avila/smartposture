@@ -14,6 +14,7 @@ public class ActivityViewModel extends ViewModel {
     private final ActivityRepository activityRepository;
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> activeActivitiesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Activity>> inactiveActivitiesLiveData = new MutableLiveData<>();
 
     public ActivityViewModel(){
         activityRepository = new ActivityRepository();
@@ -26,6 +27,10 @@ public class ActivityViewModel extends ViewModel {
 
         return activeActivitiesLiveData;
     }
+    public LiveData<List<Activity>> getInactiveActivities(){
+
+        return inactiveActivitiesLiveData;
+    }
 
     public void fetchActiveActivities(int roomId) {
         loadingStateLiveData.setValue(true);
@@ -34,6 +39,18 @@ public class ActivityViewModel extends ViewModel {
                 activeActivitiesLiveData.setValue(response.getActivity());
             } else {
                 activeActivitiesLiveData.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void fetchInactiveActivities(int roomId) {
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchInactiveActivities(roomId).observeForever(response -> {
+            if (response != null && response.getActivity() != null) {
+                inactiveActivitiesLiveData.setValue(response.getActivity());
+            } else {
+                inactiveActivitiesLiveData.setValue(new ArrayList<>());
             }
             loadingStateLiveData.setValue(false);
         });

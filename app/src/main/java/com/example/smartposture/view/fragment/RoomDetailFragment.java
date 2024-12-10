@@ -47,7 +47,7 @@ public class RoomDetailFragment extends BaseFragment {
     private RelativeLayout layout, noRequest, noActivities, preloaderActivityLayout;
     private RecyclerView recyclerView, recyclerRoomActivities;
     private ImageView preloaderImage, notification, preloaderImageActivity;
-    private TextView roomName, roomCreator, roomCode;
+    private TextView roomName, roomCreator, roomCode, noActivityText;
     private Button activeActivitiesBtn, inactiveActivitiesBtn;
     private Animation animation;
     private String dialogType;
@@ -79,6 +79,7 @@ public class RoomDetailFragment extends BaseFragment {
         activeActivitiesBtn = view.findViewById(R.id.activeActivityBtn);
         inactiveActivitiesBtn = view.findViewById(R.id.inactiveActivityBtn);
         noActivities = view.findViewById(R.id.noActivities);
+        noActivityText = view.findViewById(R.id.noActText);
         preloaderActivityLayout = view.findViewById(R.id.preloaderActivityLayout);
         preloaderImageActivity = view.findViewById(R.id.preloaderImageActivity);
         animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
@@ -110,11 +111,14 @@ public class RoomDetailFragment extends BaseFragment {
 
         activeActivitiesBtn.setOnClickListener(v -> {
             highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
+            noActivityText.setText("No Active Activities");
             fetchActiveActivities(roomId);
         });
 
         inactiveActivitiesBtn.setOnClickListener(v -> {
             highlightButton(inactiveActivitiesBtn, activeActivitiesBtn);
+            noActivityText.setText("No Inactive Activities");
+            fetchInactiveActivities(roomId);
         });
 
         viewJoinRequest.setOnClickListener(v -> {
@@ -372,6 +376,24 @@ public class RoomDetailFragment extends BaseFragment {
         activityViewModel.fetchActiveActivities(roomId);
 
         activityViewModel.getActiveActivities().observe(getViewLifecycleOwner(), activities -> {
+            if (activities != null && !activities.isEmpty()) {
+                activityAdapter = new ActivityAdapter(activities);
+                recyclerRoomActivities.setAdapter(activityAdapter);
+
+                recyclerRoomActivities.setVisibility(View.VISIBLE);
+                noActivities.setVisibility(View.GONE);
+            } else {
+                recyclerRoomActivities.setVisibility(View.GONE);
+                noActivities.setVisibility(View.VISIBLE);
+            }
+        });
+        loadingStateActivitiesObserver();
+    }
+
+    private void fetchInactiveActivities(int roomId) {
+        activityViewModel.fetchInactiveActivities(roomId);
+
+        activityViewModel.getInactiveActivities().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
                 activityAdapter = new ActivityAdapter(activities);
                 recyclerRoomActivities.setAdapter(activityAdapter);

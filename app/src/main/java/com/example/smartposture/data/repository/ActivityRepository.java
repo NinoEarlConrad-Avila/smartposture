@@ -40,4 +40,26 @@ public class ActivityRepository {
         });
         return liveData;
     }
+
+    public LiveData<ActivityResponse> fetchInactiveActivities(int roomId) {
+        MutableLiveData<ActivityResponse> liveData = new MutableLiveData<>();
+        RoomIdRequest request = new RoomIdRequest(roomId);
+
+        apiService.getInactiveActivities(request).enqueue(new Callback<ActivityResponse>() {
+            @Override
+            public void onResponse(Call<ActivityResponse> call, Response<ActivityResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ActivityResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
 }
