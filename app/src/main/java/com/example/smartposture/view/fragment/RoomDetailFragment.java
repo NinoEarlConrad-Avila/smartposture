@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
+import com.example.smartposture.data.adapter.ActivityAdapter;
 import com.example.smartposture.data.adapter.JoinRequestAdapter;
 import com.example.smartposture.data.adapter.RoomTraineesAdapter;
 import com.example.smartposture.data.model.JoinRequest;
@@ -32,15 +34,21 @@ import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.view.activity.MainActivity;
+import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
+
+import java.util.ArrayList;
 
 public class RoomDetailFragment extends BaseFragment {
     private RoomDetailViewModel roomViewModel;
+    private ActivityViewModel activityViewModel;
+    private ActivityAdapter activityAdapter;
     private LinearLayout viewJoinRequest, viewRoomTrainees;
-    private RelativeLayout layout, noRequest;
-    private RecyclerView recyclerView;
-    private ImageView preloaderImage, notification;
+    private RelativeLayout layout, noRequest, noActivities, preloaderActivityLayout;
+    private RecyclerView recyclerView, recyclerRoomActivities;
+    private ImageView preloaderImage, notification, preloaderImageActivity;
     private TextView roomName, roomCreator, roomCode;
+    private Button activeActivitiesBtn, inactiveActivitiesBtn;
     private Animation animation;
     private String dialogType;
     private SharedPreferenceManager spManager;
@@ -50,39 +58,63 @@ public class RoomDetailFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_room, container, false);
 
+        view.setVisibility(View.INVISIBLE);
+        Dialog loadingDialog = createFullScreenLoadingDialog();
+        loadingDialog.show();
 
+        View optionsTrainer = view.findViewById(R.id.optionsTrainer);
+        spManager = getSharedPreferenceManager();
+        String userType = spManager.getUserType();
 
-        roomName = view.findViewById(R.id.roomNameTextView);requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        requireActivity().getSupportFragmentManager().popBackStack();
-                    }
-                });
+        roomName = view.findViewById(R.id.roomNameTextView);
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+
+        recyclerRoomActivities = view.findViewById(R.id.recyclerRoomActivities);
+        activeActivitiesBtn = view.findViewById(R.id.activeActivityBtn);
+        inactiveActivitiesBtn = view.findViewById(R.id.inactiveActivityBtn);
+        noActivities = view.findViewById(R.id.noActivities);
+        preloaderActivityLayout = view.findViewById(R.id.preloaderActivityLayout);
+        preloaderImageActivity = view.findViewById(R.id.preloaderImageActivity);
+        animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
+
         roomCreator = view.findViewById(R.id.roomCreatorTextView);
         roomCode = view.findViewById(R.id.roomCode);
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
         viewRoomTrainees = view.findViewById(R.id.viewRoomTrainees);
         notification = view.findViewById(R.id.notification);
 
-        View optionsTrainer = view.findViewById(R.id.optionsTrainer);
-        spManager = getSharedPreferenceManager();
-        String userType = spManager.getUserType();
 
         if ("trainee".equalsIgnoreCase(userType)) {
             optionsTrainer.setVisibility(View.GONE);
         }
 
-        view.setVisibility(View.INVISIBLE);
-        Dialog loadingDialog = createFullScreenLoadingDialog();
-        loadingDialog.show();
+        recyclerRoomActivities.setLayoutManager(new LinearLayoutManager(getContext()));
 
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
+        activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
 
         int roomId = requireArguments().getInt("room_id", -1);
 
         notification.setOnClickListener(v -> {
             navigateToNotification(roomId);
+        });
+
+        highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
+        fetchActiveActivities(roomId);
+
+        activeActivitiesBtn.setOnClickListener(v -> {
+            highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
+            fetchActiveActivities(roomId);
+        });
+
+        inactiveActivitiesBtn.setOnClickListener(v -> {
+            highlightButton(inactiveActivitiesBtn, activeActivitiesBtn);
         });
 
         viewJoinRequest.setOnClickListener(v -> {
@@ -334,6 +366,41 @@ public class RoomDetailFragment extends BaseFragment {
         });
 
         loadingStateObserver();
+    }
+
+    private void fetchActiveActivities(int roomId) {
+        activityViewModel.fetchActiveActivities(roomId);
+
+        activityViewModel.getActiveActivities().observe(getViewLifecycleOwner(), activities -> {
+            if (activities != null && !activities.isEmpty()) {
+                activityAdapter = new ActivityAdapter(activities);
+                recyclerRoomActivities.setAdapter(activityAdapter);
+
+                recyclerRoomActivities.setVisibility(View.VISIBLE);
+                noActivities.setVisibility(View.GONE);
+            } else {
+                recyclerRoomActivities.setVisibility(View.GONE);
+                noActivities.setVisibility(View.VISIBLE);
+            }
+        });
+        loadingStateActivitiesObserver();
+    }
+
+    private void loadingStateActivitiesObserver(){
+        activityViewModel.getLoadingState().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                recyclerRoomActivities.setVisibility(View.GONE);
+                noActivities.setVisibility(View.GONE);
+                preloaderActivityLayout.setVisibility(View.VISIBLE);
+                preloaderImageActivity.setVisibility(View.VISIBLE);
+                preloaderImageActivity.startAnimation(animation);
+            } else {
+                recyclerRoomActivities.setVisibility(View.VISIBLE);
+                preloaderActivityLayout.setVisibility(View.GONE);
+                preloaderImageActivity.clearAnimation();
+                preloaderImageActivity.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void loadingStateObserver(){

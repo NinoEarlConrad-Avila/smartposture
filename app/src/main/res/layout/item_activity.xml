@@ -1,45 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/bg_green"
-    android:paddingStart="20dp"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_white_round_border"
+    android:paddingStart="10dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
-    android:paddingEnd="12dp"
+    android:paddingEnd="5dp"
     android:layout_marginBottom="10dp">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
         android:layout_weight="1"
-        android:orientation="vertical">
-
+        >
         <TextView
-            android:id="@+id/activityName"
-            android:layout_width="wrap_content"
+            android:id="@+id/activityTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/activity_name"
+            android:text="@string/activity_title"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/activityDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sample_text_long"
+            android:paddingRight="20dp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+            android:textSize="10sp" />
+
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+
             <TextView
-                android:id="@+id/dueDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/due_date"
+                android:text="@string/due"
                 android:textColor="@color/black"
-                android:layout_marginRight="5dp"
-                android:textSize="12sp" />
+                android:textSize="10sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/activityEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notif_date"
+                android:gravity="bottom"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  |  "
+                android:gravity="bottom"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/activityEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notif_time"
+                android:gravity="bottom"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                />
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_gravity="center"
+        android:gravity="end"
+        >
+        <Button
+            android:id="@+id/viewActivityBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/view_activity"
+            android:padding="0dp"
+            android:textSize="10sp"
+            android:backgroundTint="@color/green_med"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
 </LinearLayout>

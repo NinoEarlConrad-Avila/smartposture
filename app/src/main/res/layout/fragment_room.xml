@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -186,7 +187,7 @@
             >
 
             <Button
-                android:id="@+id/activeBtn"
+                android:id="@+id/activeActivityBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
@@ -196,7 +197,7 @@
                 android:textColor="@color/white"/>
 
             <Button
-                android:id="@+id/inactiveBtn"
+                android:id="@+id/inactiveActivityBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
@@ -216,20 +217,54 @@
             android:visibility="gone"/>
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
             android:layout_marginTop="10dp"
             android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:minHeight="400dp"
                 android:orientation="vertical">
+                <RelativeLayout
+                    android:id="@+id/noActivities"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:background="@android:color/transparent"
+                    android:padding="15dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_active_activities"
+                        />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/preloaderActivityLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:padding="15dp">
+
+                    <ImageView
+                        android:id="@+id/preloaderImageActivity"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone"
+                        android:src="@drawable/logo_sp" />
+                </RelativeLayout>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerRoomActivities"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
