@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class WorkoutDetailFragment extends Fragment {
     private ImageView workoutImage;
     private RecyclerView stepsRecyclerView;
     private Button startButton;
-
+    private ImageButton backButton;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class WorkoutDetailFragment extends Fragment {
         workoutImage = view.findViewById(R.id.workoutDetailImage);
         stepsRecyclerView = view.findViewById(R.id.stepsRecyclerView);
         startButton = view.findViewById(R.id.startButton);
+        backButton = view.findViewById(R.id.backButton);
 
         // Set up the loading dialog
         Dialog loadingDialog = createFullScreenLoadingDialog();
@@ -66,6 +68,10 @@ public class WorkoutDetailFragment extends Fragment {
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         stepsRecyclerView.setNestedScrollingEnabled(false);
         stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        backButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
 
         startButton.setOnClickListener(v -> navigateToPoseDetector(workoutName.getText().toString().toLowerCase()));
 

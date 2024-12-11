@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -47,6 +48,7 @@ public class RoomDetailFragment extends BaseFragment {
     private RelativeLayout layout, noRequest, noActivities, preloaderActivityLayout;
     private RecyclerView recyclerView, recyclerRoomActivities;
     private ImageView preloaderImage, notification, preloaderImageActivity;
+    private ImageButton backButton;
     private TextView roomName, roomCreator, roomCode, noActivityText;
     private Button activeActivitiesBtn, inactiveActivitiesBtn;
     private Animation animation;
@@ -89,7 +91,7 @@ public class RoomDetailFragment extends BaseFragment {
         viewJoinRequest = view.findViewById(R.id.viewJoinRequest);
         viewRoomTrainees = view.findViewById(R.id.viewRoomTrainees);
         notification = view.findViewById(R.id.notification);
-
+        backButton = view.findViewById(R.id.backButton);
 
         if ("trainee".equalsIgnoreCase(userType)) {
             optionsTrainer.setVisibility(View.GONE);
@@ -108,6 +110,10 @@ public class RoomDetailFragment extends BaseFragment {
 
         highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
         fetchActiveActivities(roomId);
+
+        backButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
 
         activeActivitiesBtn.setOnClickListener(v -> {
             highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);

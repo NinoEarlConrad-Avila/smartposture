@@ -28,16 +28,19 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                >
 
                 <ImageButton
-                    android:id="@+id/back_to_workout_fragment"
+                    android:id="@+id/backButton"
                     android:layout_width="62dp"
-                    android:layout_height="68dp"
+                    android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Back"
                     android:padding="8dp"
-                    android:src="?attr/actionModeCloseDrawable"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_back"
                     app:tint="@color/white" />
 
                 <TextView

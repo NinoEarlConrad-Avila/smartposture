@@ -19,7 +19,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/back_to_workout_fragment"
+            android:id="@+id/backButton"
             android:layout_width="62dp"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
