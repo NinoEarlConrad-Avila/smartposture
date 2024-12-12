@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -34,7 +35,7 @@ public class NotificationFragment extends BaseFragment {
     private RecyclerView notificationRecyclerView;
     private SharedPreferenceManager spManager;
     private String notificationType;
-
+    private ImageButton backButton;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -53,7 +54,7 @@ public class NotificationFragment extends BaseFragment {
         preloaderImage = view.findViewById(R.id.preloaderImage);
         layoutNoNotifications = view.findViewById(R.id.noNotification);
         notificationRecyclerView = view.findViewById(R.id.notificationRecyclerView);
-
+        backButton = view.findViewById(R.id.backButton);
         bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
         preloaderImage.startAnimation(bounceAnimation);
 
@@ -72,6 +73,9 @@ public class NotificationFragment extends BaseFragment {
             fetchRoomNotifications(roomId);
         }
 
+        backButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
         return view;
     }
 

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,17 +33,16 @@ import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.util.AdditionalSpace;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
-
-import java.util.ArrayList;
 
 public class RoomDetailFragment extends BaseFragment {
     private RoomDetailViewModel roomViewModel;
     private ActivityViewModel activityViewModel;
     private ActivityAdapter activityAdapter;
-    private LinearLayout viewJoinRequest, viewRoomTrainees;
+    private LinearLayout viewJoinRequest, viewRoomTrainees, addActivity;
     private RelativeLayout layout, noRequest, noActivities, preloaderActivityLayout;
     private RecyclerView recyclerView, recyclerRoomActivities;
     private ImageView preloaderImage, notification, preloaderImageActivity;
@@ -84,6 +82,7 @@ public class RoomDetailFragment extends BaseFragment {
         noActivityText = view.findViewById(R.id.noActText);
         preloaderActivityLayout = view.findViewById(R.id.preloaderActivityLayout);
         preloaderImageActivity = view.findViewById(R.id.preloaderImageActivity);
+        addActivity = view.findViewById(R.id.addActivity);
         animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
 
         roomCreator = view.findViewById(R.id.roomCreatorTextView);
@@ -96,13 +95,18 @@ public class RoomDetailFragment extends BaseFragment {
         if ("trainee".equalsIgnoreCase(userType)) {
             optionsTrainer.setVisibility(View.GONE);
         }
-
+        int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.roomActivities);
         recyclerRoomActivities.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerRoomActivities.addItemDecoration(new AdditionalSpace(spaceInPixels));
 
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
 
         int roomId = requireArguments().getInt("room_id", -1);
+
+        addActivity.setOnClickListener(v -> {
+            navigateToCreateActivity(roomId);
+        });
 
         notification.setOnClickListener(v -> {
             navigateToNotification(roomId);
@@ -455,7 +459,19 @@ public class RoomDetailFragment extends BaseFragment {
         otherBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
     }
 
+    private void navigateToCreateActivity(int roomId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("room_id", roomId);
 
+        CreateActivityFragment fragment = new CreateActivityFragment();
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
+    }
 
     private void navigateToNotification(int roomId) {
         Bundle bundle = new Bundle();

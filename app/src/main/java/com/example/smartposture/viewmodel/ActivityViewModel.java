@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.data.model.Activity;
 import com.example.smartposture.data.repository.ActivityRepository;
+import com.example.smartposture.data.request.CreateActivityRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> activeActivitiesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
+
 
     public ActivityViewModel(){
         activityRepository = new ActivityRepository();
@@ -31,7 +34,9 @@ public class ActivityViewModel extends ViewModel {
 
         return inactiveActivitiesLiveData;
     }
-
+    public LiveData<String> getCreateActivityStatus(){
+        return createActivityStatus;
+    }
     public void fetchActiveActivities(int roomId) {
         loadingStateLiveData.setValue(true);
         activityRepository.fetchActiveActivities(roomId).observeForever(response -> {
@@ -53,6 +58,18 @@ public class ActivityViewModel extends ViewModel {
                 inactiveActivitiesLiveData.setValue(new ArrayList<>());
             }
             loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void createActivity(int room_id, String title, String description, String end_date, String end_time, int[] workouts, int[] repetitions){
+        CreateActivityRequest request = new CreateActivityRequest(room_id, title, description, end_date, end_time, workouts, repetitions);
+        loadingStateLiveData.setValue(true);
+        activityRepository.addRoomActivity(request).observeForever( result -> {
+            if ("Success".equals(result)) {
+                createActivityStatus.setValue("Success");
+            } else {
+                createActivityStatus.setValue(result);
+            }
         });
     }
 }

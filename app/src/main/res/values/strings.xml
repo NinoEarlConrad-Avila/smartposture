@@ -126,4 +126,12 @@
     <string name="activity_title">Activity Title</string>
     <string name="due">DUE: </string>
     <string name="view_activity">View</string>
+
+    <string name="create">Create</string>
+    <string name="date_text">Date</string>
+    <string name="time_text">Time</string>
+    <string name="description_text">Description</string>
+    <string name="title_text">Title</string>
+    <string name="create_activity">Create Activity</string>
+    <string name="repetition_text">Repetition</string>
 </resources>

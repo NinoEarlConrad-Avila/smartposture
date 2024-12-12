@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/rounded_edittext"
+        android:paddingTop="1dp"
+        android:textColorHint="#E9000000"
+        app:boxBackgroundColor="#000000"
+        app:boxBackgroundMode="outline"
+        app:cursorColor="#000000"
+        app:hintTextColor="#000000">
+
+        <Spinner
+            android:id="@+id/mySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="8dp"
+            android:spinnerMode="dropdown"
+            android:textAlignment="center" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/txtRepetition"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="2"
+        android:background="@drawable/rounded_edittext"
+        android:hint="@string/repetition_text"
+        android:paddingTop="1dp"
+        android:textColorHint="#E9000000"
+        app:boxBackgroundColor="#000000"
+        app:boxBackgroundMode="outline"
+        app:cursorColor="#000000"
+        app:hintTextColor="#000000">
+
+        <EditText
+            android:id="@+id/repetition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:inputType="number"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="12sp"
+            android:maxLength="3"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>
