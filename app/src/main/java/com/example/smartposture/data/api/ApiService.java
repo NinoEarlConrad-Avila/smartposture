@@ -1,5 +1,6 @@
 package com.example.smartposture.data.api;
 
+import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.request.JoinReqRequest;
@@ -13,6 +14,7 @@ import com.example.smartposture.data.request.RoomRequest;
 import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
 import com.example.smartposture.data.request.WorkoutDetailRequest;
+import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.LoginResponse;
@@ -112,4 +114,7 @@ public interface ApiService {
 
     @POST("activity/addRoomActivity")
     Call<ApiResponse> addRoomActivity(@Body CreateActivityRequest request);
+
+    @POST("activity/getActivityDetails")
+    Call<ActivityDetailResponse> getActivityDetails(@Body ActivityIdRequest request);
 }

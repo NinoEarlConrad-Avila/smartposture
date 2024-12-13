@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.data.model.Activity;
+import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.repository.ActivityRepository;
 import com.example.smartposture.data.request.CreateActivityRequest;
+import com.example.smartposture.data.response.ActivityDetailResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> activeActivitiesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
 
 
@@ -33,6 +36,10 @@ public class ActivityViewModel extends ViewModel {
     public LiveData<List<Activity>> getInactiveActivities(){
 
         return inactiveActivitiesLiveData;
+    }
+    public LiveData<ActivityDetailResponse> getActivityDetails(){
+
+        return activityDetailsLiveData;
     }
     public LiveData<String> getCreateActivityStatus(){
         return createActivityStatus;
@@ -70,6 +77,16 @@ public class ActivityViewModel extends ViewModel {
             } else {
                 createActivityStatus.setValue(result);
             }
+        });
+    }
+
+    public void fetchActivityDetails(int activityId) {
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchActivityDetails(activityId).observeForever(response -> {
+            if (response != null && response.getActivity() != null) {
+                activityDetailsLiveData.setValue(response);
+            }
+            loadingStateLiveData.setValue(false);
         });
     }
 }

@@ -33,7 +33,7 @@ import com.example.smartposture.data.adapter.RoomAdapter;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.request.CreateRoomRequest;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
-import com.example.smartposture.util.AdditionalSpace;
+import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -143,7 +143,7 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         adapter = new RoomAdapter(this, getContext());
         recyclerViewRooms.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewRooms.setAdapter(adapter);
-        recyclerViewRooms.addItemDecoration(new AdditionalSpace(spaceInPixels));
+        recyclerViewRooms.addItemDecoration(new AdditionalSpaceBottom(spaceInPixels));
     }
 
     private void observeViewModel() {

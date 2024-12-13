@@ -1,6 +1,6 @@
 package com.example.smartposture.data.adapter;
 
-import android.util.Log;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,23 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.Activity;
+import com.example.smartposture.data.model.ActivityWorkout;
+import com.example.smartposture.view.fragment.ActivityDetailsFragment;
+import com.example.smartposture.view.fragment.RoomDetailFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>{
     private List<Activity> activities;
-
-    public ActivityAdapter(List<Activity> activities){
+    private RoomDetailFragment context;
+    public ActivityAdapter(List<Activity> activities, RoomDetailFragment context){
         this.activities = activities;
+        this.context = context;
     }
 
-    public void updateActivity(List<Activity> newActivities) {
-        this.activities = newActivities;
-        notifyDataSetChanged();
-        Log.d("ActivityAdapter", "Activities updated: " + newActivities.size());
-    }
-
-    @NonNull
+       @NonNull
     @Override
     public ActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_activity, parent, false);
@@ -43,6 +42,20 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.description.setText(activity.getDescription());
         holder.date.setText(activity.getEnd_date());
         holder.time.setText(activity.getEnd_time());
+
+        holder.viewButton.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("activity_id", activity.getActivity_id());
+
+            ActivityDetailsFragment fragment = new ActivityDetailsFragment();
+            fragment.setArguments(bundle);
+
+            context.getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .addToBackStack("RoomDetailFragment")
+                    .commit();
+        });
     }
 
     @Override
@@ -62,5 +75,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             time = itemView.findViewById(R.id.activityEndTime);
             viewButton = itemView.findViewById(R.id.viewActivityBtn);
         }
+    }
+
+    public void updateActivities(List<Activity> newActivities) {
+        if (newActivities == null) {
+            newActivities = new ArrayList<>();
+        }
+        this.activities.clear();
+        this.activities.addAll(newActivities);
+        notifyDataSetChanged();
     }
 }

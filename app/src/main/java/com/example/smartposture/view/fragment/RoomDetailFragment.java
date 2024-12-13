@@ -33,7 +33,7 @@ import com.example.smartposture.data.model.JoinRequest;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
-import com.example.smartposture.util.AdditionalSpace;
+import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.RoomDetailViewModel;
@@ -97,7 +97,7 @@ public class RoomDetailFragment extends BaseFragment {
         }
         int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.roomActivities);
         recyclerRoomActivities.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerRoomActivities.addItemDecoration(new AdditionalSpace(spaceInPixels));
+        recyclerRoomActivities.addItemDecoration(new AdditionalSpaceBottom(spaceInPixels));
 
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
@@ -387,7 +387,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getActiveActivities().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(activities);
+                activityAdapter = new ActivityAdapter(activities, this);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -405,7 +405,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getInactiveActivities().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(activities);
+                activityAdapter = new ActivityAdapter(activities, this);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -427,7 +427,6 @@ public class RoomDetailFragment extends BaseFragment {
                 preloaderImageActivity.setVisibility(View.VISIBLE);
                 preloaderImageActivity.startAnimation(animation);
             } else {
-                recyclerRoomActivities.setVisibility(View.VISIBLE);
                 preloaderActivityLayout.setVisibility(View.GONE);
                 preloaderImageActivity.clearAnimation();
                 preloaderImageActivity.setVisibility(View.GONE);

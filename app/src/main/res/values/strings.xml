@@ -134,4 +134,8 @@
     <string name="title_text">Title</string>
     <string name="create_activity">Create Activity</string>
     <string name="repetition_text">Repetition</string>
+
+    <string name="activity_details">Activity Details</string>
+    <string name="submit_activity">Submit Activity</string>
+    <string name="back_button">Back</string>
 </resources>

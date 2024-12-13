@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.api.ApiService;
+import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
+import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.ApiResponse;
 
@@ -84,6 +86,28 @@ public class ActivityRepository {
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 liveData.postValue("Error: " + t.getMessage());
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<ActivityDetailResponse> fetchActivityDetails(int activityId) {
+        MutableLiveData<ActivityDetailResponse> liveData = new MutableLiveData<>();
+        ActivityIdRequest request = new ActivityIdRequest(activityId);
+
+        apiService.getActivityDetails(request).enqueue(new Callback<ActivityDetailResponse>() {
+            @Override
+            public void onResponse(Call<ActivityDetailResponse> call, Response<ActivityDetailResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ActivityDetailResponse> call, Throwable t) {
+                liveData.postValue(null);
             }
         });
         return liveData;
