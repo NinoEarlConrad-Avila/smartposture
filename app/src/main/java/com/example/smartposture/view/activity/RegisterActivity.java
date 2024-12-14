@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
-import com.example.smartposture.viewmodel.RegisterViewModel;
+import com.example.smartposture.viewmodel.AuthViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText emailEditText, usernameEditText, firstNameEditText, lastNameEditText, passwordEditText, confirmPasswordEditText;
     private TextInputEditText birthDateEditText;
     private TextView signInTextView;
-    private RegisterViewModel registerViewModel;
+    private AuthViewModel authViewModel;
     private final Calendar myCalendar = Calendar.getInstance();
     private Button registerButton;
     @Override
@@ -54,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         signInTextView = findViewById(R.id.txt_login);
         registerButton = findViewById(R.id.button);
 
-        registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         setupObservers();
 
@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (!password.equals(confirmPassword)) {
                     Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 } else {
-                    registerViewModel.registerUser(email, password, username, firstname, lastname, birthdate, "trainee");
+                    authViewModel.registerUser(email, password, username, firstname, lastname, birthdate, "trainee");
                 }
             }
         });
@@ -92,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void setupObservers() {
         // Observe login success
-        registerViewModel.isLoginSuccessful().observe(this, success -> {
+        authViewModel.isLoginSuccessful().observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show();
             } else {
@@ -101,14 +101,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // Observe error messages
-        registerViewModel.getErrorMessage().observe(this, error -> {
+        authViewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
 
         // Observe logged-in user details
-        registerViewModel.getLoggedInUser().observe(this, user -> {
+        authViewModel.getLoggedInUser().observe(this, user -> {
             if (user != null) {
                 saveUserDetails(user);
                 navigateToMain(user);

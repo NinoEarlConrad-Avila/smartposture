@@ -39,8 +39,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation("com.google.firebase:firebase-database:20.3.1")
-    implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.mlkit:pose-detection:18.0.0-beta4")
     // If you want to use the accurate sdk
     implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta4")

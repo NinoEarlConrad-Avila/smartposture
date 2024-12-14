@@ -1,22 +1,16 @@
 package com.example.smartposture.posedetector.classification;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.ToneGenerator;
-import android.app.AlertDialog;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.app.AlertDialog;
 
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
-import com.example.smartposture.viewmodel.HomeViewModel;
+import com.example.smartposture.viewmodel.PoseDetectorViewModel;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 
@@ -61,14 +55,14 @@ public class PoseClassifierProcessor {
   private List<RepetitionCounter> repCounters;
   private PoseClassifier poseClassifier;
   private String lastRepResult;
-  private HomeViewModel homeViewModel;
+  private PoseDetectorViewModel homeViewModel;
   private String type;
   private ArrayList<Float> scores = new ArrayList<>(); // Acts as a stack to hold scores
   boolean repetitionCompleted = false;
   private Context context;
 
 
-  public PoseClassifierProcessor(Context context, boolean isStreamMode, HomeViewModel homeViewModel, String type) {
+  public PoseClassifierProcessor(Context context, boolean isStreamMode, PoseDetectorViewModel homeViewModel, String type) {
     Log.d(TAG, "PoseClassifierProcessor constructor started.");
     this.context = context;
     this.isStreamMode = isStreamMode;

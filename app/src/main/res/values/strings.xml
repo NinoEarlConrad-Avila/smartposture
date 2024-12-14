@@ -12,96 +12,36 @@
     <string name="already_have_account">Already have an account?</string>
     <string name="login">LOGIN</string>
     <string name="signup">SIGN UP</string>
-    <string name="welcome_txt">Welcome!</string>
-    <string name="login_to_continue">Log in to Continue</string>
     <string name="continue_as_guest">Continue as a Guest</string>
-    <string name="forgot_pass_login">Forgot Password?</string>
-    <string name="click_here">CLICK HERE</string>
-    <string name="forgot_pass">Forgot Password</string>
-    <string name="hint_enter_email">Enter your email</string>
-    <string name="reset_pass">Reset Password</string>
     <string name="smart">Smart</string>
     <string name="posture">Posture</string>
     <string name="tag_line">JUST TAP TO UNLOCK YOUR POSTURE PERFECT</string>
     <!-- Workout Texts -->
     <string name="workout_text">WORKOUT</string>
     <string name="workout_image">Workout Image</string>
-    <string name="item">Item</string>
     <string name="squat">Squat</string>
-    <string name="push_up">Push-up</string>
     <!-- Room Texts-->
     <string name="room">Room</string>
     <string name="join_room">Join Room</string>
     <string name="room_name">Room Name</string>
     <string name="room_creator">Room Creator</string>
-    <string name="hint_enter_code">Enter Room Code</string>
     <string name="hint_enter_room_name">Enter Room Name</string>
-    <string name="hint_enter_room_description">Enter Room Description</string>
-    <string name="send_request">Send Request</string>
     <string name="create_room">Create Room</string>
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
     <string name="add_activity">Add Activity</string>
-    <string name="view_request">View Join Request</string>
     <string name="room_code">Room Code</string>
     <string name="code">Code</string>
     <string name="my_rooms">My Rooms</string>
     <string name="available_rooms">Available Rooms</string>
     <string name="search_room">Search Room</string>
+
     <!-- General Texts-->
-    <string name="activity_name">Activity Name</string>
-    <string name="due_date">Due Date: </string>
     <string name="date">10/23/2023</string>
-
     <string name="join_request">Join Request</string>
-    <string name="status">Status</string>
-    <string name="accept">Accept</string>
-    <string name="decline">Decline</string>
-    <!-- General Texts-->
     <string name="close">Close</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <!-- Login Strings-->
-    <string name="login_name">Page 1</string>
-    <string name="ek_img_content">ExportKit Image</string>
     <string name="username_string">username</string>
-    <string name="password_string">password</string>
-    <string name="Signup">Dont have an account? SIGN UP</string>
-    <string name="Login_btn">Log in</string>
-
-    <!--register-->
-    <string name="register_name">Page 1</string>
-    <string name="confirm_password_string">Confirm Password</string>
-    <string name="email_string">Email</string>
-    <string name="already_have_an_account__log_in_string">Already have an account? LOG IN</string>
-    <string name="sign_in_string">Sign in</string>
-    <!--onboarding-->
-    <string name="onboarding_name">Page 1</string>
-    <string name="motive_string1">Wherever you are health is number one</string>
-    <string name="motive_string2">There is no instant way to a healthy life</string>
-    <string name="get_started_string">Get Started</string>
-
-    <!--  home strings  -->
-    <string name="Home">Page 1</string>
-    <string name="Username">Allen Kalbo</string>
-    <string name="Greetings">Good Morning </string>
     <string name="Searchbar">Search</string>
-    <string name="workout_context">Lower BodyTraining</string>
-    <string name="calories">500 Kcal</string>
-    <string name="workout_duration">50 Min</string>
-    <string name="workout_context2">HandTraining</string>
-    <string name="duration2">40 Min</string>
-    <string name="popularworkout">Popular Workouts</string>
-    <string name="workout_plan">Push Up</string>
-    <string name="workout_reps">100 Push up a day</string>
-    <string name="workout_dificulty">Intermediate</string>
-    <string name="workout_progress">45%</string>
-    <string name="Today_plan">Today Plan</string>
-    <string name="nav_barhome">Home</string>
-    <!--  workout strings  -->
-    <string name="workoutses">Page 1</string>
-    <string name="Title">Workout</string>
-    <string name="Done">Finish Work Out</string>
     <string name="steps">Steps</string>
 
     <string name="action">Action</string>

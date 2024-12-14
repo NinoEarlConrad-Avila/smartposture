@@ -12,17 +12,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
-import com.example.smartposture.viewmodel.SplashViewModel;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.viewmodel.AuthViewModel;
 
 public class SplashActivity extends AppCompatActivity {
 
     private static final int SPLASH_SCREEN_DELAY = 2000;
     private LinearLayout splashScreen;
-    private SplashViewModel splashViewModel;
+    private AuthViewModel authViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,36 +38,26 @@ public class SplashActivity extends AppCompatActivity {
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         splashScreen.startAnimation(fadeIn);
 
-        splashViewModel = new ViewModelProvider(this).get(SplashViewModel.class);
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        splashViewModel.getSessionValidLiveData().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isSessionValid) {
-                if (isSessionValid != null) {
-                    if (isSessionValid) {
-                        navigateToMainActivity();
-                    } else {
-                        navigateToLoginActivity();
-                    }
-                }
+        authViewModel.getSessionValid().observe(this, isSessionValid -> {
+            if (Boolean.TRUE.equals(isSessionValid)) {
+                navigateToMainActivity();
+            } else {
+                navigateToLoginActivity();
             }
         });
 
-        splashViewModel.getErrorMessageLiveData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String errorMessage) {
-                if (errorMessage != null) {
-                    Log.d("Error", errorMessage);
-                    navigateToLoginActivity();
-                }
+        authViewModel.getErrorMessage().observe(this, errorMessage -> {
+            if (errorMessage != null) {
+                Log.d("Error", errorMessage);
+                navigateToLoginActivity();
             }
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                splashViewModel.validateSessionToken();
-            }
+        new Handler().postDelayed(() -> {
+            String token = new SharedPreferenceManager(this).getSessionToken();
+            authViewModel.validateSessionToken(token);
         }, SPLASH_SCREEN_DELAY);
     }
 

@@ -1,9 +1,7 @@
 package com.example.smartposture.view.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +12,16 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.view.activity.LoginActivity;
-import com.example.smartposture.viewmodel.ProfileViewModel;
+import com.example.smartposture.viewmodel.AuthViewModel;
 
 public class ProfileFragment extends BaseFragment {
 
-    private ProfileViewModel profileViewModel;
+    private AuthViewModel authViewModel;
     private SharedPreferenceManager spManager;
 
     @Nullable
@@ -40,13 +37,13 @@ public class ProfileFragment extends BaseFragment {
                     }
                 });
 
-        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         spManager = SharedPreferenceManager.getInstance(requireContext());
 
         String token = spManager.getSessionToken();
 
-        profileViewModel.getLogoutResult().observe(getViewLifecycleOwner(), logoutResponse -> {
+        authViewModel.getLogoutResult().observe(getViewLifecycleOwner(), logoutResponse -> {
             if (logoutResponse.isSuccess()) {
                 spManager.clearSession();
                 Toast.makeText(requireContext(), logoutResponse.getMessage(), Toast.LENGTH_SHORT).show();
@@ -57,7 +54,7 @@ public class ProfileFragment extends BaseFragment {
         });
 
         Button logoutButton = view.findViewById(R.id.logoutButton);
-        logoutButton.setOnClickListener(v -> profileViewModel.logoutUser(token));
+        logoutButton.setOnClickListener(v -> authViewModel.logoutUser(token));
 
         Button guidance = view.findViewById(R.id.offGuidance);
         boolean initialStatus = spManager.getGuidanceStatus();

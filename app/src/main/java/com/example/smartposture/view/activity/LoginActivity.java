@@ -19,8 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.User;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
-import com.example.smartposture.view.fragment.WorkoutDetailFragment;
-import com.example.smartposture.viewmodel.LoginViewModel;
+import com.example.smartposture.viewmodel.AuthViewModel;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -28,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView registerTextView;
 
-    private LoginViewModel loginViewModel;
+    private AuthViewModel authViewModel;
     private Animation animation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +56,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        loginViewModel.isLoginSuccessful().observe(this, success -> {
+        authViewModel.isLoginSuccessful().observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
             }
         });
 
-        loginViewModel.getErrorMessage().observe(this, error -> {
+        authViewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
 
-        loginViewModel.getLoggedInUser().observe(this, this::handleLoginSuccess);
+        authViewModel.getLoggedInUser().observe(this, this::handleLoginSuccess);
     }
 
     private void setupListeners() {
@@ -91,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please fill in both fields", Toast.LENGTH_SHORT).show();
         } else {
-            loginViewModel.loginUser(username, password);
+            authViewModel.loginUser(username, password);
         }
     }
 
