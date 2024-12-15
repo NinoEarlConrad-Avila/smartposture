@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
@@ -47,6 +49,7 @@ import com.example.smartposture.posedetector.GraphicOverlay;
 import com.example.smartposture.posedetector.classification.PoseClassifierProcessor;
 import com.example.smartposture.posedetector.classification.PoseCorrection;
 import com.example.smartposture.view.activity.MainActivity;
+import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.PoseDetectorViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
@@ -81,6 +84,12 @@ public class PoseDetectorFragment extends BaseFragment {
     private String type;
     private boolean guidanceStatus;
     private SharedPreferenceManager spManager;
+    private PoseDetectorViewModel poseDetectorViewModel;
+    private TextView goalRepetition, currentRepetition;
+    private int activityWorkoutId, goal, current;
+    private List<String> classificationResult;
+    private LinearLayout goalLayout;
+    private Button done;
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Nullable
     @Override
@@ -98,10 +107,22 @@ public class PoseDetectorFragment extends BaseFragment {
                     }
                 });
         ImageButton returnBtn = view.findViewById(R.id.returnBtn);
+        goalLayout = view.findViewById(R.id.goalRepetitionLayout);
         previewView = view.findViewById(R.id.previewView);
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
-        Button done = view.findViewById(R.id.done);
+        done = view.findViewById(R.id.done);
         Button goHome = view.findViewById(R.id.goHome);
+        goalRepetition = view.findViewById(R.id.goalRepCount);
+        currentRepetition = view.findViewById(R.id.currentRepCount);
+
+        activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
+        goal = requireArguments().getInt("rep_goal", -1);
+
+        if (activityWorkoutId != -1 && goal != -1){
+            goalRepetition.setText(String.valueOf(goal));
+        }else {
+            goalLayout.setVisibility(View.GONE);
+        }
 
         spManager = SharedPreferenceManager.getInstance(requireContext());
         guidanceStatus = spManager.getGuidanceStatus();
@@ -113,6 +134,19 @@ public class PoseDetectorFragment extends BaseFragment {
                 .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
                 .build();
         poseDetector = PoseDetection.getClient(options);
+        poseDetectorViewModel = new ViewModelProvider(this).get(PoseDetectorViewModel.class);
+
+        poseDetectorViewModel.getRepCount().observe(getViewLifecycleOwner(), repCount -> {
+            currentRepetition.setText(String.valueOf(repCount));
+
+            if (repCount >= goal){
+                done.setEnabled(true);
+                done.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.teal));
+            }else{
+                done.setEnabled(false);
+                done.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
+            }
+        });
 
         poseCorrection = new PoseCorrection(requireContext(),"pose/pose_landmarks2.csv");
 
@@ -122,7 +156,7 @@ public class PoseDetectorFragment extends BaseFragment {
 
         Bundle args = getArguments();
         type = args != null ? args.getString("exer") : "squat";
-        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), true, homeViewModel, type);
+        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), this, true, homeViewModel, type);
 
 
         goHome.setOnClickListener(v -> {
@@ -137,7 +171,6 @@ public class PoseDetectorFragment extends BaseFragment {
                 showCustomDialog(
                         "No Data Available",
                         "No scores were recorded. Please try the exercise again.",
-                        true, // Hide cancel button
                         null, // No action needed on confirm
                         null // No action needed for cancel (since button is hidden)
                 );
@@ -146,7 +179,6 @@ public class PoseDetectorFragment extends BaseFragment {
                 showCustomDialog(
                         "Confirm Action",
                         "Scores are available. Do you want to proceed?",
-                        true, // Hide cancel button (since no action is needed for cancel)
                         () -> {
                             // Action on "Yes": Navigate to the WorkoutSummaryFragment
                             WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
@@ -159,7 +191,10 @@ public class PoseDetectorFragment extends BaseFragment {
                                     .addToBackStack("WorkoutSummary")
                                     .commit();
                         },
-                        null // No action needed for cancel
+                        () -> {
+                            resetCamera();
+                            resetPoseClassifierProcessor();
+                        }
                 );
             }
         });
@@ -237,7 +272,7 @@ public class PoseDetectorFragment extends BaseFragment {
                         InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
                         Task<Pose> result = poseDetector.process(image)
                                 .addOnSuccessListener(pose -> {
-                                    List<String> classificationResult = new ArrayList<>();
+                                    classificationResult = new ArrayList<>();
                                     if (poseClassifierProcessor != null && runClassification) {
                                         handler.post(() -> {
                                             classificationResult.addAll(poseClassifierProcessor.getPoseResult(pose));
@@ -304,7 +339,7 @@ public class PoseDetectorFragment extends BaseFragment {
         }
     }
 
-    private void showCustomDialog(String title, String message, boolean hideCancel, Runnable onConfirm, Runnable onCancel) {
+    private void showCustomDialog(String title, String message, Runnable onConfirm, Runnable onCancel) {
         Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -325,12 +360,6 @@ public class PoseDetectorFragment extends BaseFragment {
         Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
         Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
-        if (hideCancel) {
-            btnCancel.setVisibility(View.GONE);
-        } else {
-            btnCancel.setVisibility(View.VISIBLE);
-        }
-
         btnConfirm.setOnClickListener(v -> {
             dialog.dismiss();
             if (onConfirm != null) {
@@ -340,7 +369,9 @@ public class PoseDetectorFragment extends BaseFragment {
 
         btnCancel.setOnClickListener(v -> {
             dialog.dismiss();
-            // No action needed for cancel
+            if (onCancel != null) {
+                onCancel.run();
+            }
         });
 
         dialog.show();
@@ -351,13 +382,16 @@ public class PoseDetectorFragment extends BaseFragment {
         // Logic to reset the camera
         poseClassifierProcessor.resetScores();
         poseClassifierProcessor.resetRepCount();
+        currentRepetition.setText(String.valueOf(0));
+        done.setEnabled(false);
+        done.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_green));
         startCamera();
         Toast.makeText(requireContext(), "Camera reset.", Toast.LENGTH_SHORT).show();
     }
 
     private void resetPoseClassifierProcessor() {
         // Reinitialize the PoseClassifierProcessor
-        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), true, homeViewModel, type);
+        poseClassifierProcessor = new PoseClassifierProcessor(getContext(), this,true, homeViewModel, type);
         Toast.makeText(requireContext(), "Pose Classifier Processor has been reset", Toast.LENGTH_SHORT).show();
     }
 

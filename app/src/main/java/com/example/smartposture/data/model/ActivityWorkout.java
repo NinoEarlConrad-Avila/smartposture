@@ -7,14 +7,16 @@ public class ActivityWorkout {
     private String workout_description;
     private String workout_img_path;
     private int repetition;
+    private int status;
 
-    public ActivityWorkout(int activity_workout_id, int workout_id, String workout_name, String workout_description, String workout_img_path, int repetition) {
+    public ActivityWorkout(int activity_workout_id, int workout_id, String workout_name, String workout_description, String workout_img_path, int repetition, int status) {
         this.activity_workout_id = activity_workout_id;
         this.workout_id = workout_id;
         this.workout_name = workout_name;
         this.workout_description = workout_description;
         this.workout_img_path = workout_img_path;
         this.repetition = repetition;
+        this.status = status;
     }
 
     public int getActivity_workout_id() {
@@ -63,5 +65,13 @@ public class ActivityWorkout {
 
     public void setRepetition(int repetition) {
         this.repetition = repetition;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

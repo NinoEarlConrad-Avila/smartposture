@@ -8,8 +8,11 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
+import com.example.smartposture.view.fragment.PoseDetectorFragment;
+import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.PoseDetectorViewModel;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
@@ -40,6 +43,7 @@ public class PoseClassifierProcessor {
   private float lowestPushupAngle = Float.MAX_VALUE;
   private String lastErrorResult = "";  // Store the last error result for squats
   private static String POSE_SAMPLES_FILE;
+  private PoseDetectorViewModel viewModel;
 //  private static final String POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
 
   // Specify classes for which we want rep counting.
@@ -60,9 +64,9 @@ public class PoseClassifierProcessor {
   private ArrayList<Float> scores = new ArrayList<>(); // Acts as a stack to hold scores
   boolean repetitionCompleted = false;
   private Context context;
+  private int repCount;
 
-
-  public PoseClassifierProcessor(Context context, boolean isStreamMode, PoseDetectorViewModel homeViewModel, String type) {
+  public PoseClassifierProcessor(Context context, PoseDetectorFragment fragment, boolean isStreamMode, PoseDetectorViewModel homeViewModel, String type) {
     Log.d(TAG, "PoseClassifierProcessor constructor started.");
     this.context = context;
     this.isStreamMode = isStreamMode;
@@ -78,6 +82,7 @@ public class PoseClassifierProcessor {
       repCounters = new ArrayList<>();
       lastRepResult = "";
     }
+    viewModel = new ViewModelProvider(fragment).get(PoseDetectorViewModel.class);
     loadPoseSamplesAsync(context);
     squatlower = MediaPlayer.create(context, R.raw.badpostureswatlower);
     alignforearms = MediaPlayer.create(context, R.raw.alignyourforearms);
@@ -90,7 +95,6 @@ public class PoseClassifierProcessor {
   public void resetScores(){
     scores = new ArrayList<>();
   }
-
   public void resetRepCount(){
     repCounters = new ArrayList<>();
   }
@@ -205,6 +209,7 @@ public class PoseClassifierProcessor {
                 // Update total score
 //              float totalScore = scores.stream().reduce(0f, Float::sum);
                 scores.set(0, scores.get(0) + scoreToAdd);
+                viewModel.updateRepetition(scores);
                 result.add(String.format(Locale.US, "Score for repetition %.2f: ", scores.get(0)));
 
                 // Mark the repetition as completed
@@ -264,8 +269,8 @@ public class PoseClassifierProcessor {
         if (repsAfter > repsBefore) {
           ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
           tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-          lastRepResult = String.format(
-                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
+//          lastRepResult = String.format(
+//                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
           break;
         }
       }
@@ -349,7 +354,6 @@ public class PoseClassifierProcessor {
     float angleInRadians = (float) Math.acos(cosTheta);
     return (int) Math.toDegrees(angleInRadians);
   }
-
   // Method to trigger the pop-up
 //  private void showBadPosturePopup(String alert) {
 //    if (context instanceof FragmentActivity) {

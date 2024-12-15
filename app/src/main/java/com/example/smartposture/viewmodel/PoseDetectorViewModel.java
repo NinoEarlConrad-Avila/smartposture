@@ -1,16 +1,19 @@
 package com.example.smartposture.viewmodel;
 
-import android.app.Application;
-
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.smartposture.data.model.PoseDetector;
+import java.util.ArrayList;
 
 public class PoseDetectorViewModel extends ViewModel {
-    private PoseDetector poseDetector;
+    private MutableLiveData<Integer> repCount =  new MutableLiveData<>(0);
 
-    public PoseDetectorViewModel(Application application) {
-        super();
-        poseDetector = new PoseDetector(application);
+    public LiveData<Integer> getRepCount() {
+        return repCount;
+    }
+
+    public void updateRepetition(ArrayList<Float> scores) {
+        repCount.postValue(scores.size()-1);
     }
 }

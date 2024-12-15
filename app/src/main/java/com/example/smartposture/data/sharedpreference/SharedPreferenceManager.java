@@ -37,7 +37,7 @@ public class SharedPreferenceManager {
     }
 
     public boolean getGuidanceStatus() {
-        return sharedPreferences.getBoolean(KEY_GUIDANCE_STATUS, false);
+        return sharedPreferences.getBoolean(KEY_GUIDANCE_STATUS, true);
     }
 
     public void saveSessionData(User user) {

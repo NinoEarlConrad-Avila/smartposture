@@ -1,5 +1,7 @@
 package com.example.smartposture.data.repository;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -91,9 +93,8 @@ public class ActivityRepository {
         return liveData;
     }
 
-    public LiveData<ActivityDetailResponse> fetchActivityDetails(int activityId) {
+    public LiveData<ActivityDetailResponse> fetchActivityDetails(ActivityIdRequest request) {
         MutableLiveData<ActivityDetailResponse> liveData = new MutableLiveData<>();
-        ActivityIdRequest request = new ActivityIdRequest(activityId);
 
         apiService.getActivityDetails(request).enqueue(new Callback<ActivityDetailResponse>() {
             @Override

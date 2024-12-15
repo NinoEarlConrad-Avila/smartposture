@@ -54,10 +54,14 @@
                     android:textSize="24sp" />
             </LinearLayout>
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp">
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="30dp"
+                >
 
                 <ImageView
                     android:id="@+id/workoutDetailImage"
@@ -66,34 +70,96 @@
                     android:scaleType="fitXY"
                     tools:srcCompat="@tools:sample/avatars"
                     android:background="@drawable/rounded_image"/>
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/workoutDetailName"
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:text="@string/squat"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="32sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/workoutDetailDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginBottom="20dp"
-                android:gravity="start|center_vertical"
-                android:paddingRight="7dp"
-                android:text="@string/sample_text_long"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
+                >
+                <LinearLayout
+                    android:id="@+id/workoutInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    android:layout_weight="1"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    >
+                    <TextView
+                        android:id="@+id/workoutDetailName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:text="@string/squat"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/workoutDetailDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingRight="7dp"
+                        android:text="@string/sample_text_long"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/workoutGoals"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:layout_marginBottom="20dp"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="GOALS"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Repetition: "
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        />
+                    <TextView
+                        android:id="@+id/repetitionGoal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/steps"
                 android:textColor="@color/white"
                 android:textSize="24sp"
@@ -105,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
+                android:layout_marginBottom="20dp"
                 tools:listitem="@layout/item_workout_detail_step" />
 
         </LinearLayout>

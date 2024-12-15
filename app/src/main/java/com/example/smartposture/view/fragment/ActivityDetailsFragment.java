@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,8 +25,10 @@ import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.ActivityWorkoutAdapter;
 import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.model.ActivityWorkout;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.util.AdditionalSpaceTop;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.ActivityViewModel;
 
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ public class ActivityDetailsFragment extends BaseFragment {
     private ImageView backButton;
     private RecyclerView workoutsRecyclerView;
     private ActivityWorkoutAdapter workoutAdapter;
+    private SharedPreferenceManager spManager;
 
     @Nullable
     @Override
@@ -46,7 +51,9 @@ public class ActivityDetailsFragment extends BaseFragment {
         loadingDialog.show();
 
         int activityId = requireArguments().getInt("activity_id", -1);
-
+        spManager = getSharedPreferenceManager();
+        int userId = spManager.getUserId();
+        Log.d("Test IDs: " ,""+ activityId +" " +userId);
         title = view.findViewById(R.id.activityName);
         description = view.findViewById(R.id.description);
         deadline = view.findViewById(R.id.deadline);
@@ -58,7 +65,7 @@ public class ActivityDetailsFragment extends BaseFragment {
         int spaceInPixelsBottom = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsBottom);
         int spaceInPixelsTop = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsTop);
         workoutsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        workoutAdapter = new ActivityWorkoutAdapter(new ArrayList<>());
+        workoutAdapter = new ActivityWorkoutAdapter(new ArrayList<>(), this);
         workoutsRecyclerView.setAdapter(workoutAdapter);
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceBottom(spaceInPixelsBottom));
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceTop(spaceInPixelsTop));
@@ -71,11 +78,14 @@ public class ActivityDetailsFragment extends BaseFragment {
             if (response != null && response.getActivity() != null) {
                 updateUI(response.getActivity());
                 loadingDialog.dismiss();
+            } else {
+                loadingDialog.dismiss();
             }
         });
 
+
         if (activityId != -1) {
-            activityViewModel.fetchActivityDetails(activityId);
+            activityViewModel.fetchActivityDetails(activityId, userId);
         }
         return view;
     }
@@ -104,5 +114,21 @@ public class ActivityDetailsFragment extends BaseFragment {
         preloaderImage.startAnimation(bounceAnimation);
 
         return dialog;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
+        }
     }
 }

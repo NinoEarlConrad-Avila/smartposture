@@ -14,32 +14,33 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.StepsAdapter;
-import com.example.smartposture.data.model.WorkoutDetail;
+import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.view.activity.MainActivity;
-import com.example.smartposture.viewmodel.WorkoutDetailViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.smartposture.viewmodel.WorkoutViewModel;
 
-public class WorkoutDetailFragment extends Fragment {
+public class WorkoutDetailFragment extends BaseFragment {
 
-    private WorkoutDetailViewModel workoutDetailViewModel;
+    private WorkoutViewModel workoutViewModel;
     private ScrollView contentScrollView;
-    private TextView workoutName, workoutDescription;
+    private TextView workoutName, workoutDescription, repGoal;
     private ImageView workoutImage;
     private RecyclerView stepsRecyclerView;
     private Button startButton;
     private ImageButton backButton;
+    private LinearLayout workoutGoals;
+    private int workoutId, activityWorkoutId, repetition;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,8 +49,13 @@ public class WorkoutDetailFragment extends Fragment {
         if (getActivity() != null) {
             ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
+        workoutId = requireArguments().getInt("workout_id", -1);
+        activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
+        repetition = requireArguments().getInt("repetition", -1);
 
         // Initialize views
+        workoutGoals = view.findViewById(R.id.workoutGoals);
+        repGoal = view.findViewById(R.id.repetitionGoal);
         contentScrollView = view.findViewById(R.id.workoutDetailScrollView);
         workoutName = view.findViewById(R.id.workoutDetailName);
         workoutDescription = view.findViewById(R.id.workoutDetailDescription);
@@ -62,12 +68,20 @@ public class WorkoutDetailFragment extends Fragment {
         Dialog loadingDialog = createFullScreenLoadingDialog();
         loadingDialog.show();
 
-        workoutDetailViewModel = new ViewModelProvider(this).get(WorkoutDetailViewModel.class);
-
         // Set up RecyclerView
+        int spaceInPixelsBottom = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsBottom);
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        stepsRecyclerView.setNestedScrollingEnabled(false);
-        stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+
+        workoutViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
+        if (repetition != -1 && activityWorkoutId != -1){
+            workoutGoals.setVisibility(View.VISIBLE);
+            repGoal.setText(String.valueOf(repetition));
+            stepsRecyclerView.setNestedScrollingEnabled(false);
+            stepsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        } else {
+            workoutGoals.setVisibility(View.GONE);
+        }
 
         backButton.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
@@ -76,25 +90,25 @@ public class WorkoutDetailFragment extends Fragment {
         startButton.setOnClickListener(v -> navigateToPoseDetector(workoutName.getText().toString().toLowerCase()));
 
         // Get the workout ID from arguments and load data
-        int workoutId = requireArguments().getInt("workout_id", -1);
+
         if (workoutId != -1) {
             // Observing the LiveData from the ViewModel
-            workoutDetailViewModel.getWorkoutDetail(workoutId).observe(getViewLifecycleOwner(), response -> {
-                if (response != null && response.getWorkouts() != null) {
+            workoutViewModel.fetchWorkoutDetail(workoutId);
+
+            workoutViewModel.getWorkoutDetail().observe(getViewLifecycleOwner(), response -> {
+                if (response != null && response != null) {
                     // Successfully fetched workout data
-                    WorkoutDetail workoutDetail = response.getWorkouts();
-                    workoutName.setText(workoutDetail.getName());
-                    workoutDescription.setText(workoutDetail.getDescription());
+                    workoutName.setText(response.getName());
+                    workoutDescription.setText(response.getDescription());
 
                     // Set image resource dynamically
-                    int imageResourceId = getDrawableResourceId(requireContext(), workoutDetail.getPath());
+                    int imageResourceId = getDrawableResourceId(requireContext(), response.getPath());
                     workoutImage.setImageResource(imageResourceId != 0 ? imageResourceId : R.drawable.default_image);
 
                     // Set up RecyclerView adapter for steps
-                    StepsAdapter stepsAdapter = new StepsAdapter(workoutDetail.getSteps());
+                    StepsAdapter stepsAdapter = new StepsAdapter(response.getSteps());
                     stepsRecyclerView.setAdapter(stepsAdapter);
-                    stepsRecyclerView.setNestedScrollingEnabled(false);
-                    setRecyclerViewHeightBasedOnItems(stepsRecyclerView);
+                    stepsRecyclerView.addItemDecoration(new AdditionalSpaceBottom(spaceInPixelsBottom));
 
                     // Hide loading dialog and show content
                     loadingDialog.dismiss();
@@ -126,45 +140,6 @@ public class WorkoutDetailFragment extends Fragment {
         return dialog;
     }
 
-
-    private void setRecyclerViewHeightBasedOnItems(RecyclerView recyclerView) {
-        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = recyclerView.getAdapter();
-        if (adapter == null) {
-            return;
-        }
-
-        int totalHeight = 0;
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (layoutManager == null) {
-            return;
-        }
-
-        int recyclerViewPadding = recyclerView.getPaddingTop() + recyclerView.getPaddingBottom();
-        totalHeight += recyclerViewPadding;
-
-        for (int i = 0; i < adapter.getItemCount(); i++) {
-            RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
-            adapter.bindViewHolder(holder, i);
-
-            View itemView = holder.itemView;
-            itemView.measure(
-                    View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth(), View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.UNSPECIFIED
-            );
-
-            int itemHeight = itemView.getMeasuredHeight();
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) itemView.getLayoutParams();
-            int itemMarginTop = layoutParams.topMargin;
-            int itemMarginBottom = layoutParams.bottomMargin;
-
-            totalHeight += itemHeight + itemMarginTop + itemMarginBottom;
-        }
-
-        ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-        params.height = totalHeight + 350;
-        recyclerView.setLayoutParams(params);
-    }
-
     private int getDrawableResourceId(Context context, String fileName) {
         return context.getResources().getIdentifier(fileName, "drawable", context.getPackageName());
     }
@@ -188,6 +163,8 @@ public class WorkoutDetailFragment extends Fragment {
     private void navigateToPoseDetector(String name) {
         Bundle bundle = new Bundle();
         bundle.putString("exer", name);
+        bundle.putInt("activity_workout_id", activityWorkoutId);
+        bundle.putInt("rep_goal", repetition);
 
         PoseDetectorFragment fragment = new PoseDetectorFragment();
         fragment.setArguments(bundle);

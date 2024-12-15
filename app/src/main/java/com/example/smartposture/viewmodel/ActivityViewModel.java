@@ -1,5 +1,7 @@
 package com.example.smartposture.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -7,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.smartposture.data.model.Activity;
 import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.repository.ActivityRepository;
+import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 
@@ -80,12 +83,18 @@ public class ActivityViewModel extends ViewModel {
         });
     }
 
-    public void fetchActivityDetails(int activityId) {
+    public void fetchActivityDetails(int activityId, int userId) {
+        ActivityIdRequest request = new ActivityIdRequest(activityId, userId);
+
         loadingStateLiveData.setValue(true);
-        activityRepository.fetchActivityDetails(activityId).observeForever(response -> {
+        activityRepository.fetchActivityDetails(request).observeForever(response -> {
             if (response != null && response.getActivity() != null) {
                 activityDetailsLiveData.setValue(response);
+                Log.d("Test ViewModel", "ViewModel returned");
+            }else {
+                Log.d("Test ViewModel", "ViewModel no return");
             }
+
             loadingStateLiveData.setValue(false);
         });
     }
