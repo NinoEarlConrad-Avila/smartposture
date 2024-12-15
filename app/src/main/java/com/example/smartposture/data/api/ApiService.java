@@ -11,6 +11,7 @@ import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
 import com.example.smartposture.data.request.RoomRequest;
+import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
 import com.example.smartposture.data.request.WorkoutDetailRequest;
@@ -117,4 +118,7 @@ public interface ApiService {
 
     @POST("activity/getActivityDetails")
     Call<ActivityDetailResponse> getActivityDetails(@Body ActivityIdRequest request);
+
+    @POST("activity/addTraineeScores")
+    Call<ApiResponse> addTraineeScores(@Body TraineeScoreRequest request);
 }

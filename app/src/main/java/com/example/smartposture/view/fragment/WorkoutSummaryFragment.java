@@ -1,43 +1,77 @@
 package com.example.smartposture.view.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.example.smartposture.R;
-import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import java.util.ArrayList;
 
-public class WorkoutSummaryFragment extends Fragment {
+public class WorkoutSummaryFragment extends BaseFragment {
     private TextView repCount, totalScore;
     private Button submit;
+    private ActivityViewModel activityViewModel;
+    private SharedPreferenceManager spManager;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout_summary, container, false);
 
+        int activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
+        spManager = getSharedPreferenceManager();
+        int userId = spManager.getUserId();
+        ArrayList<Float> floatList = (ArrayList<Float>) getArguments().getSerializable("floatList");
+
         repCount = view.findViewById(R.id.repCount);
         totalScore = view.findViewById(R.id.totalScore);
         submit = view.findViewById(R.id.submit);
+        Button submit = view.findViewById(R.id.submit);
+        ProgressBar loadingSpinner = view.findViewById(R.id.loadingSpinner);
 
+        activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
         submit.setOnClickListener(v -> {
-            navigateToHome();
+            if (floatList != null && floatList.size() > 1) {
+                ArrayList<Float> subList = new ArrayList<>(floatList.subList(1, floatList.size()));
+
+                loadingSpinner.setVisibility(View.VISIBLE);
+                submit.setEnabled(false);
+                submit.setText("");
+
+                activityViewModel.addTraineeScore(activityWorkoutId, userId, subList);
+            } else {
+                Log.e("WorkoutDetailFragment", "Insufficient data in floatList");
+            }
+        });
+
+        activityViewModel.getTraineeScoreStatus().observe(getViewLifecycleOwner(), status -> {
+            loadingSpinner.setVisibility(View.GONE);
+            submit.setEnabled(true);
+            if ("Success".equals(status)) {
+                navigateToActivityDetail();
+            } else if (status != null) {
+                Toast.makeText(requireContext(), "Failed to create activity: " + status, Toast.LENGTH_LONG).show();
+            }
         });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
@@ -47,7 +81,6 @@ public class WorkoutSummaryFragment extends Fragment {
                     }
                 });
 
-        ArrayList<Float> floatList = (ArrayList<Float>) getArguments().getSerializable("floatList");
 
         if (floatList != null) {
             // Loop through the list and log each element
@@ -135,15 +168,12 @@ public class WorkoutSummaryFragment extends Fragment {
             Log.d("GraphView", "No data available in the floatList.");
         }
     }
-    private void navigateToHome() {
-        Bundle bundle = new Bundle();
-
-        HomeFragment fragment = new HomeFragment();
-
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack("RoomDetailFragment")
-                .commit();
+    private void navigateToActivityDetail() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        for (int i = 0; i < 3; i++) {
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack();
+            }
+        }
     }
 }

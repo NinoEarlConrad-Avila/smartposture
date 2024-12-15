@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.Activity;
 import com.example.smartposture.data.model.ActivityWorkout;
+import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.view.fragment.ActivityDetailsFragment;
 import com.example.smartposture.view.fragment.RoomDetailFragment;
 

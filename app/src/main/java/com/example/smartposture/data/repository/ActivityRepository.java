@@ -10,6 +10,7 @@ import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
+import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.ApiResponse;
@@ -109,6 +110,30 @@ public class ActivityRepository {
             @Override
             public void onFailure(Call<ActivityDetailResponse> call, Throwable t) {
                 liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<String> addTraineeScore(TraineeScoreRequest request) {
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+        apiService.addTraineeScores(request).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
+                        liveData.postValue("Success");
+                    } else {
+                        liveData.postValue(response.body().getMessage());
+                    }
+                } else {
+                    liveData.postValue("Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                liveData.postValue("Error: " + t.getMessage());
             }
         });
         return liveData;

@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -162,7 +163,6 @@ public class PoseDetectorFragment extends BaseFragment {
         goHome.setOnClickListener(v -> {
             navigateToHome();
         });
-
         done.setOnClickListener(v -> {
             ArrayList<Float> floatList = poseClassifierProcessor.getScores();
 
@@ -181,15 +181,7 @@ public class PoseDetectorFragment extends BaseFragment {
                         "Scores are available. Do you want to proceed?",
                         () -> {
                             // Action on "Yes": Navigate to the WorkoutSummaryFragment
-                            WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("floatList", floatList);
-                            summary.setArguments(bundle);
-
-                            requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.container, summary)
-                                    .addToBackStack("WorkoutSummary")
-                                    .commit();
+                            navigateToSummary(floatList);
                         },
                         () -> {
                             resetCamera();
@@ -422,7 +414,19 @@ public class PoseDetectorFragment extends BaseFragment {
                 .addToBackStack("RoomDetailFragment")
                 .commit();
     }
+    private void navigateToSummary(ArrayList<Float> floatList) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("activity_workout_id", activityWorkoutId);
+        bundle.putSerializable("floatList", floatList);
 
+        WorkoutSummaryFragment summary = new WorkoutSummaryFragment();
+        summary.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, summary)
+                .addToBackStack("WorkoutSummary")
+                .commit();
+    }
     public void showBadPosturePopup(String alert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Posture Alert");

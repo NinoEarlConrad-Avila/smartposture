@@ -16,6 +16,7 @@ public class SharedPreferenceManager {
     private static final String KEY_BIRTH_DATE = "birthdate";
     private static final String KEY_USER_TYPE = "user_type";
     private static final String KEY_GUIDANCE_STATUS = "guidance_status";
+    private static final String KEY_ACTIVITY_ID = "activity_id";
     private static SharedPreferenceManager instance;
     private SharedPreferences sharedPreferences;
 
@@ -33,6 +34,12 @@ public class SharedPreferenceManager {
     public void saveGuidanceStatus(boolean status) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(KEY_GUIDANCE_STATUS, status);
+        editor.apply(); // Save changes asynchronously
+    }
+
+    public void saveActivityId(int id) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_ACTIVITY_ID, id);
         editor.apply(); // Save changes asynchronously
     }
 
@@ -68,7 +75,7 @@ public class SharedPreferenceManager {
     public String getUserType() {
         return sharedPreferences.getString(KEY_USER_TYPE, null);
     }
-
+    public int getActivityId(){return sharedPreferences.getInt(KEY_ACTIVITY_ID, -1);}
     public User getUserDetails() {
         int userId = getUserId();
         String username = getUsername();
@@ -89,6 +96,12 @@ public class SharedPreferenceManager {
     public void clearSession() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
+        editor.apply();
+    }
+
+    public void clearKey(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
         editor.apply();
     }
 }

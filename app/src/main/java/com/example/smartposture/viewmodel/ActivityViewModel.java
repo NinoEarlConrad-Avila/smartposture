@@ -11,6 +11,7 @@ import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.repository.ActivityRepository;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
+import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<List<Activity>> inactiveActivitiesLiveData = new MutableLiveData<>();
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
+    private final MutableLiveData<String> traineeScoreStatus= new MutableLiveData<>();
 
 
     public ActivityViewModel(){
@@ -46,6 +48,9 @@ public class ActivityViewModel extends ViewModel {
     }
     public LiveData<String> getCreateActivityStatus(){
         return createActivityStatus;
+    }
+    public LiveData<String> getTraineeScoreStatus(){
+        return traineeScoreStatus;
     }
     public void fetchActiveActivities(int roomId) {
         loadingStateLiveData.setValue(true);
@@ -96,6 +101,18 @@ public class ActivityViewModel extends ViewModel {
             }
 
             loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void addTraineeScore(int act_wkt_id, int user_id, ArrayList<Float> scores){
+        TraineeScoreRequest request = new TraineeScoreRequest(act_wkt_id, user_id, scores);
+        loadingStateLiveData.setValue(true);
+        activityRepository.addTraineeScore(request).observeForever( result -> {
+            if ("Success".equals(result)) {
+                traineeScoreStatus.setValue("Success");
+            } else {
+                traineeScoreStatus.setValue(result);
+            }
         });
     }
 }
