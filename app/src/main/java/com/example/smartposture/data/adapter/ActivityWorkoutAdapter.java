@@ -23,9 +23,12 @@ import java.util.List;
 public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkoutAdapter.ActivityWorkoutViewHolder> {
     private List<ActivityWorkout> workouts;
     private ActivityDetailsFragment context;
-    public ActivityWorkoutAdapter(List<ActivityWorkout> workouts, ActivityDetailsFragment context){
+    private int activityId, roomId;
+    public ActivityWorkoutAdapter(List<ActivityWorkout> workouts, ActivityDetailsFragment context, int activityId, int roomId){
         this.workouts = workouts;
         this.context = context;
+        this.activityId = activityId;
+        this.roomId = roomId;
     }
 
     @NonNull
@@ -58,6 +61,8 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
 
         holder.startButton.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
+            bundle.putInt("activity_id", activityId);
+            bundle.putInt("room_id", roomId);
             bundle.putInt("activity_workout_id", activity.getActivity_workout_id());
             bundle.putInt("workout_id", activity.getWorkout_id());
             bundle.putInt("repetition", activity.getRepetition());

@@ -27,11 +27,13 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
     private RoomDetailFragment fragment;
     private Context context;
     private String userType;
-    public ActivityAdapter(Context context, List<Activity> activities, RoomDetailFragment fragment, String userType){
+    private int roomId;
+    public ActivityAdapter(Context context, List<Activity> activities, RoomDetailFragment fragment, String userType, int roomId){
         this.context = context;
         this.activities = activities;
         this.fragment = fragment;
         this.userType = userType;
+        this.roomId = roomId;
     }
 
        @NonNull
@@ -59,7 +61,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
             if (background != null) {
                 if (activity.getStatus().equals("Not attempted")) {
                     background.setTint(ContextCompat.getColor(context, R.color.not_attempted));
-                } else if (activity.getStatus().equals("In progress")) {
+                } else if (activity.getStatus().equals("In Progress")) {
                     background.setTint(ContextCompat.getColor(context, R.color.in_progress));
                 } else if (activity.getStatus().equals("Submitted")) {
                     background.setTint(ContextCompat.getColor(context, R.color.submitted));
@@ -79,6 +81,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.viewButton.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
             bundle.putInt("activity_id", activity.getActivity_id());
+            bundle.putInt("room_id", roomId);
 
             ActivityDetailsFragment fragment = new ActivityDetailsFragment();
             fragment.setArguments(bundle);

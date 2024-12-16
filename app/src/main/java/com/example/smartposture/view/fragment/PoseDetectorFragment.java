@@ -416,6 +416,9 @@ public class PoseDetectorFragment extends BaseFragment {
     }
     private void navigateToSummary(ArrayList<Float> floatList) {
         Bundle bundle = new Bundle();
+        bundle.putInt("room_id", requireArguments().getInt("room_id", -1));
+        bundle.putInt("activity_id", requireArguments().getInt("activity_id", -1));
+        bundle.putInt("rep_goal", requireArguments().getInt("rep_goal", -1));
         bundle.putInt("activity_workout_id", activityWorkoutId);
         bundle.putSerializable("floatList", floatList);
 

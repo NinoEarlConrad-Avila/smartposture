@@ -127,4 +127,7 @@ public interface ApiService {
 
     @POST("activity/addTraineeScores")
     Call<ApiResponse> addTraineeScores(@Body TraineeScoreRequest request);
+
+    @POST("activity/submitActivity")
+    Call<ApiResponse> submitActivity(@Body ActivityIdRequest request);
 }

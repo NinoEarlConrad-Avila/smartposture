@@ -52,7 +52,7 @@ public class RoomDetailFragment extends BaseFragment {
     private Animation animation;
     private String dialogType, userType;
     private SharedPreferenceManager spManager;
-
+    private int roomId;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -103,7 +103,7 @@ public class RoomDetailFragment extends BaseFragment {
         roomViewModel = new ViewModelProvider(this).get(RoomDetailViewModel.class);
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
 
-        int roomId = requireArguments().getInt("room_id", -1);
+        roomId = requireArguments().getInt("room_id", -1);
 
         addActivity.setOnClickListener(v -> {
             navigateToCreateActivity(roomId);
@@ -400,7 +400,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getActiveActivitiesTrainer().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType, roomId);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -418,7 +418,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getActiveActivitiesTrainee().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType, roomId);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -436,7 +436,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getInactiveActivitiesTrainer().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType, roomId);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -454,7 +454,7 @@ public class RoomDetailFragment extends BaseFragment {
 
         activityViewModel.getInactiveActivitiesTrainee().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType, roomId);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);

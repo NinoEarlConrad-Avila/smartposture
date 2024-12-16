@@ -383,7 +383,7 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, fragment)
-                .addToBackStack("RoomDetailFragment")
+                .addToBackStack("SelectRoomFragment")
                 .commit();
     }
 }

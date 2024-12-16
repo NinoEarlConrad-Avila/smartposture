@@ -39,6 +39,8 @@ public class WorkoutSummaryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_workout_summary, container, false);
 
         int activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
+        int activityId = requireArguments().getInt("activity_id", -1);
+        int goalRep = requireArguments().getInt("rep_goal", -1);
         spManager = getSharedPreferenceManager();
         int userId = spManager.getUserId();
         ArrayList<Float> floatList = (ArrayList<Float>) getArguments().getSerializable("floatList");
@@ -68,7 +70,11 @@ public class WorkoutSummaryFragment extends BaseFragment {
             loadingSpinner.setVisibility(View.GONE);
             submit.setEnabled(true);
             if ("Success".equals(status)) {
-                navigateToActivityDetail();
+                if (goalRep != -1){
+                    navigateToActivityDetail(activityId);
+                } else {
+                    navigateToHome();
+                }
             } else if (status != null) {
                 Toast.makeText(requireContext(), "Failed to create activity: " + status, Toast.LENGTH_LONG).show();
             }
@@ -168,7 +174,24 @@ public class WorkoutSummaryFragment extends BaseFragment {
             Log.d("GraphView", "No data available in the floatList.");
         }
     }
-    private void navigateToActivityDetail() {
+    private void navigateToActivityDetail(int activityId) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
+        fragmentManager.popBackStack("ActivityDetailFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("room_id", requireArguments().getInt("room_id", -1));
+        bundle.putInt("activity_id", activityId);
+
+        ActivityDetailsFragment summary = new ActivityDetailsFragment();
+        summary.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, summary)
+                .commit();
+    }
+
+    private void navigateToHome(){
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         for (int i = 0; i < 3; i++) {
             if (fragmentManager.getBackStackEntryCount() > 0) {

@@ -28,6 +28,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
     private final MutableLiveData<String> traineeScoreStatus= new MutableLiveData<>();
+    private final MutableLiveData<String> submitActivityStatus= new MutableLiveData<>();
 
 
     public ActivityViewModel(){
@@ -62,6 +63,9 @@ public class ActivityViewModel extends ViewModel {
     }
     public LiveData<String> getTraineeScoreStatus(){
         return traineeScoreStatus;
+    }
+    public LiveData<String> getSubmitActivityStatus(){
+        return submitActivityStatus;
     }
 
     public void fetchActiveActivitiesTrainer(int roomId) {
@@ -150,6 +154,18 @@ public class ActivityViewModel extends ViewModel {
                 traineeScoreStatus.setValue("Success");
             } else {
                 traineeScoreStatus.setValue(result);
+            }
+        });
+    }
+
+    public void submitActivity(int activity_id, int user_id){
+        ActivityIdRequest request = new ActivityIdRequest(activity_id, user_id);
+        loadingStateLiveData.setValue(true);
+        activityRepository.submitActivity(request).observeForever( result -> {
+            if ("Success".equals(result)) {
+                submitActivityStatus.setValue("Success");
+            } else {
+                submitActivityStatus.setValue(result);
             }
         });
     }

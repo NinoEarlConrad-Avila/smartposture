@@ -11,12 +11,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +41,7 @@ import java.util.List;
 public class ActivityDetailsFragment extends BaseFragment {
     private ActivityViewModel activityViewModel;
     private TextView title, description, deadline;
+    private Button submit;
     private ImageView backButton;
     private RecyclerView workoutsRecyclerView;
     private ActivityWorkoutAdapter workoutAdapter;
@@ -51,6 +56,7 @@ public class ActivityDetailsFragment extends BaseFragment {
         loadingDialog.show();
 
         int activityId = requireArguments().getInt("activity_id", -1);
+        int roomId = requireArguments().getInt("room_id", -1);
         spManager = getSharedPreferenceManager();
         int userId = spManager.getUserId();
         Log.d("Test IDs: " ,""+ activityId +" " +userId);
@@ -58,14 +64,16 @@ public class ActivityDetailsFragment extends BaseFragment {
         description = view.findViewById(R.id.description);
         deadline = view.findViewById(R.id.deadline);
         backButton = view.findViewById(R.id.backButton);
+        submit = view.findViewById(R.id.submitButton);
         workoutsRecyclerView = view.findViewById(R.id.activityWorkoutRecyclerView);
+        ProgressBar loadingSpinner = view.findViewById(R.id.loadingSpinner);
 
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
 
         int spaceInPixelsBottom = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsBottom);
         int spaceInPixelsTop = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsTop);
         workoutsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        workoutAdapter = new ActivityWorkoutAdapter(new ArrayList<>(), this);
+        workoutAdapter = new ActivityWorkoutAdapter(new ArrayList<>(), this, activityId, roomId);
         workoutsRecyclerView.setAdapter(workoutAdapter);
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceBottom(spaceInPixelsBottom));
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceTop(spaceInPixelsTop));
@@ -83,6 +91,25 @@ public class ActivityDetailsFragment extends BaseFragment {
             }
         });
 
+        submit.setOnClickListener(v -> {
+            loadingSpinner.setVisibility(View.VISIBLE);
+            submit.setEnabled(false);
+            submit.setText("");
+
+            activityViewModel.submitActivity(activityId, userId);
+            activityViewModel.getSubmitActivityStatus().observe(getViewLifecycleOwner(), status -> {
+                if ("Success".equals(status)) {
+                    Toast.makeText(requireContext(), "Activity Submitted", Toast.LENGTH_SHORT).show();
+
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                } else {
+                    submit.setEnabled(true);
+                    submit.setText("Submit Activity");
+                    Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
 
         if (activityId != -1) {
             activityViewModel.fetchActivityDetails(activityId, userId);
@@ -94,9 +121,20 @@ public class ActivityDetailsFragment extends BaseFragment {
         title.setText(activityDetails.getTitle());
         description.setText(activityDetails.getDescription());
         deadline.setText(String.format("%s %s", activityDetails.getEnd_date(), activityDetails.getEnd_time()));
+        if (activityDetails.getStatus().equals("Submitted")){
+            submit.setEnabled(false);
+            submit.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
+        }
 
         List<ActivityWorkout> workouts = activityDetails.getWorkouts();
         workoutAdapter.updateWorkouts(workouts);
+        for (ActivityWorkout workout : workouts) {
+            if(workout.getStatus() == 0){
+                submit.setEnabled(false);
+                submit.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
+                return;
+            }
+        }
     }
 
     private Dialog createFullScreenLoadingDialog() {

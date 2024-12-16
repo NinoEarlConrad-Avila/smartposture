@@ -375,6 +375,11 @@ public class CreateActivityFragment extends BaseFragment {
             isValid = false;
         }
 
+        if (repetitionInput.getText().toString().equals("0")){
+            repetitionInput.setError("Repetition count must be greater than 0");
+            isValid = false;
+        }
+
         if (isInitial)
             isInitial = false;
 
