@@ -11,6 +11,7 @@ import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.repository.ActivityRepository;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
+import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 
@@ -20,8 +21,10 @@ import java.util.List;
 public class ActivityViewModel extends ViewModel {
     private final ActivityRepository activityRepository;
     private final MutableLiveData<Boolean> loadingStateLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Activity>> activeActivitiesLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Activity>> inactiveActivitiesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Activity>> activeActivitiesTrainer = new MutableLiveData<>();
+    private final MutableLiveData<List<Activity>> activeActivitiesTrainee = new MutableLiveData<>();
+    private final MutableLiveData<List<Activity>> inactiveActivitiesTrainer = new MutableLiveData<>();
+    private final MutableLiveData<List<Activity>> inactiveActivitiesTrainee = new MutableLiveData<>();
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
     private final MutableLiveData<String> traineeScoreStatus= new MutableLiveData<>();
@@ -34,13 +37,21 @@ public class ActivityViewModel extends ViewModel {
         return loadingStateLiveData;
     }
 
-    public LiveData<List<Activity>> getActiveActivities(){
+    public LiveData<List<Activity>> getActiveActivitiesTrainer(){
 
-        return activeActivitiesLiveData;
+        return activeActivitiesTrainer;
     }
-    public LiveData<List<Activity>> getInactiveActivities(){
+    public LiveData<List<Activity>> getActiveActivitiesTrainee(){
 
-        return inactiveActivitiesLiveData;
+        return activeActivitiesTrainee;
+    }
+    public LiveData<List<Activity>> getInactiveActivitiesTrainer(){
+
+        return inactiveActivitiesTrainer;
+    }
+    public LiveData<List<Activity>> getInactiveActivitiesTrainee(){
+
+        return inactiveActivitiesTrainee;
     }
     public LiveData<ActivityDetailResponse> getActivityDetails(){
 
@@ -52,25 +63,52 @@ public class ActivityViewModel extends ViewModel {
     public LiveData<String> getTraineeScoreStatus(){
         return traineeScoreStatus;
     }
-    public void fetchActiveActivities(int roomId) {
+
+    public void fetchActiveActivitiesTrainer(int roomId) {
         loadingStateLiveData.setValue(true);
-        activityRepository.fetchActiveActivities(roomId).observeForever(response -> {
+        activityRepository.fetchActiveActivitiesTrainer(roomId).observeForever(response -> {
             if (response != null && response.getActivity() != null) {
-                activeActivitiesLiveData.setValue(response.getActivity());
+                activeActivitiesTrainer.setValue(response.getActivity());
             } else {
-                activeActivitiesLiveData.setValue(new ArrayList<>());
+                activeActivitiesTrainer.setValue(new ArrayList<>());
             }
             loadingStateLiveData.setValue(false);
         });
     }
 
-    public void fetchInactiveActivities(int roomId) {
+    public void fetchActiveActivitiesTrainee(int roomId, int userId) {
+        TraineeActivityRequest request = new TraineeActivityRequest(roomId, userId);
         loadingStateLiveData.setValue(true);
-        activityRepository.fetchInactiveActivities(roomId).observeForever(response -> {
+        activityRepository.fetchActiveActivitiesTrainee(request).observeForever(response -> {
             if (response != null && response.getActivity() != null) {
-                inactiveActivitiesLiveData.setValue(response.getActivity());
+                activeActivitiesTrainee.setValue(response.getActivity());
             } else {
-                inactiveActivitiesLiveData.setValue(new ArrayList<>());
+                activeActivitiesTrainee.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void fetchInactiveActivitiesTrainer(int roomId) {
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchInactiveActivitiesTrainer(roomId).observeForever(response -> {
+            if (response != null && response.getActivity() != null) {
+                inactiveActivitiesTrainer.setValue(response.getActivity());
+            } else {
+                inactiveActivitiesTrainer.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+    }
+
+    public void fetchInactiveActivitiesTrainee(int roomId, int userId) {
+        TraineeActivityRequest request = new TraineeActivityRequest(roomId, userId);
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchInactiveActivitiesTrainee(request).observeForever(response -> {
+            if (response != null && response.getActivity() != null) {
+                inactiveActivitiesTrainee.setValue(response.getActivity());
+            } else {
+                inactiveActivitiesTrainee.setValue(new ArrayList<>());
             }
             loadingStateLiveData.setValue(false);
         });

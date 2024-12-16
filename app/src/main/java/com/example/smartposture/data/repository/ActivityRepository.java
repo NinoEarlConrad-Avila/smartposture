@@ -10,6 +10,7 @@ import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
+import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
@@ -26,11 +27,11 @@ public class ActivityRepository {
         apiService = ApiClient.getClient().create(ApiService.class);
     }
 
-    public LiveData<ActivityResponse> fetchActiveActivities(int roomId) {
+    public LiveData<ActivityResponse> fetchActiveActivitiesTrainer(int roomId) {
         MutableLiveData<ActivityResponse> liveData = new MutableLiveData<>();
         RoomIdRequest request = new RoomIdRequest(roomId);
 
-        apiService.getActiveActivities(request).enqueue(new Callback<ActivityResponse>() {
+        apiService.getActiveActivitiesTrainer(request).enqueue(new Callback<ActivityResponse>() {
             @Override
             public void onResponse(Call<ActivityResponse> call, Response<ActivityResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -48,11 +49,52 @@ public class ActivityRepository {
         return liveData;
     }
 
-    public LiveData<ActivityResponse> fetchInactiveActivities(int roomId) {
+    public LiveData<ActivityResponse> fetchActiveActivitiesTrainee(TraineeActivityRequest request) {
+        MutableLiveData<ActivityResponse> liveData = new MutableLiveData<>();
+
+        apiService.getActiveActivitiesTrainee(request).enqueue(new Callback<ActivityResponse>() {
+            @Override
+            public void onResponse(Call<ActivityResponse> call, Response<ActivityResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ActivityResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<ActivityResponse> fetchInactiveActivitiesTrainer(int roomId) {
         MutableLiveData<ActivityResponse> liveData = new MutableLiveData<>();
         RoomIdRequest request = new RoomIdRequest(roomId);
 
-        apiService.getInactiveActivities(request).enqueue(new Callback<ActivityResponse>() {
+        apiService.getInactiveActivitiesTrainer(request).enqueue(new Callback<ActivityResponse>() {
+            @Override
+            public void onResponse(Call<ActivityResponse> call, Response<ActivityResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ActivityResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<ActivityResponse> fetchInactiveActivitiesTrainee(TraineeActivityRequest request) {
+        MutableLiveData<ActivityResponse> liveData = new MutableLiveData<>();
+        apiService.getInactiveActivitiesTrainee(request).enqueue(new Callback<ActivityResponse>() {
             @Override
             public void onResponse(Call<ActivityResponse> call, Response<ActivityResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

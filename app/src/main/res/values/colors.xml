@@ -14,4 +14,9 @@
 <color name="bg_dark_blue">#192126</color>
 <color name="red">#800000</color>
 <color name="green_med">#014421</color>
+<color name="no_submission">#DC3545</color>
+<color name="not_attempted">#6C757D</color>
+<color name="in_progress">#007BFF</color>
+<color name="submitted">#28A745</color>
+<color name="submitted_late">#FF7F00</color>
 </resources>

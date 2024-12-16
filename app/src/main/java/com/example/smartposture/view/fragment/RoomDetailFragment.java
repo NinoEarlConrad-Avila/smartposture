@@ -50,7 +50,7 @@ public class RoomDetailFragment extends BaseFragment {
     private TextView roomName, roomCreator, roomCode, noActivityText;
     private Button activeActivitiesBtn, inactiveActivitiesBtn;
     private Animation animation;
-    private String dialogType;
+    private String dialogType, userType;
     private SharedPreferenceManager spManager;
 
     @Nullable
@@ -64,7 +64,8 @@ public class RoomDetailFragment extends BaseFragment {
 
         View optionsTrainer = view.findViewById(R.id.optionsTrainer);
         spManager = getSharedPreferenceManager();
-        String userType = spManager.getUserType();
+        userType = spManager.getUserType();
+        int userId = spManager.getUserId();
 
         roomName = view.findViewById(R.id.roomNameTextView);
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
@@ -113,7 +114,11 @@ public class RoomDetailFragment extends BaseFragment {
         });
 
         highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
-        fetchActiveActivities(roomId);
+        if (userType.equals("trainee")){
+            fetchActiveActivitiesTrainee(roomId, userId);
+        } else if (userType.equals("trainer")){
+            fetchActiveActivitiesTrainer(roomId);
+        }
 
         backButton.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
@@ -122,13 +127,21 @@ public class RoomDetailFragment extends BaseFragment {
         activeActivitiesBtn.setOnClickListener(v -> {
             highlightButton(activeActivitiesBtn, inactiveActivitiesBtn);
             noActivityText.setText("No Active Activities");
-            fetchActiveActivities(roomId);
+            if (userType.equals("trainee")){
+                fetchActiveActivitiesTrainee(roomId, userId);
+            } else if (userType.equals("trainer")){
+                fetchActiveActivitiesTrainer(roomId);
+            }
         });
 
         inactiveActivitiesBtn.setOnClickListener(v -> {
             highlightButton(inactiveActivitiesBtn, activeActivitiesBtn);
             noActivityText.setText("No Inactive Activities");
-            fetchInactiveActivities(roomId);
+            if (userType.equals("trainee")){
+                fetchInactiveActivitiesTrainee(roomId, userId);
+            } else if (userType.equals("trainer")){
+                fetchInactiveActivitiesTrainer(roomId);
+            }
         });
 
         viewJoinRequest.setOnClickListener(v -> {
@@ -382,12 +395,12 @@ public class RoomDetailFragment extends BaseFragment {
         loadingStateObserver();
     }
 
-    private void fetchActiveActivities(int roomId) {
-        activityViewModel.fetchActiveActivities(roomId);
+    private void fetchActiveActivitiesTrainer(int roomId) {
+        activityViewModel.fetchActiveActivitiesTrainer(roomId);
 
-        activityViewModel.getActiveActivities().observe(getViewLifecycleOwner(), activities -> {
+        activityViewModel.getActiveActivitiesTrainer().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(activities, this);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);
@@ -400,12 +413,48 @@ public class RoomDetailFragment extends BaseFragment {
         loadingStateActivitiesObserver();
     }
 
-    private void fetchInactiveActivities(int roomId) {
-        activityViewModel.fetchInactiveActivities(roomId);
+    private void fetchActiveActivitiesTrainee(int roomId, int userId) {
+        activityViewModel.fetchActiveActivitiesTrainee(roomId, userId);
 
-        activityViewModel.getInactiveActivities().observe(getViewLifecycleOwner(), activities -> {
+        activityViewModel.getActiveActivitiesTrainee().observe(getViewLifecycleOwner(), activities -> {
             if (activities != null && !activities.isEmpty()) {
-                activityAdapter = new ActivityAdapter(activities, this);
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                recyclerRoomActivities.setAdapter(activityAdapter);
+
+                recyclerRoomActivities.setVisibility(View.VISIBLE);
+                noActivities.setVisibility(View.GONE);
+            } else {
+                recyclerRoomActivities.setVisibility(View.GONE);
+                noActivities.setVisibility(View.VISIBLE);
+            }
+        });
+        loadingStateActivitiesObserver();
+    }
+
+    private void fetchInactiveActivitiesTrainer(int roomId) {
+        activityViewModel.fetchInactiveActivitiesTrainer(roomId);
+
+        activityViewModel.getInactiveActivitiesTrainer().observe(getViewLifecycleOwner(), activities -> {
+            if (activities != null && !activities.isEmpty()) {
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
+                recyclerRoomActivities.setAdapter(activityAdapter);
+
+                recyclerRoomActivities.setVisibility(View.VISIBLE);
+                noActivities.setVisibility(View.GONE);
+            } else {
+                recyclerRoomActivities.setVisibility(View.GONE);
+                noActivities.setVisibility(View.VISIBLE);
+            }
+        });
+        loadingStateActivitiesObserver();
+    }
+
+    private void fetchInactiveActivitiesTrainee(int roomId, int userId) {
+        activityViewModel.fetchInactiveActivitiesTrainee(roomId, userId);
+
+        activityViewModel.getInactiveActivitiesTrainee().observe(getViewLifecycleOwner(), activities -> {
+            if (activities != null && !activities.isEmpty()) {
+                activityAdapter = new ActivityAdapter(getContext(), activities, this, userType);
                 recyclerRoomActivities.setAdapter(activityAdapter);
 
                 recyclerRoomActivities.setVisibility(View.VISIBLE);

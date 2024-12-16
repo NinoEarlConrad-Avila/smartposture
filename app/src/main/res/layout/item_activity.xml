@@ -2,106 +2,133 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:background="@drawable/bg_white_round_border"
     android:paddingStart="10dp"
-    android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:paddingEnd="5dp"
     android:layout_marginBottom="10dp">
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/activityStatus"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_weight="1"
+        android:layout_gravity="end"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="2dp"
+        android:background="@drawable/bg_workout_category"
         >
-        <TextView
-            android:id="@+id/activityTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_title"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/activityDescription"
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingBottom="2dp"
+            android:text="No Submission"
+            android:textSize="10sp"
+            android:textColor="@color/white" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sample_text_long"
-            android:paddingRight="20dp"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            >
+            <TextView
+                android:id="@+id/activityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/activity_title"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/activityDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_text_long"
+                android:paddingRight="20dp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:textColor="@color/black"
+                android:textSize="10sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/due"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/activityEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notif_date"
+                    android:gravity="bottom"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  |  "
+                    android:gravity="bottom"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/activityEndTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notif_time"
+                    android:gravity="bottom"
+                    android:textColor="@color/black"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="end"
             >
-
-            <TextView
+            <Button
+                android:id="@+id/viewActivityBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/due"
-                android:textColor="@color/black"
+                android:text="@string/view_activity"
+                android:padding="0dp"
                 android:textSize="10sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:id="@+id/activityEndDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/notif_date"
-                android:gravity="bottom"
-                android:textColor="@color/black"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="  |  "
-                android:gravity="bottom"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:id="@+id/activityEndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/notif_time"
-                android:gravity="bottom"
-                android:textColor="@color/black"
-                android:textSize="10sp"
-                android:textStyle="bold"
+                android:layout_marginRight="3dp"
+                android:backgroundTint="@color/green_med"
+                android:textColor="@color/white"
                 />
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:layout_gravity="center"
-        android:gravity="end"
-        >
-        <Button
-            android:id="@+id/viewActivityBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/view_activity"
-            android:padding="0dp"
-            android:textSize="10sp"
-            android:backgroundTint="@color/green_med"
-            android:textColor="@color/white"
-            />
     </LinearLayout>
 </LinearLayout>

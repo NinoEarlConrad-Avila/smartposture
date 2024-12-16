@@ -11,6 +11,7 @@ import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
 import com.example.smartposture.data.request.RoomRequest;
+import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
@@ -107,11 +108,16 @@ public interface ApiService {
     Call<NotificationResponse> getRoomNotification(@Body RoomIdRequest request);
 
     // Activity API endpoints
-    @POST("activity/getActiveActivities")
-    Call<ActivityResponse> getActiveActivities(@Body RoomIdRequest request);
+    @POST("activity/getActiveActivitiesTrainer")
+    Call<ActivityResponse> getActiveActivitiesTrainer(@Body RoomIdRequest request);
 
-    @POST("activity/getInactiveActivities")
-    Call<ActivityResponse> getInactiveActivities(@Body RoomIdRequest request);
+    @POST("activity/getActiveActivitiesTrainee")
+    Call<ActivityResponse> getActiveActivitiesTrainee(@Body TraineeActivityRequest request);
+    @POST("activity/getInactiveActivitiesTrainer")
+    Call<ActivityResponse> getInactiveActivitiesTrainer(@Body RoomIdRequest request);
+
+    @POST("activity/getInactiveActivitiesTrainee")
+    Call<ActivityResponse> getInactiveActivitiesTrainee(@Body TraineeActivityRequest request);
 
     @POST("activity/addRoomActivity")
     Call<ApiResponse> addRoomActivity(@Body CreateActivityRequest request);

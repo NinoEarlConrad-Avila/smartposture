@@ -6,6 +6,7 @@ public class Activity {
     private String description;
     private String end_date;
     private String end_time;
+    private String status;
 
     public Activity(int activity_id, String title, String description, String end_date, String end_time) {
         this.activity_id = activity_id;
@@ -15,6 +16,14 @@ public class Activity {
         this.end_time = end_time;
     }
 
+    public Activity(int activity_id, String title, String description, String end_date, String end_time, String status) {
+        this.activity_id = activity_id;
+        this.title = title;
+        this.description = description;
+        this.end_date = end_date;
+        this.end_time = end_time;
+        this.status = status;
+    }
     public int getActivity_id() {
         return activity_id;
     }
@@ -53,5 +62,13 @@ public class Activity {
 
     public void setEnd_time(String end_time) {
         this.end_time = end_time;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
