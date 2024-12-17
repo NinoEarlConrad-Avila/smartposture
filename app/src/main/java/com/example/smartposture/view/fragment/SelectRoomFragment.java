@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -38,6 +41,8 @@ import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.RoomViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRoomClickListener {
@@ -51,8 +56,9 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
     private String userType;
     private int userId;
     private ImageView preloaderImage;
+    private EditText searchRoom;
     private Animation animation;
-
+    private List<Room> allRooms = new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,6 +76,7 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
         layoutNoRooms = view.findViewById(R.id.noRooms);
 
+        searchRoom = view.findViewById(R.id.searchRoom);
         myRoomsButton = view.findViewById(R.id.myRooms);
         availableRoomsButton = view.findViewById(R.id.availableRooms);
 
@@ -107,6 +114,20 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
 
             fetchMyRooms(viewModel);
         }
+        searchRoom.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                String query = charSequence.toString().toLowerCase();
+
+                adapter.filter(query);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
 
         return view;
     }

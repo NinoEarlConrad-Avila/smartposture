@@ -16,11 +16,13 @@ import com.bumptech.glide.Glide;
 import com.example.smartposture.R;
 import com.example.smartposture.data.model.Workout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder> {
     private List<Workout> workouts;
-    private final OnWorkoutClickListener listener; // Define a listener field
+    private List<Workout> workoutsFull; // To keep the original list for filtering
+    private final OnWorkoutClickListener listener;
 
     public interface OnWorkoutClickListener {
         void onWorkoutClick(int workoutId);
@@ -28,11 +30,13 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
 
     public WorkoutAdapter(List<Workout> workouts, OnWorkoutClickListener listener) {
         this.workouts = workouts;
-        this.listener = listener; // Assign the listener
+        this.workoutsFull = new ArrayList<>(workouts); // Keep a copy of the original list
+        this.listener = listener;
     }
 
     public void setWorkouts(List<Workout> newWorkouts) {
         this.workouts = newWorkouts;
+        this.workoutsFull = new ArrayList<>(newWorkouts); // Update the full list as well
         notifyDataSetChanged();
     }
 
@@ -46,12 +50,11 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
     @Override
     public void onBindViewHolder(@NonNull WorkoutViewHolder holder, int position) {
         Workout workout = workouts.get(position);
-        holder.itemView.setTag(workout.getId()); // Assuming `getId()` returns an int
+        holder.itemView.setTag(workout.getId());
         holder.nameTextView.setText(workout.getName());
         holder.descriptionTextView.setText(workout.getDescription());
         holder.categoryTextView.setText(workout.getCategory());
 
-        // Load image
         int imageResourceId = getDrawableResourceId(holder.itemView.getContext(), workout.getPath());
         holder.imageView.setImageResource(imageResourceId != 0 ? imageResourceId : R.drawable.default_image);
     }
@@ -59,6 +62,28 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
     @Override
     public int getItemCount() {
         return workouts.size();
+    }
+
+    public void filter(String query) {
+        // Clear the current list
+        List<Workout> filteredList = new ArrayList<>();
+
+        if (query.isEmpty()) {
+            // If query is empty, show the full list
+            filteredList.addAll(workoutsFull);
+        } else {
+            // Loop through the full list and add items that match the query
+            for (Workout workout : workoutsFull) {
+                if (workout.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(workout);
+                }
+            }
+        }
+
+        // Update the list and notify the adapter
+        workouts.clear();
+        workouts.addAll(filteredList);
+        notifyDataSetChanged();
     }
 
     static class WorkoutViewHolder extends RecyclerView.ViewHolder {
@@ -72,14 +97,6 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
             imageView = itemView.findViewById(R.id.workoutImage);
             categoryTextView = itemView.findViewById(R.id.workoutCategory);
 
-            // Handle clicks
-//            itemView.setOnClickListener(v -> {
-//                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-//                    int workoutId = (int) v.getTag();
-//                    Log.d("Adapter", "Id: " +workoutId);
-//                    listener.onWorkoutClick(workoutId);
-//                }
-//            });
             itemView.setOnClickListener(v -> {
                 if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
                     int workoutId = (int) v.getTag();
@@ -102,4 +119,3 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
         return context.getResources().getIdentifier(fileName, "drawable", context.getPackageName());
     }
 }
-

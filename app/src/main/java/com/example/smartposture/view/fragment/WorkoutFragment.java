@@ -10,20 +10,25 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
+import com.example.smartposture.data.model.Room;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WorkoutFragment extends Fragment {
 
@@ -33,7 +38,8 @@ public class WorkoutFragment extends Fragment {
     private ImageView preloaderImage;
     private Animation bounceAnimation;
     private RecyclerView workoutRecyclerView;
-
+    private EditText searchWorkout;
+    private List<Room> allRooms = new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -46,6 +52,7 @@ public class WorkoutFragment extends Fragment {
                 public void handleOnBackPressed() {
                 }
             });
+        searchWorkout = view.findViewById(R.id.searchWorkout);
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
         preloaderImage = view.findViewById(R.id.preloaderImage);
         layoutNoWorkouts = view.findViewById(R.id.noWorkout);
@@ -63,6 +70,21 @@ public class WorkoutFragment extends Fragment {
         observeViewModel();
 
         workoutsViewModel.fetchWorkouts();
+
+        searchWorkout.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                String query = charSequence.toString().toLowerCase();
+
+                workoutAdapter.filter(query);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
 
         return view;
     }

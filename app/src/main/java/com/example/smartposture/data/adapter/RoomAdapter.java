@@ -19,10 +19,9 @@ import java.util.List;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
     private static OnRoomClickListener onRoomClickListener;
-
     private static String mode = "myRooms";
-    private List<Room> rooms;
-
+    private List<Room> fullList;
+    private List<Room> filteredList;
     private final Context context;
 
     public interface OnRoomClickListener {
@@ -33,21 +32,23 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public RoomAdapter(OnRoomClickListener onRoomClickListener, Context context) {
         this.onRoomClickListener = onRoomClickListener;
         this.context = context;
-        rooms = new ArrayList<>();
+        fullList = new ArrayList<>();
+        filteredList = new ArrayList<>();
     }
 
     public void setMode(String mode) {
-        this.mode = mode;
+        RoomAdapter.mode = mode;
         notifyDataSetChanged();
     }
 
     public void updateRooms(List<Room> newRooms) {
-        this.rooms = newRooms;
+        this.fullList = new ArrayList<>(newRooms);
+        this.filteredList = new ArrayList<>(newRooms);
         notifyDataSetChanged();
     }
 
     public Room getRoomById(int roomId) {
-        for (Room room : rooms) {
+        for (Room room : filteredList) {
             if (room.getRoom_id() == roomId) {
                 return room;
             }
@@ -56,13 +57,12 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     }
 
     public List<Room> getRooms() {
-        return rooms;
+        return filteredList;
     }
 
     public int getPosition(int roomId) {
-        List<Room> rooms = getRooms();
-        for (int i = 0; i < rooms.size(); i++) {
-            if (rooms.get(i).getRoom_id() == roomId) {
+        for (int i = 0; i < filteredList.size(); i++) {
+            if (filteredList.get(i).getRoom_id() == roomId) {
                 return i;
             }
         }
@@ -79,7 +79,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
-        Room room = rooms.get(position);
+        Room room = filteredList.get(position);
         if (room != null) {
             holder.bind(room);
         }
@@ -87,7 +87,22 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     @Override
     public int getItemCount() {
-        return rooms != null ? rooms.size() : 0;
+        return filteredList != null ? filteredList.size() : 0;
+    }
+
+    public void filter(String query) {
+        filteredList.clear();
+        if (query.isEmpty()) {
+            filteredList.addAll(fullList);
+        } else {
+            String lowerCaseQuery = query.toLowerCase();
+            for (Room room : fullList) {
+                if (room.getRoom_name().toLowerCase().contains(lowerCaseQuery)) {
+                    filteredList.add(room);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     static class RoomViewHolder extends RecyclerView.ViewHolder {

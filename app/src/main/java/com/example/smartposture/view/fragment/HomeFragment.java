@@ -9,12 +9,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,11 +25,13 @@ import android.widget.Toast;
 
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
+import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends BaseFragment {
 
@@ -38,6 +43,8 @@ public class HomeFragment extends BaseFragment {
     private Animation bounceAnimation;
     private SharedPreferenceManager spManager;
     private RecyclerView workoutRecyclerView;
+    private EditText searchWorkout;
+    private List<Room> allRooms = new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -51,6 +58,7 @@ public class HomeFragment extends BaseFragment {
                     }
                 });
 
+        searchWorkout = view.findViewById(R.id.searchWorkout);
         usernameTextView = view.findViewById(R.id.txtUsername);
         workoutRecyclerView = view.findViewById(R.id.workoutRecyclerView);
         layoutPreLoader = view.findViewById(R.id.preloaderLayout);
@@ -75,6 +83,21 @@ public class HomeFragment extends BaseFragment {
         notification.setOnClickListener(v -> navigateToNotification());
 
         workoutsViewModel.fetchWorkouts();
+
+        searchWorkout.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                String query = charSequence.toString().toLowerCase();
+
+                workoutAdapter.filter(query);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
 
         return view;
     }

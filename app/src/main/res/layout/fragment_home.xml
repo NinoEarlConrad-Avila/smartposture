@@ -74,7 +74,7 @@
             >
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/searchWorkout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@android:color/transparent"
