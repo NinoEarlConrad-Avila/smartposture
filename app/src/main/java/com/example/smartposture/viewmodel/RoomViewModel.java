@@ -154,4 +154,13 @@ public class RoomViewModel extends ViewModel {
             }
         });
     }
+
+    public void joinRoomCode(int roomId, int userId) {
+        loadingStateLiveData.setValue(true);
+        repository.joinRoomCode(roomId, userId).observeForever(result -> {
+            if ("Success".equals(result)) {
+//                fetchTraineeAvailableRooms(roomId);
+            }
+        });
+    }
 }

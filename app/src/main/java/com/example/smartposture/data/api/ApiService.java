@@ -91,6 +91,9 @@ public interface ApiService {
     @POST("room/addTraineeRoom")
     Call<ApiResponse> addTrainee(@Body JoinReqRequest request);
 
+    @POST("room/addTraineeRoom")
+    Call<ApiResponse> joinRoomCode(@Body JoinReqRequest request);
+
     @POST("room/removeRoomTrainee")
     Call<ApiResponse> removeTrainee(@Body JoinReqRequest request);
 

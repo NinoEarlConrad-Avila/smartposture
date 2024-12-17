@@ -26,15 +26,30 @@
         android:text="@string/room_creator"
         android:textColor="@color/black"
         android:textSize="16sp" />
-
-    <Button
-        android:id="@+id/roomActionButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/join_room"
-        android:backgroundTint="@color/bg_dark_blue"
-        android:textColor="@color/white"
-        />
-
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/roomActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:text="@string/join_room"
+            android:textSize="10sp"
+            android:backgroundTint="@color/bg_dark_blue"
+            android:textColor="@color/white"
+            />
+        <Button
+            android:id="@+id/enterRoomCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textSize="10sp"
+            android:text="Enter Code"
+            android:backgroundTint="@color/bg_dark_blue"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
 </LinearLayout>

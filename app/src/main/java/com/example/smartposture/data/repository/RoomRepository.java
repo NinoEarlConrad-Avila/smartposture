@@ -185,6 +185,30 @@ public class RoomRepository {
             }
         });
     }
+    public LiveData<String> joinRoomCode(int roomId, int userId) {
+        MutableLiveData<String> liveData = new MutableLiveData<>();
+        JoinReqRequest request = new JoinReqRequest(roomId, userId);
+        apiService.joinRoomCode(request).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().getMessage().equals("Success") && response.body().getStatus() == 1){
+                        liveData.postValue("Success");
+                    } else {
+                        liveData.postValue(response.body().getMessage());
+                    }
+                } else {
+                    liveData.postValue("Failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                liveData.postValue("Error: " + t.getMessage());
+            }
+        });
+        return liveData;
+    }
 
     public interface CreateRoomCallback {
         void onSuccess(String message);

@@ -27,6 +27,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public interface OnRoomClickListener {
         void onRoomClick(int roomId, String mode, Button actionButton);
+        void onCodeClick(int roomId, String roomCode);
     }
 
     public RoomAdapter(OnRoomClickListener onRoomClickListener, Context context) {
@@ -92,7 +93,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     static class RoomViewHolder extends RecyclerView.ViewHolder {
         private final TextView roomNameTextView;
         private final TextView roomCreatorTextView;
-        private Button actionButton;
+        private Button actionButton, enterCode;
         private final Context context;
 
         public RoomViewHolder(@NonNull View itemView, Context context) {
@@ -101,6 +102,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             roomNameTextView = itemView.findViewById(R.id.roomName);
             roomCreatorTextView = itemView.findViewById(R.id.roomCreator);
             actionButton = itemView.findViewById(R.id.roomActionButton);
+            enterCode = itemView.findViewById(R.id.enterRoomCode);
         }
 
         public void bind(Room room) {
@@ -110,7 +112,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             if (mode.equals("myRooms")) {
                 actionButton.setText("View Room");
                 actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
+                enterCode.setVisibility(View.GONE);
             } else if (mode.equals("availableRooms")) {
+                enterCode.setVisibility(View.VISIBLE);
                 if (room.getRequest_status() == 0) {
                     actionButton.setText("Requested");
                     actionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.bg_dark_blue));
@@ -123,6 +127,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             actionButton.setOnClickListener(v -> {
                 if (onRoomClickListener != null) {
                     onRoomClickListener.onRoomClick(room.getRoom_id(), mode, actionButton);
+                }
+            });
+            enterCode.setOnClickListener(v -> {
+                if (onRoomClickListener != null) {
+                    onRoomClickListener.onCodeClick(room.getRoom_id(), room.getRoom_code());
                 }
             });
         }

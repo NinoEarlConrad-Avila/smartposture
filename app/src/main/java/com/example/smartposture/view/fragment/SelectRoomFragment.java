@@ -49,6 +49,7 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
     private LinearLayout layoutButtons, layoutTrainer;
     private Button myRoomsButton, availableRoomsButton;
     private String userType;
+    private int userId;
     private ImageView preloaderImage;
     private Animation animation;
 
@@ -77,9 +78,9 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         animation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
 
         viewModel = new ViewModelProvider(this).get(RoomViewModel.class);
-
         spManager = getSharedPreferenceManager();
         userType = spManager.getUserType();
+        userId = spManager.getUserId();
 
         setupRecyclerView();
         observeViewModel();
@@ -132,6 +133,24 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
                         );
                     }
                 }
+            }
+        } else {
+            Toast.makeText(requireContext(), "Invalid Room ID", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCodeClick(int roomId, String roomCode) {
+        if (roomId != -1) {
+            Room selectedRoom = adapter.getRoomById(roomId);
+            if (selectedRoom != null) {
+                enterRoomCodeDialog(
+                    roomId,
+                    roomCode,
+                    () -> {
+                        Toast.makeText(requireContext(), "Room Code Verified! Joining Room...", Toast.LENGTH_SHORT).show();
+                    }
+                );
             }
         } else {
             Toast.makeText(requireContext(), "Invalid Room ID", Toast.LENGTH_SHORT).show();
@@ -349,6 +368,37 @@ public class SelectRoomFragment extends BaseFragment implements RoomAdapter.OnRo
         });
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void enterRoomCodeDialog(int roomId, String expectedRoomCode, Runnable onConfirm) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.setContentView(R.layout.dialog_enter_code);
+        dialog.setCancelable(true);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.5f);
+        }
+
+        EditText enteredRoomCode = dialog.findViewById(R.id.inputRoomCode);
+        Button joinRoom = dialog.findViewById(R.id.sendRequest);
+
+        joinRoom.setOnClickListener(v -> {
+            String enteredCode = enteredRoomCode.getText().toString().trim();
+            if (enteredCode.equals(expectedRoomCode)) {
+                viewModel.joinRoomCode(roomId, userId);
+                navigateToRoomDetails(roomId);
+                Toast.makeText(requireContext(), "Successfully joined the room!", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            } else {
+                enteredRoomCode.setError("Incorrect room code");
+            }
+        });
 
         dialog.show();
     }
