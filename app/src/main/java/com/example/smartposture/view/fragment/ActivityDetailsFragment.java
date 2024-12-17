@@ -23,6 +23,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,6 +57,7 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
     private boolean isDialogShowing = false;
     private int partialSquatCount, parallelSquatCount, deepSquatCount, repetitionSubmittedCount;
     private float totalWorkoutScore;
+    private LinearLayout viewStatistics;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,6 +79,8 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
         backButton = view.findViewById(R.id.backButton);
         submit = view.findViewById(R.id.submitButton);
         workoutsRecyclerView = view.findViewById(R.id.activityWorkoutRecyclerView);
+        viewStatistics = view.findViewById(R.id.viewActivityStatistics);
+
         ProgressBar loadingSpinner = view.findViewById(R.id.loadingSpinner);
 
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
@@ -91,6 +95,10 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
 
         backButton.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
+        });
+
+        viewStatistics.setOnClickListener(v -> {
+           navigateToStatistics(roomId, activityId);
         });
 
         activityViewModel.getActivityDetails().observe(getViewLifecycleOwner(), response -> {
@@ -256,7 +264,7 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
 
     @Override
     public void viewScore(int activityWorkoutId, int repetition) {
-            showWorkoutDialog(activityWorkoutId, repetition);
+        showWorkoutDialog(activityWorkoutId, repetition);
     }
 
     private void showWorkoutDialog(int activityWorkoutId, int repetition) {
@@ -309,10 +317,10 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
                 if (calcScore >= 75){
                     scoreClassification.setText("VERY GOOD");
                     scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green));
-                } else if (calcScore < 75 && calcScore > 50){
+                } else if (calcScore < 75 && calcScore >= 50){
                     scoreClassification.setText("GOOD");
                     scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.submitted_late));
-                } else if (calcScore <= 50){
+                } else if (calcScore < 50){
                     scoreClassification.setText("BAD");
                     scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.no_submission));
                 }
@@ -323,5 +331,19 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
             }
         });
         workoutDialog.show();
+    }
+
+    private void navigateToStatistics(int roomId, int activityId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("room_id", roomId);
+        bundle.putInt("activity_id", activityId);
+
+        ActivityStatisticsFragment summary = new ActivityStatisticsFragment();
+        summary.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, summary)
+                .addToBackStack("ActivityDetailsFragment")
+                .commit();
     }
 }

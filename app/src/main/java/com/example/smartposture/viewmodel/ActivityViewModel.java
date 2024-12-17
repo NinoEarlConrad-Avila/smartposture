@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.data.model.Activity;
 import com.example.smartposture.data.model.ActivityDetails;
+import com.example.smartposture.data.model.ActivityTrainee;
 import com.example.smartposture.data.repository.ActivityRepository;
 import com.example.smartposture.data.request.ActivityIdRequest;
+import com.example.smartposture.data.request.ActivityStatisticsRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
@@ -26,6 +28,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<List<Activity>> activeActivitiesTrainee = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesTrainer = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesTrainee = new MutableLiveData<>();
+    private final MutableLiveData<List<ActivityTrainee>> activityTrainees = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Float>> workoutScores = new MutableLiveData<>();
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
@@ -63,6 +66,10 @@ public class ActivityViewModel extends ViewModel {
     public LiveData<ArrayList<Float>> getWorkoutScores(){
 
         return workoutScores;
+    }
+    public LiveData<List<ActivityTrainee>> getActivityTrainees(){
+
+        return activityTrainees;
     }
     public LiveData<String> getCreateActivityStatus(){
         return createActivityStatus;
@@ -188,4 +195,20 @@ public class ActivityViewModel extends ViewModel {
         });
         return scores;
     }
+
+    public void fetchActivityStatistics(int roomId, int activityId) {
+        ActivityStatisticsRequest request = new ActivityStatisticsRequest(roomId, activityId);
+        loadingStateLiveData.setValue(true);
+
+        activityRepository.fetchActivityStatistics(request).observeForever(trainees -> {
+            if (trainees != null && !trainees.isEmpty()) {
+                activityTrainees.setValue(trainees);
+            } else {
+                // If no trainees or null response, set an empty list
+                activityTrainees.setValue(new ArrayList<>());
+            }
+            loadingStateLiveData.setValue(false);
+        });
+    }
+
 }

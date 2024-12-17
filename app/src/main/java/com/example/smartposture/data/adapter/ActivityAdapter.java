@@ -55,7 +55,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.Activi
         holder.date.setText(activity.getEnd_date());
         holder.time.setText(activity.getEnd_time());
 
-        Drawable background = ContextCompat.getDrawable(context, R.drawable.bg_workout_category);
+        Drawable background = ContextCompat.getDrawable(context, R.drawable.bg_activity_status);
 
         if(userType.equals("trainee")){
             if (background != null) {

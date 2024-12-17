@@ -15,7 +15,7 @@
         android:layout_gravity="end"
         android:layout_marginTop="2dp"
         android:layout_marginRight="2dp"
-        android:background="@drawable/bg_workout_category"
+        android:background="@drawable/bg_activity_status"
         >
 
         <TextView
