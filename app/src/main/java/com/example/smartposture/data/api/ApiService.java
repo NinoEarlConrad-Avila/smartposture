@@ -16,6 +16,7 @@ import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.UserIdRequest;
 import com.example.smartposture.data.request.ValidateSessionRequest;
 import com.example.smartposture.data.request.WorkoutDetailRequest;
+import com.example.smartposture.data.request.WorkoutScoresRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.JoinRequestResponse;
@@ -30,6 +31,9 @@ import com.example.smartposture.data.response.RoomTraineesResponse;
 import com.example.smartposture.data.response.ValidateSessionResponse;
 import com.example.smartposture.data.response.WorkoutDetailResponse;
 import com.example.smartposture.data.response.WorkoutResponse;
+import com.example.smartposture.data.response.WorkoutScoresResponse;
+
+import org.checkerframework.checker.units.qual.C;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -133,4 +137,7 @@ public interface ApiService {
 
     @POST("activity/submitActivity")
     Call<ApiResponse> submitActivity(@Body ActivityIdRequest request);
+
+    @POST("activity/getWorkoutScores")
+    Call<WorkoutScoresResponse> getWorkoutScores(@Body WorkoutScoresRequest request);
 }

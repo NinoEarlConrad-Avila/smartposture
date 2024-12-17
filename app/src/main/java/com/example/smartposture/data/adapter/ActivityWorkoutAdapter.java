@@ -23,12 +23,19 @@ import java.util.List;
 public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkoutAdapter.ActivityWorkoutViewHolder> {
     private List<ActivityWorkout> workouts;
     private ActivityDetailsFragment context;
+    private final OnWorkoutClickListener workoutClickListener;
     private int activityId, roomId;
-    public ActivityWorkoutAdapter(List<ActivityWorkout> workouts, ActivityDetailsFragment context, int activityId, int roomId){
+    private String userType;
+    public interface OnWorkoutClickListener {
+        void viewScore(int activity_workout_id, int repetition);
+    }
+    public ActivityWorkoutAdapter(List<ActivityWorkout> workouts, ActivityDetailsFragment context, int activityId, int roomId,  OnWorkoutClickListener listener, String userType){
         this.workouts = workouts;
         this.context = context;
         this.activityId = activityId;
         this.roomId = roomId;
+        this.workoutClickListener = listener;
+        this.userType = userType;
     }
 
     @NonNull
@@ -50,13 +57,16 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
         int imageResourceId = getDrawableResourceId(holder.itemView.getContext(), activity.getWorkout_img_path());
         holder.img_path.setImageResource(imageResourceId != 0 ? imageResourceId : R.drawable.default_image);
 
-        if (activity.getStatus() == 1){
-            holder.doneWorkout.setEnabled(false);
-            holder.startButton.setVisibility(View.GONE);
-            holder.doneWorkout.setVisibility(View.VISIBLE);
+        if (userType.equals("trainer")){
+            holder.startButton.setEnabled(false);
         } else {
-            holder.startButton.setVisibility(View.VISIBLE);
-            holder.doneWorkout.setVisibility(View.GONE);
+            if (activity.getStatus() == 1){
+                holder.startButton.setVisibility(View.GONE);
+                holder.doneWorkout.setVisibility(View.VISIBLE);
+            } else {
+                holder.startButton.setVisibility(View.VISIBLE);
+                holder.doneWorkout.setVisibility(View.GONE);
+            }
         }
 
         holder.startButton.setOnClickListener(view -> {
@@ -75,6 +85,12 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
                     .replace(R.id.container, fragment)
                     .addToBackStack("ActivityDetailFragment")
                     .commit();
+        });
+
+        holder.doneWorkout.setOnClickListener(view -> {
+            if (workoutClickListener != null) {
+                workoutClickListener.viewScore(activity.getActivity_workout_id(), activity.getRepetition());
+            }
         });
     }
 

@@ -13,6 +13,7 @@ import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
+import com.example.smartposture.data.request.WorkoutScoresRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<List<Activity>> activeActivitiesTrainee = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesTrainer = new MutableLiveData<>();
     private final MutableLiveData<List<Activity>> inactiveActivitiesTrainee = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Float>> workoutScores = new MutableLiveData<>();
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
     private final MutableLiveData<String> traineeScoreStatus= new MutableLiveData<>();
@@ -57,6 +59,10 @@ public class ActivityViewModel extends ViewModel {
     public LiveData<ActivityDetailResponse> getActivityDetails(){
 
         return activityDetailsLiveData;
+    }
+    public LiveData<ArrayList<Float>> getWorkoutScores(){
+
+        return workoutScores;
     }
     public LiveData<String> getCreateActivityStatus(){
         return createActivityStatus;
@@ -168,5 +174,18 @@ public class ActivityViewModel extends ViewModel {
                 submitActivityStatus.setValue(result);
             }
         });
+    }
+
+    public LiveData<ArrayList<Float>> fetchWorkoutScores(int activityWorkoutId, int userId) {
+        WorkoutScoresRequest request = new WorkoutScoresRequest(activityWorkoutId, userId);
+        MutableLiveData<ArrayList<Float>> scores = new MutableLiveData<>();
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchWorkoutScores(request).observeForever(response -> {
+            if (response != null) {
+                scores.setValue(response);
+            }
+            loadingStateLiveData.setValue(false);
+        });
+        return scores;
     }
 }

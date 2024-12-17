@@ -1,7 +1,5 @@
 package com.example.smartposture.data.repository;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -12,9 +10,13 @@ import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
+import com.example.smartposture.data.request.WorkoutScoresRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.ApiResponse;
+import com.example.smartposture.data.response.WorkoutScoresResponse;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -200,6 +202,27 @@ public class ActivityRepository {
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 liveData.postValue("Error: " + t.getMessage());
+            }
+        });
+        return liveData;
+    }
+
+    public LiveData<ArrayList<Float>> fetchWorkoutScores(WorkoutScoresRequest request) {
+        MutableLiveData<ArrayList<Float>> liveData = new MutableLiveData<>();
+
+        apiService.getWorkoutScores(request).enqueue(new Callback<WorkoutScoresResponse>() {
+            @Override
+            public void onResponse(Call<WorkoutScoresResponse> call, Response<WorkoutScoresResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body().getScores());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WorkoutScoresResponse> call, Throwable t) {
+                liveData.postValue(null);
             }
         });
         return liveData;
