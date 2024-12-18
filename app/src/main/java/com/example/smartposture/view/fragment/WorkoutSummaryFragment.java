@@ -32,6 +32,8 @@ public class WorkoutSummaryFragment extends BaseFragment {
     private Button submit;
     private ActivityViewModel activityViewModel;
     private SharedPreferenceManager spManager;
+    private boolean isGuest;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -50,10 +52,17 @@ public class WorkoutSummaryFragment extends BaseFragment {
         submit = view.findViewById(R.id.submit);
         Button submit = view.findViewById(R.id.submit);
         ProgressBar loadingSpinner = view.findViewById(R.id.loadingSpinner);
+        Log.d("Guest", ""+spManager.isGuestSession());
+        if (getArguments() != null) {
+            isGuest = getArguments().getBoolean("isGuest", false);
+        }
 
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
         submit.setOnClickListener(v -> {
-            if (floatList != null && floatList.size() > 1) {
+            if (userId == -1){
+                navigateToHome();
+            }
+            else if (floatList != null && floatList.size() > 1) {
                 ArrayList<Float> subList = new ArrayList<>(floatList.subList(1, floatList.size()));
 
                 loadingSpinner.setVisibility(View.VISIBLE);

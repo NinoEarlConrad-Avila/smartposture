@@ -74,10 +74,11 @@ public class MainActivity extends AppCompatActivity {
     public void loadFragment(Fragment fragment, boolean addToBackStack, Bundle bundle) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
         if (bundle != null) {
             fragment.setArguments(bundle);
         }
-
+        bundle.putBoolean("isGuest", isGuest);
         transaction.replace(R.id.container, fragment);
 
         if (addToBackStack) {
@@ -99,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isGuestUser() {
         boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
+        if (isGuest){
+            sharedPreferenceManager.saveGuestSession();
+        }
         Log.d("MainActivity", "Is guest user: " + isGuest);
         return isGuest;
     }

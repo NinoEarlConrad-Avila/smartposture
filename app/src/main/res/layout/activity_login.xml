@@ -160,13 +160,14 @@
                     android:text="@string/login"
                     android:textColor="@color/white" />
 
-<!--                <Button-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:backgroundTint="@color/green"-->
-<!--                    android:text="Login as a Guest"-->
-<!--                    android:textColor="@color/white"/>-->
+                <Button
+                    android:id="@+id/loginGuest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/green"
+                    android:text="Login as a Guest"
+                    android:textColor="@color/white"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

@@ -92,6 +92,15 @@ public class SharedPreferenceManager {
         return null;
     }
 
+    public void saveGuestSession() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isGuest", true);
+        editor.apply();
+    }
+
+    public boolean isGuestSession() {
+        return sharedPreferences.getBoolean("isGuest", false);
+    }
 
     public void clearSession() {
         SharedPreferences.Editor editor = sharedPreferences.edit();

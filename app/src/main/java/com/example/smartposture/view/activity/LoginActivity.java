@@ -81,6 +81,9 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
+
+        Button loginAsGuestButton = findViewById(R.id.loginGuest);
+        loginAsGuestButton.setOnClickListener(v -> loginAsGuest());
     }
 
     private void validateAndLogin() {
@@ -108,6 +111,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void navigateToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        finish();
+    }
+
+    private void loginAsGuest() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("isGuest", true);  // Set the guest flag
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
