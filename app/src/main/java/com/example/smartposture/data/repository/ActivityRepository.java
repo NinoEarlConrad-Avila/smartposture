@@ -6,11 +6,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.api.ApiService;
 import com.example.smartposture.data.model.ActivityTrainee;
-import com.example.smartposture.data.model.Trainee;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.ActivityStatisticsRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
+import com.example.smartposture.data.request.SubmissionDetailsRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.WorkoutScoresRequest;
@@ -18,6 +18,7 @@ import com.example.smartposture.data.response.ActivityDetailResponse;
 import com.example.smartposture.data.response.ActivityResponse;
 import com.example.smartposture.data.response.ActivityStatisticsResponse;
 import com.example.smartposture.data.response.ApiResponse;
+import com.example.smartposture.data.response.SubmissionDetailResponse;
 import com.example.smartposture.data.response.WorkoutScoresResponse;
 
 import java.util.ArrayList;
@@ -258,6 +259,27 @@ public class ActivityRepository {
             }
         });
 
+        return liveData;
+    }
+
+    public LiveData<SubmissionDetailResponse> fetchSubmissionDetails(SubmissionDetailsRequest request) {
+        MutableLiveData<SubmissionDetailResponse> liveData = new MutableLiveData<>();
+
+        apiService.getSubmissionDetails(request).enqueue(new Callback<SubmissionDetailResponse>() {
+            @Override
+            public void onResponse(Call<SubmissionDetailResponse> call, Response<SubmissionDetailResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.postValue(response.body());
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubmissionDetailResponse> call, Throwable t) {
+                liveData.postValue(null);
+            }
+        });
         return liveData;
     }
 }

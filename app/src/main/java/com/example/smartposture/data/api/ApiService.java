@@ -12,6 +12,7 @@ import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
 import com.example.smartposture.data.request.RoomRequest;
+import com.example.smartposture.data.request.SubmissionDetailsRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.UserIdRequest;
@@ -30,12 +31,11 @@ import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
 import com.example.smartposture.data.response.RoomResponse;
 import com.example.smartposture.data.response.RoomTraineesResponse;
+import com.example.smartposture.data.response.SubmissionDetailResponse;
 import com.example.smartposture.data.response.ValidateSessionResponse;
 import com.example.smartposture.data.response.WorkoutDetailResponse;
 import com.example.smartposture.data.response.WorkoutResponse;
 import com.example.smartposture.data.response.WorkoutScoresResponse;
-
-import org.checkerframework.checker.units.qual.C;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -145,4 +145,7 @@ public interface ApiService {
 
     @POST("activity/getActivityStatistics")
     Call<ActivityStatisticsResponse> getActivityStatistics(@Body ActivityStatisticsRequest request);
+
+    @POST("activity/getSubmissionDetails")
+    Call<SubmissionDetailResponse> getSubmissionDetails(@Body SubmissionDetailsRequest request);
 }

@@ -14,10 +14,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,9 +25,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartposture.R;
-import com.example.smartposture.data.adapter.ActivityWorkoutAdapter;
-import com.example.smartposture.data.model.ActivityDetails;
+import com.example.smartposture.data.adapter.SubmissionWorkoutsAdapter;
 import com.example.smartposture.data.model.ActivityWorkout;
+import com.example.smartposture.data.model.SubmissionDetails;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.util.AdditionalSpaceTop;
@@ -43,49 +41,49 @@ import com.jjoe64.graphview.series.DataPoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityDetailsFragment extends BaseFragment implements ActivityWorkoutAdapter.OnWorkoutClickListener  {
+public class SubmissionDetailFragment extends BaseFragment implements SubmissionWorkoutsAdapter.OnViewClickListener{
     private ActivityViewModel activityViewModel;
-    private TextView title, description, deadline;
-    private Button submit;
+    private TextView user,partial, parallel, deep, totalSquats, averageScore, scoreClassification;
     private ImageView backButton;
     private RecyclerView workoutsRecyclerView;
-    private ActivityWorkoutAdapter workoutAdapter;
+    private SubmissionWorkoutsAdapter workoutAdapter;
     private SharedPreferenceManager spManager;
     private boolean isDialogShowing = false;
-    private int partialSquatCount, parallelSquatCount, deepSquatCount, repetitionSubmittedCount;
+    private int partialSquatCount, parallelSquatCount, deepSquatCount, repetitionSubmittedCount, traineeId;
     private float totalWorkoutScore;
     private LinearLayout viewStatistics;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_activity_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_submission, container, false);
 
         Dialog loadingDialog = createFullScreenLoadingDialog();
         loadingDialog.show();
 
-        int activityId = requireArguments().getInt("activity_id", -1);
         int roomId = requireArguments().getInt("room_id", -1);
+        int activityId = requireArguments().getInt("activity_id", -1);
+        traineeId = requireArguments().getInt("trainee_id", -1);
         spManager = getSharedPreferenceManager();
         int userId = spManager.getUserId();
         String userType = spManager.getUserType();
 
         Log.d("Test IDs: " ,""+ activityId +" " +userId);
-        title = view.findViewById(R.id.activityName);
-        description = view.findViewById(R.id.description);
-        deadline = view.findViewById(R.id.deadline);
+        user = view.findViewById(R.id.submissionUser);
+        partial = view.findViewById(R.id.partialSquatCount);
+        parallel = view.findViewById(R.id.parallelSquatCount);
+        deep = view.findViewById(R.id.deepSquatCount);
+        totalSquats = view.findViewById(R.id.overAllSquatCount);
+        averageScore = view.findViewById(R.id.averageScore);
+        scoreClassification = view.findViewById(R.id.scoreClassification);
+        workoutsRecyclerView = view.findViewById(R.id.activityWorkoutsRecyclerView);
         backButton = view.findViewById(R.id.backButton);
-        submit = view.findViewById(R.id.submitButton);
-        workoutsRecyclerView = view.findViewById(R.id.activityWorkoutRecyclerView);
-        viewStatistics = view.findViewById(R.id.viewActivityStatistics);
-
-        ProgressBar loadingSpinner = view.findViewById(R.id.loadingSpinner);
 
         activityViewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
 
         int spaceInPixelsBottom = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsBottom);
         int spaceInPixelsTop = getResources().getDimensionPixelSize(R.dimen.activityWorkoutsTop);
         workoutsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        workoutAdapter = new ActivityWorkoutAdapter(new ArrayList<>(), this, activityId, roomId, this, userType);
+        workoutAdapter = new SubmissionWorkoutsAdapter(new ArrayList<>(), this,this, activityId, roomId, traineeId);
         workoutsRecyclerView.setAdapter(workoutAdapter);
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceBottom(spaceInPixelsBottom));
         workoutsRecyclerView.addItemDecoration(new AdditionalSpaceTop(spaceInPixelsTop));
@@ -93,71 +91,48 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
         if (userType.equals("trainee")){
             viewStatistics.setVisibility(View.GONE);
         }
-        
+
         backButton.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
         });
 
-        viewStatistics.setOnClickListener(v -> {
-           navigateToStatistics(roomId, activityId);
-        });
-
-        activityViewModel.getActivityDetails().observe(getViewLifecycleOwner(), response -> {
-            if (response != null && response.getActivity() != null) {
-                updateUI(response.getActivity());
+        activityViewModel.getSubmissionDetail().observe(getViewLifecycleOwner(), response -> {
+            if (response != null && response.getSubmission() != null) {
+                updateUI(response.getSubmission());
                 loadingDialog.dismiss();
             } else {
                 loadingDialog.dismiss();
             }
         });
 
-        if(userType.equals("trainer")){
-            submit.setVisibility(View.GONE);
-        }
-
-        submit.setOnClickListener(v -> {
-            loadingSpinner.setVisibility(View.VISIBLE);
-            submit.setEnabled(false);
-            submit.setText("");
-
-            activityViewModel.submitActivity(activityId, userId);
-            activityViewModel.getSubmitActivityStatus().observe(getViewLifecycleOwner(), status -> {
-                if ("Success".equals(status)) {
-                    Toast.makeText(requireContext(), "Activity Submitted", Toast.LENGTH_SHORT).show();
-
-                    requireActivity().getSupportFragmentManager().popBackStack();
-                } else {
-                    submit.setEnabled(true);
-                    submit.setText("Submit Activity");
-                    Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-        if (activityId != -1) {
-            activityViewModel.fetchActivityDetails(activityId, userId);
+        if (activityId != -1 && traineeId != -1) {
+            activityViewModel.fetchSubmissionDetails(activityId, traineeId);
         }
         return view;
     }
 
-    private void updateUI(ActivityDetails activityDetails) {
-        title.setText(activityDetails.getTitle());
-        description.setText(activityDetails.getDescription());
-        deadline.setText(String.format("%s %s", activityDetails.getEnd_date(), activityDetails.getEnd_time()));
-        if (activityDetails.getStatus().equals("Submitted")){
-            submit.setEnabled(false);
-            submit.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
-        }
+    private void updateUI(SubmissionDetails submissionDetails) {
+        user.setText(spManager.getUsername());
+        partial.setText(String.valueOf(submissionDetails.getCount_025()));
+        parallel.setText(String.valueOf(submissionDetails.getCount_050()));
+        deep.setText(String.valueOf(submissionDetails.getCount_100()));
+        totalSquats.setText(String.valueOf((submissionDetails.getTotal_repetitions())));
+        averageScore.setText(String.valueOf(submissionDetails.getAvg_score()*100));
 
-        List<ActivityWorkout> workouts = activityDetails.getWorkouts();
-        workoutAdapter.updateWorkouts(workouts);
-        for (ActivityWorkout workout : workouts) {
-            if(workout.getStatus() == 0){
-                submit.setEnabled(false);
-                submit.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
-                return;
-            }
+        if(submissionDetails.getAvg_score()*100 >= 75.0){
+            scoreClassification.setText("VERY GOOD");
+            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green));
         }
+        else if(submissionDetails.getAvg_score()*100 >= 50.0 && submissionDetails.getAvg_score()*100 <75.0){
+            scoreClassification.setText("GOOD");
+            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.submitted_late));
+        }
+        else {
+            scoreClassification.setText("BAD");
+            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.no_submission));
+        }
+        List<ActivityWorkout> workouts = submissionDetails.getWorkouts();
+        workoutAdapter.updateWorkouts(workouts);
     }
 
     private Dialog createFullScreenLoadingDialog() {
@@ -248,6 +223,11 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
     }
 
     @Override
+    public void viewScore(int activityWorkoutId, int repetition) {
+        showWorkoutDialog(activityWorkoutId, repetition);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (getActivity() != null) {
@@ -261,11 +241,6 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
         if (getActivity() != null) {
             ((MainActivity) getActivity()).setBottomNavVisibility(View.GONE);
         }
-    }
-
-    @Override
-    public void viewScore(int activityWorkoutId, int repetition) {
-        showWorkoutDialog(activityWorkoutId, repetition);
     }
 
     private void showWorkoutDialog(int activityWorkoutId, int repetition) {
@@ -303,7 +278,7 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
         scoreDetails.setVisibility(View.GONE);
         scoreClassification.setVisibility(View.GONE);
 
-        activityViewModel.fetchWorkoutScores(activityWorkoutId, spManager.getUserId()).observe(getViewLifecycleOwner(), workoutScores -> {
+        activityViewModel.fetchWorkoutScores(activityWorkoutId, traineeId).observe(getViewLifecycleOwner(), workoutScores -> {
             if (workoutScores != null) {
                 setGraphViewData(workoutDialog.findViewById(R.id.idGraphView), workoutScores);
                 requiredRepetition.setText(String.valueOf(repetition));
@@ -332,19 +307,5 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
             }
         });
         workoutDialog.show();
-    }
-
-    private void navigateToStatistics(int roomId, int activityId) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("room_id", roomId);
-        bundle.putInt("activity_id", activityId);
-
-        ActivityStatisticsFragment summary = new ActivityStatisticsFragment();
-        summary.setArguments(bundle);
-
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, summary)
-                .addToBackStack("ActivityDetailsFragment")
-                .commit();
     }
 }

@@ -60,10 +60,10 @@ public class ActivityStatisticsFragment extends Fragment {
         backButton.setOnClickListener(v -> getActivity().onBackPressed());
 
         bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
-        traineeAdapter = new ActivityTraineeAdapter(getContext(), traineeList, new ActivityTraineeAdapter.OnStartWorkoutClickListener() {
+        traineeAdapter = new ActivityTraineeAdapter(getContext(), traineeList, new ActivityTraineeAdapter.ViewSubmissionClickListener() {
             @Override
-            public void onStartWorkoutClick(ActivityTrainee trainee) {
-                Toast.makeText(getContext(), "Starting workout for " + trainee.getTrainee_username(), Toast.LENGTH_SHORT).show();
+            public void onViewSubmissionClick(ActivityTrainee trainee) {
+                navigateToActivityDetails(trainee.getTrainee_id(), trainee.getActivity_id(), roomId);
             }
         });
         recyclerView.setAdapter(traineeAdapter);
@@ -108,5 +108,20 @@ public class ActivityStatisticsFragment extends Fragment {
         preloaderImage.startAnimation(bounceAnimation);
 
         viewModel.fetchActivityStatistics(roomId, activityId);
+    }
+
+    private void navigateToActivityDetails(int traineeId, int activityId, int roomId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("trainee_id", traineeId);
+        bundle.putInt("activity_id", activityId);
+        bundle.putInt("room_id", roomId);
+
+        SubmissionDetailFragment summary = new SubmissionDetailFragment();
+        summary.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, summary)
+                .addToBackStack("ActivityStatisticsFragment")
+                .commit();
     }
 }

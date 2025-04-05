@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -20,12 +21,12 @@ import java.util.List;
 public class ActivityTraineeAdapter extends RecyclerView.Adapter<ActivityTraineeAdapter.TraineeViewHolder> {
 
     private List<ActivityTrainee> traineeList;
-    private OnStartWorkoutClickListener onStartWorkoutClickListener;
+    private ViewSubmissionClickListener onViewSubmissionClickListener;
     private Context context;
     // Constructor
-    public ActivityTraineeAdapter(Context context, List<ActivityTrainee> traineeList, OnStartWorkoutClickListener listener) {
+    public ActivityTraineeAdapter(Context context, List<ActivityTrainee> traineeList, ViewSubmissionClickListener listener) {
         this.traineeList = traineeList;
-        this.onStartWorkoutClickListener = listener;
+        this.onViewSubmissionClickListener = listener;
         this.context = context;
     }
 
@@ -33,7 +34,7 @@ public class ActivityTraineeAdapter extends RecyclerView.Adapter<ActivityTrainee
     public TraineeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Inflate the item layout
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_activity_trainee, parent, false);
+                .inflate(R.layout.item_trainees, parent, false);
         return new TraineeViewHolder(itemView);
     }
 
@@ -65,9 +66,18 @@ public class ActivityTraineeAdapter extends RecyclerView.Adapter<ActivityTrainee
             holder.status.setText(trainee.getStatus());
         }
 
-        holder.startWorkoutButton.setOnClickListener(v -> {
-            if (onStartWorkoutClickListener != null) {
-                onStartWorkoutClickListener.onStartWorkoutClick(trainee);
+        if(trainee.getStatus().equals("Submitted") || trainee.getStatus().equals("Submitted Late")){
+            holder.viewSubmissionButton.setEnabled(true);
+            holder.viewSubmissionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.green_med));
+        }
+        else{
+            holder.viewSubmissionButton.setEnabled(false);
+            holder.viewSubmissionButton.setBackgroundColor(ContextCompat.getColor(context, R.color.light_green));
+        }
+
+        holder.viewSubmissionButton.setOnClickListener(v -> {
+            if (onViewSubmissionClickListener != null) {
+                onViewSubmissionClickListener.onViewSubmissionClick(trainee);
             }
         });
     }
@@ -80,18 +90,18 @@ public class ActivityTraineeAdapter extends RecyclerView.Adapter<ActivityTrainee
     // View holder class
     public class TraineeViewHolder extends RecyclerView.ViewHolder {
         TextView usernameTextView, status;
-        ImageButton startWorkoutButton;
+        Button viewSubmissionButton;
 
         public TraineeViewHolder(View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.username);
-            startWorkoutButton = itemView.findViewById(R.id.startWorkout);
+            viewSubmissionButton = itemView.findViewById(R.id.viewWorkoutSubmission);
             status = itemView.findViewById(R.id.status);
         }
     }
 
     // Interface to handle start workout click event
-    public interface OnStartWorkoutClickListener {
-        void onStartWorkoutClick(ActivityTrainee trainee);
+    public interface ViewSubmissionClickListener {
+        void onViewSubmissionClick(ActivityTrainee trainee);
     }
 }

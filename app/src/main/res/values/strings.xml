@@ -78,4 +78,13 @@
     <string name="activity_details">Activity Details</string>
     <string name="submit_activity">Submit Activity</string>
     <string name="back_button">Back</string>
+
+    <string name="partial_squat">Partial Squat</string>
+    <string name="parallel_squat">Parallel Squat</string>
+    <string name="deep_squat">Deep Squat</string>
+    <string name="number">0</string>
+    <string name="squats_count">Squats Count</string>
+    <string name="average_squat_score">Average Squat \nScore</string>
+    <string name="score_classification">Score\nClassification</string>
+    <string name="classification">Good</string>
 </resources>

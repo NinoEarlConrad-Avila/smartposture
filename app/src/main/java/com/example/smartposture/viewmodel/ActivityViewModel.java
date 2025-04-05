@@ -7,16 +7,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.smartposture.data.model.Activity;
-import com.example.smartposture.data.model.ActivityDetails;
 import com.example.smartposture.data.model.ActivityTrainee;
 import com.example.smartposture.data.repository.ActivityRepository;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.ActivityStatisticsRequest;
 import com.example.smartposture.data.request.CreateActivityRequest;
+import com.example.smartposture.data.request.SubmissionDetailsRequest;
 import com.example.smartposture.data.request.TraineeActivityRequest;
 import com.example.smartposture.data.request.TraineeScoreRequest;
 import com.example.smartposture.data.request.WorkoutScoresRequest;
 import com.example.smartposture.data.response.ActivityDetailResponse;
+import com.example.smartposture.data.response.SubmissionDetailResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class ActivityViewModel extends ViewModel {
     private final MutableLiveData<List<ActivityTrainee>> activityTrainees = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Float>> workoutScores = new MutableLiveData<>();
     private final MutableLiveData<ActivityDetailResponse> activityDetailsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<SubmissionDetailResponse> submissionDetailLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> createActivityStatus= new MutableLiveData<>();
     private final MutableLiveData<String> traineeScoreStatus= new MutableLiveData<>();
     private final MutableLiveData<String> submitActivityStatus= new MutableLiveData<>();
@@ -63,6 +65,12 @@ public class ActivityViewModel extends ViewModel {
 
         return activityDetailsLiveData;
     }
+
+    public LiveData<SubmissionDetailResponse> getSubmissionDetail(){
+
+        return submissionDetailLiveData;
+    }
+
     public LiveData<ArrayList<Float>> getWorkoutScores(){
 
         return workoutScores;
@@ -211,4 +219,19 @@ public class ActivityViewModel extends ViewModel {
         });
     }
 
+    public void fetchSubmissionDetails(int activityId, int traineeId) {
+        SubmissionDetailsRequest request = new SubmissionDetailsRequest(activityId, traineeId);
+
+        loadingStateLiveData.setValue(true);
+        activityRepository.fetchSubmissionDetails(request).observeForever(response -> {
+            if (response != null && response.getSubmission() != null) {
+                submissionDetailLiveData.setValue(response);
+                Log.d("Test ViewModel", "ViewModel returned");
+            }else {
+                Log.d("Test ViewModel", "ViewModel no return");
+            }
+
+            loadingStateLiveData.setValue(false);
+        });
+    }
 }
