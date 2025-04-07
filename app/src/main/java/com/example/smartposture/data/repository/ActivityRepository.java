@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.smartposture.data.api.ApiClient;
 import com.example.smartposture.data.api.ApiService;
+import com.example.smartposture.data.model.ActivityStatistics;
 import com.example.smartposture.data.model.ActivityTrainee;
 import com.example.smartposture.data.request.ActivityIdRequest;
 import com.example.smartposture.data.request.ActivityStatisticsRequest;
@@ -235,19 +236,14 @@ public class ActivityRepository {
         return liveData;
     }
 
-    public LiveData<List<ActivityTrainee>> fetchActivityStatistics(ActivityStatisticsRequest request) {
-        MutableLiveData<List<ActivityTrainee>> liveData = new MutableLiveData<>();
+    public LiveData<ActivityStatistics> fetchActivityStatistics(ActivityStatisticsRequest request) {
+        MutableLiveData<ActivityStatistics> liveData = new MutableLiveData<>();
 
         apiService.getActivityStatistics(request).enqueue(new Callback<ActivityStatisticsResponse>() {
             @Override
             public void onResponse(Call<ActivityStatisticsResponse> call, Response<ActivityStatisticsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ActivityStatisticsResponse responseData = response.body();
-                    Map<String, ActivityTrainee> traineesMap = responseData.getTrainees();
-
-                    List<ActivityTrainee> traineeList = new ArrayList<>(traineesMap.values());
-
-                    liveData.postValue(traineeList);
+                    liveData.postValue(response.body().getStatistics());
                 } else {
                     liveData.postValue(null);
                 }

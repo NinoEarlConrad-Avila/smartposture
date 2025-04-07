@@ -87,4 +87,12 @@
     <string name="average_squat_score">Average Squat \nScore</string>
     <string name="score_classification">Score\nClassification</string>
     <string name="classification">Good</string>
+
+    <string name="partial">Partial</string>
+    <string name="parallel">Parallel</string>
+    <string name="deep">Deep</string>
+    <string name="total_repetition">Total Repetition</string>
+    <string name="average_score">Average Score</string>
+    <string name="submitted">Submitted</string>
+    <string name="not_submitted">Not Submitted</string>
 </resources>

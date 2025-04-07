@@ -1,5 +1,6 @@
 package com.example.smartposture.data.response;
 
+import com.example.smartposture.data.model.ActivityStatistics;
 import com.example.smartposture.data.model.ActivityTrainee;
 
 import java.util.Map;
@@ -7,12 +8,12 @@ import java.util.Map;
 public class ActivityStatisticsResponse {
     private String message;
     private int status;
-    private Map<String, ActivityTrainee> trainees;
+    private ActivityStatistics statistics;
 
-    public ActivityStatisticsResponse(String message, int status, Map<String, ActivityTrainee> trainees) {
+    public ActivityStatisticsResponse(String message, int status, ActivityStatistics statistics) {
         this.message = message;
         this.status = status;
-        this.trainees = trainees;
+        this.statistics = statistics;
     }
 
     public String getMessage() {
@@ -31,11 +32,11 @@ public class ActivityStatisticsResponse {
         this.status = status;
     }
 
-    public Map<String, ActivityTrainee> getTrainees() {
-        return trainees;
+    public ActivityStatistics getStatistics() {
+        return statistics;
     }
 
-    public void setTrainees(Map<String, ActivityTrainee> trainees) {
-        this.trainees = trainees;
+    public void setStatistics(ActivityStatistics statistics) {
+        this.statistics = statistics;
     }
 }
