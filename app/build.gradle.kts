@@ -50,8 +50,9 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
-    implementation("com.jjoe64:graphview:4.2.2")
+
     implementation("androidx.core:core:1.9.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     implementation ("com.google.android.material:material:1.8.0")
     implementation ("androidx.navigation:navigation-fragment-ktx:2.5.3")

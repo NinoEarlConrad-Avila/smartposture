@@ -73,8 +73,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/idGraphView"
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/viewScoreBarChart"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_alignParentTop="true"

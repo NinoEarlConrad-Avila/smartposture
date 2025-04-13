@@ -233,46 +233,13 @@
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/idGraphView"
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/viewScoreBarChart"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/bg_white_round"
-            android:paddingRight="20dp"
-            android:layout_marginTop="16dp" />
+            android:layout_height="200dp"/>
 
-
-
-        <!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:gravity="center"-->
-<!--            >-->
-
-<!--            <CheckBox-->
-<!--                android:id="@+id/checkBox1"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Good Posture"-->
-<!--                android:textSize="12sp"-->
-<!--                android:scaleX="0.8"-->
-<!--                android:scaleY="0.8"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:checked="false"/>-->
-
-<!--            &lt;!&ndash; Second CheckBox to control the second line in the graph &ndash;&gt;-->
-<!--            <CheckBox-->
-<!--                android:id="@+id/checkBox2"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Bad Posture"-->
-<!--                android:textSize="12sp"-->
-<!--                android:scaleX="0.8"-->
-<!--                android:scaleY="0.8"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:checked="false"/>-->
-<!--        </LinearLayout>-->
         <TextView
             android:id="@+id/textView17"
             android:layout_width="match_parent"
