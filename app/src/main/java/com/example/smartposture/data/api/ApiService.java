@@ -8,6 +8,7 @@ import com.example.smartposture.data.request.JoinReqRequest;
 import com.example.smartposture.data.request.JoinRoomRequest;
 import com.example.smartposture.data.request.LoginRequest;
 import com.example.smartposture.data.request.LogoutRequest;
+import com.example.smartposture.data.request.MonthlyWorkoutsRequest;
 import com.example.smartposture.data.request.RegisterRequest;
 import com.example.smartposture.data.request.RoomDetailsRequest;
 import com.example.smartposture.data.request.RoomIdRequest;
@@ -25,7 +26,9 @@ import com.example.smartposture.data.response.ActivityStatisticsResponse;
 import com.example.smartposture.data.response.JoinRequestResponse;
 import com.example.smartposture.data.response.LoginResponse;
 import com.example.smartposture.data.response.LogoutResponse;
+import com.example.smartposture.data.response.MonthlyWorkoutsResponse;
 import com.example.smartposture.data.response.NotificationResponse;
+import com.example.smartposture.data.response.ProfileStatisticsResponse;
 import com.example.smartposture.data.response.RegisterResponse;
 import com.example.smartposture.data.response.ApiResponse;
 import com.example.smartposture.data.response.RoomDetailsResponse;
@@ -148,4 +151,10 @@ public interface ApiService {
 
     @POST("activity/getSubmissionDetails")
     Call<SubmissionDetailResponse> getSubmissionDetails(@Body SubmissionDetailsRequest request);
+
+    @POST("profile/getUserMonthlyWorkouts")
+    Call<MonthlyWorkoutsResponse> getMonthlyWorkouts(@Body MonthlyWorkoutsRequest request);
+
+    @POST("profile/getProfileStatistics")
+    Call<ProfileStatisticsResponse> getProfileStatistics(@Body UserIdRequest request);
 }

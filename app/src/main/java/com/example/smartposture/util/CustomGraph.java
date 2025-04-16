@@ -3,6 +3,7 @@ package com.example.smartposture.util;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.View;
@@ -18,16 +19,24 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.example.smartposture.R;
 import com.example.smartposture.viewmodel.ActivityViewModel;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomGraph {
 
@@ -139,10 +148,16 @@ public class CustomGraph {
                     ContextCompat.getColor(context, R.color.green)
             );
 
+            barDataSet.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return String.valueOf((int) value);
+                }
+            });
+
             BarData barData = new BarData(barDataSet);
             barChart.setData(barData);
             barChart.setFitBars(true);
-
             XAxis xAxis = barChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
@@ -158,6 +173,7 @@ public class CustomGraph {
             barChart.setPinchZoom(false);
             barChart.setScaleEnabled(false);
             barChart.setClickable(false);
+            barChart.animateY(1000);
 
             Description description = new Description();
             description.setText("");
@@ -168,5 +184,136 @@ public class CustomGraph {
         } else {
             Log.d("BarChart", "No data available in the floatList.");
         }
+    }
+    public static void setBarMonthlyWorkouts(View view, Context context, List<Integer> dailyReps) {
+        BarChart barChart = view.findViewById(R.id.barChart);
+
+        List<BarEntry> entries = new ArrayList<>();
+        String[] days = new String[dailyReps.size()];
+
+        for (int i = 0; i < dailyReps.size(); i++) {
+            entries.add(new BarEntry(i, dailyReps.get(i)));
+            days[i] = String.valueOf(i + 1);
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, "Daily Workout Repetitions");
+        int barColor = ContextCompat.getColor(context, R.color.green_med);
+        dataSet.setColor(barColor);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        BarData barData = new BarData(dataSet);
+        barChart.setData(barData);
+        barChart.setFitBars(true);
+
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setLabelCount(days.length);
+        xAxis.setLabelRotationAngle(90);
+
+        barChart.getAxisLeft().setAxisMinimum(0f);
+        barChart.getAxisRight().setAxisMinimum(0f);
+
+        Legend legend = barChart.getLegend();
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
+
+        barChart.getDescription().setEnabled(false);
+        barChart.animateY(1000);
+        barChart.invalidate();
+    }
+
+    public static void setPieOverall(View view, Context context, float averageScore, int totalReps) {
+        PieChart pieChart = view.findViewById(R.id.pieChartAveReps);
+
+        float percentage = averageScore * 100f;
+        int mainColor;
+
+        if (percentage >= 75) mainColor = ContextCompat.getColor(context, R.color.green);
+        else if (percentage >= 50) mainColor = ContextCompat.getColor(context, R.color.submitted_late);
+        else mainColor = ContextCompat.getColor(context, R.color.no_submission);
+
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(percentage, "Average Score"));
+        entries.add(new PieEntry(100f - percentage, ""));
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        dataSet.setColors(
+                mainColor,
+                Color.parseColor("#EEEEEE")
+        );
+        dataSet.setSliceSpace(2f);
+        dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setDrawValues(false);
+
+        pieChart.setData(data);
+        pieChart.setUsePercentValues(false);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setDrawEntryLabels(false);
+        pieChart.setHoleRadius(75f);
+        pieChart.setTransparentCircleRadius(80f);
+
+        String centerLabel = "Total Reps: " + totalReps + "\nAvg Score: " + String.format("%.2f", percentage) + "%";
+        pieChart.setCenterText(centerLabel);
+        pieChart.setCenterTextSize(9f);
+        pieChart.setCenterTextColor(Color.DKGRAY);
+        pieChart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
+
+        pieChart.animateY(1000, Easing.EaseInOutQuad);
+        pieChart.invalidate();
+    }
+
+    public static void setPieScoresClassification(View view, Context context, int value1, int value2, int value3) {
+        PieChart pieChart = view.findViewById(R.id.pieChartClassification);
+
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(value1, "Partial"));
+        entries.add(new PieEntry(value2, "Parallel"));
+        entries.add(new PieEntry(value3, "Deep"));
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        dataSet.setColors(
+                ContextCompat.getColor(context, R.color.no_submission),
+                ContextCompat.getColor(context, R.color.submitted_late),
+                ContextCompat.getColor(context, R.color.green)
+        );
+        dataSet.setSliceSpace(2f);
+        dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setDrawValues(true);
+        data.setValueTextColor(Color.BLACK);
+        data.setValueTextSize(12f);
+
+        data.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        pieChart.setData(data);
+        pieChart.setUsePercentValues(false);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(true);
+
+        pieChart.setDrawEntryLabels(false);
+
+        pieChart.setHoleRadius(50f);
+        pieChart.setTransparentCircleRadius(55f);
+        pieChart.animateY(1000, Easing.EaseInOutQuad);
+        pieChart.invalidate();
     }
 }

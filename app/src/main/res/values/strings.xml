@@ -95,4 +95,30 @@
     <string name="average_score">Average Score</string>
     <string name="submitted">Submitted</string>
     <string name="not_submitted">Not Submitted</string>
+
+    <string name="scores_classification">Scores Classification</string>
+    <string name="overall">Overall</string>
+    <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="monthly_data">Monthly Data</string>
+
+    <string-array name="months_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string-array name="years_array">
+        <item>2024</item>
+        <item>2025</item>
+    </string-array>
 </resources>

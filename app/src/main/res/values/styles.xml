@@ -5,4 +5,9 @@
         <item name="android:shape">rectangle</item>
         <item name="android:radius">16dp</item>
     </style>
+
+    <style name="CustomSpinnerStyle">
+        <item name="android:dropDownHeight">100dp</item>
+        <item name="android:dropDownVerticalOffset">0dp</item>
+    </style>
 </resources>
