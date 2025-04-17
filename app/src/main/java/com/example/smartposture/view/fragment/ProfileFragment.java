@@ -22,6 +22,7 @@ import com.example.smartposture.R;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
 import com.example.smartposture.util.CustomGraph;
 import com.example.smartposture.view.activity.LoginActivity;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.AuthViewModel;
 import com.example.smartposture.viewmodel.ProfileViewModel;
 import com.github.mikephil.charting.charts.BarChart;
@@ -206,6 +207,14 @@ public class ProfileFragment extends BaseFragment {
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+        }
     }
 
     private void navigateToLogin() {

@@ -38,7 +38,7 @@ import java.util.List;
 
 public class SubmissionDetailFragment extends BaseFragment implements SubmissionWorkoutsAdapter.OnViewClickListener{
     private ActivityViewModel activityViewModel;
-    private TextView user,partial, parallel, deep, totalSquats, averageScore, scoreClassification;
+    private TextView user;
     private ImageView backButton;
     private RecyclerView workoutsRecyclerView;
     private SubmissionWorkoutsAdapter workoutAdapter;
@@ -63,12 +63,6 @@ public class SubmissionDetailFragment extends BaseFragment implements Submission
 
         Log.d("Test IDs: " ,""+ activityId +" " +userId);
         user = view.findViewById(R.id.submissionUser);
-        partial = view.findViewById(R.id.partialSquatCount);
-        parallel = view.findViewById(R.id.parallelSquatCount);
-        deep = view.findViewById(R.id.deepSquatCount);
-        totalSquats = view.findViewById(R.id.overAllSquatCount);
-        averageScore = view.findViewById(R.id.averageScore);
-        scoreClassification = view.findViewById(R.id.scoreClassification);
         workoutsRecyclerView = view.findViewById(R.id.activityWorkoutsRecyclerView);
         backButton = view.findViewById(R.id.backButton);
 
@@ -107,24 +101,9 @@ public class SubmissionDetailFragment extends BaseFragment implements Submission
 
     private void updateUI(SubmissionDetails submissionDetails) {
         user.setText(spManager.getUsername());
-        partial.setText(String.valueOf(submissionDetails.getCount_025()));
-        parallel.setText(String.valueOf(submissionDetails.getCount_050()));
-        deep.setText(String.valueOf(submissionDetails.getCount_100()));
-        totalSquats.setText(String.valueOf((submissionDetails.getTotal_repetitions())));
-        averageScore.setText(String.valueOf(submissionDetails.getAvg_score()*100));
+        CustomGraph.setPieOverall(requireView(), requireContext(),submissionDetails.getAvg_score(), submissionDetails.getTotal_repetitions());
+        CustomGraph.setPieScoresClassification(requireView(), requireContext(), submissionDetails.getCount_025(), submissionDetails.getCount_050(), submissionDetails.getCount_100());
 
-        if(submissionDetails.getAvg_score()*100 >= 75.0){
-            scoreClassification.setText("VERY GOOD");
-            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green));
-        }
-        else if(submissionDetails.getAvg_score()*100 >= 50.0 && submissionDetails.getAvg_score()*100 <75.0){
-            scoreClassification.setText("GOOD");
-            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.submitted_late));
-        }
-        else {
-            scoreClassification.setText("BAD");
-            scoreClassification.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.no_submission));
-        }
         List<ActivityWorkout> workouts = submissionDetails.getWorkouts();
         workoutAdapter.updateWorkouts(workouts);
     }

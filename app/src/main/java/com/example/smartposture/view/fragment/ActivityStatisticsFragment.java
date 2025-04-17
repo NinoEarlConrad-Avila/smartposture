@@ -13,7 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -25,8 +24,8 @@ import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.ActivityTraineeAdapter;
 import com.example.smartposture.data.model.ActivityStatistics;
 import com.example.smartposture.data.model.ActivityTrainee;
+import com.example.smartposture.util.CustomGraph;
 import com.example.smartposture.viewmodel.ActivityViewModel;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +37,12 @@ public class ActivityStatisticsFragment extends Fragment {
     private ActivityTraineeAdapter traineeAdapter;
     private List<ActivityTrainee> traineeList = new ArrayList<>();
     private ActivityViewModel viewModel;
-
     private RelativeLayout noNotificationLayout, preloaderLayout;
-    private TextView textView, partial, parallel, deep, total, average, submitted, notSubmitted;
     private ImageView preloaderImage;
     private ImageButton backButton;
     private int activityId, roomId;
     private Animation bounceAnimation;
     private Dialog loadingDialog;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,18 +61,9 @@ public class ActivityStatisticsFragment extends Fragment {
 
         noNotificationLayout = rootView.findViewById(R.id.noNotification);
         preloaderLayout = rootView.findViewById(R.id.preloaderLayout);
-        textView = rootView.findViewById(R.id.textView19);
         preloaderImage = rootView.findViewById(R.id.preloaderImage);
         backButton = rootView.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> getActivity().onBackPressed());
-
-        partial = rootView.findViewById(R.id.partialExerciseCount);
-        parallel = rootView.findViewById(R.id.parallelExerciseCount);
-        deep = rootView.findViewById(R.id.deepExerciseCount);
-        total = rootView.findViewById(R.id.totalRepetition);
-        average = rootView.findViewById(R.id.averageScore);
-        submitted = rootView.findViewById(R.id.submittedCount);
-        notSubmitted = rootView.findViewById(R.id.notSubmittedCount);
 
         bounceAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.logo_bounce);
         traineeAdapter = new ActivityTraineeAdapter(getContext(), traineeList, new ActivityTraineeAdapter.ViewSubmissionClickListener() {
@@ -97,7 +84,6 @@ public class ActivityStatisticsFragment extends Fragment {
     }
 
     private void observeActivityStatistics(View view) {
-        viewModel.fetchActivityStatistics(roomId, activityId);
         viewModel.getActivityStatistics().observe(getViewLifecycleOwner(), new Observer<ActivityStatistics>() {
             @Override
             public void onChanged(ActivityStatistics statistics) {
@@ -106,18 +92,13 @@ public class ActivityStatisticsFragment extends Fragment {
                     preloaderLayout.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
 
-                    partial.setText(String.valueOf(statistics.getCount_025()));
-                    parallel.setText(String.valueOf(statistics.getCount_050()));
-                    deep.setText(String.valueOf(statistics.getCount_100()));
-                    total.setText(String.valueOf(statistics.getTotal_repetitions()));
-                    average.setText(String.valueOf(statistics.getAvg_score()));
-                    submitted.setText(String.valueOf(statistics.getTotal_submitted()));
-                    notSubmitted.setText(String.valueOf(statistics.getTotal_not_submitted()));
                     Map<String, ActivityTrainee> traineesMap = statistics.getTrainees();
+                    CustomGraph.setPieOverall(requireView(), requireContext(),statistics.getAvg_score(), statistics.getTotal_repetitions());
+                    CustomGraph.setPieScoresClassification(requireView(), requireContext(), statistics.getCount_025(), statistics.getCount_050(), statistics.getCount_100());
+                    CustomGraph.setBarSubmissionStatus(requireView(), requireContext(), statistics.getTotal_submitted(), statistics.getTotal_not_submitted());
 
                     traineeList.clear();
                     traineeList.addAll(traineesMap.values());
-                    traineeAdapter.notifyDataSetChanged();
                     view.setVisibility(View.VISIBLE);
                     loadingDialog.dismiss();
                 } else {

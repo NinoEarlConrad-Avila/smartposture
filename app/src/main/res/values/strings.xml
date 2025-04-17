@@ -101,7 +101,8 @@
     <string name="logout">Logout</string>
     <string name="profile">Profile</string>
     <string name="monthly_data">Monthly Data</string>
-
+    <string name="submissions_status">Submissions Status</string>
+    <string name="activity_statistics">Activity Statistics</string>
     <string-array name="months_array">
         <item>January</item>
         <item>February</item>

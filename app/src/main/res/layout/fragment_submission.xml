@@ -59,172 +59,59 @@
                 android:paddingLeft="20dp"
                 android:gravity="center"
                 >
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:baselineAligned="false">
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/partial_squat"
-                        android:textColor="@color/white"
-                        />
-                    <TextView
-                        android:id="@+id/partialSquatCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/number"
-                        android:textColor="@color/white"
-                        />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/parallel_squat"
-                            android:textColor="@color/white"
-                            />
-                        <TextView
-                            android:id="@+id/parallelSquatCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/number"
-                            android:textColor="@color/white"
-                            />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/deep_squat"
-                            android:textColor="@color/white"
-                            />
-                        <TextView
-                            android:id="@+id/deepSquatCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/number"
-                            android:textColor="@color/white"
-                            />
-                    </LinearLayout>
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="10dp"
-                    >
-
+                    android:layout_height="160dp"
+                    android:orientation="horizontal">
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/squats_count"
-                            android:textColor="@color/white"
-                            />
-                        <TextView
-                            android:id="@+id/overAllSquatCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/number"
-                            android:textColor="@color/white"
-                            />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/average_squat_score"
-                            android:textColor="@color/white"
-                            />
-                        <TextView
-                            android:id="@+id/averageScore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/number"
-                            android:textColor="@color/white"
-                            />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/score_classification"
-                            android:gravity="center"
-                            android:textColor="@color/white"
-                            />
+                        android:layout_weight="1.1"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/bg_white_round_border"
+                        android:padding="10dp"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/scoreClassification"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:text="@string/overall"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieChartAveReps"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginBottom="0dp"
-                            android:background="@color/green"
-                            android:gravity="center"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:text="@string/classification"
-                            android:textColor="@color/white"
-                            android:textSize="12sp" />
+                            />
                     </LinearLayout>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:background="@drawable/bg_white_round_border"
+                        android:padding="10dp"
+                        android:orientation="vertical">
 
-
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:text="@string/scores_classification"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieChartClassification"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            />
+                    </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -277,8 +164,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 tools:listitem="@layout/item_submission_workouts" />
-
         </LinearLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

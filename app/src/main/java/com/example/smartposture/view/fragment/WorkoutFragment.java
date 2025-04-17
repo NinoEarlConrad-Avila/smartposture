@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
 import com.example.smartposture.data.model.Room;
+import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
 import java.util.ArrayList;
@@ -128,6 +129,14 @@ public class WorkoutFragment extends Fragment {
     private void hidePreloader() {
         layoutPreLoader.setVisibility(View.GONE);
         preloaderImage.clearAnimation();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            ((MainActivity) getActivity()).setBottomNavVisibility(View.VISIBLE);
+        }
     }
 
     private void navigateToWorkoutDetails(int workoutId) {

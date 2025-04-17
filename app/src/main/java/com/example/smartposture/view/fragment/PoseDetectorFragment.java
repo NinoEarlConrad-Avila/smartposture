@@ -226,9 +226,9 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-        if (!isInitialCam){
+//        if (!isInitialCam){
             cameraProvider.unbindAll();
-        }
+//        }
 
         // Create a Preview use case
         Preview preview = new Preview.Builder().build();

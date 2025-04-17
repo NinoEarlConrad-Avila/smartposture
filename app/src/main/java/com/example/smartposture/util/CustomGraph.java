@@ -21,6 +21,7 @@ import com.example.smartposture.R;
 import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -315,5 +316,52 @@ public class CustomGraph {
         pieChart.setTransparentCircleRadius(55f);
         pieChart.animateY(1000, Easing.EaseInOutQuad);
         pieChart.invalidate();
+    }
+
+    public static void setBarSubmissionStatus(View view, Context context, int submittedCount, int notSubmittedCount) {
+        HorizontalBarChart barChart = view.findViewById(R.id.horizontalBarChart);
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0f, notSubmittedCount));
+        entries.add(new BarEntry(1f, submittedCount));
+
+        BarDataSet dataSet = new BarDataSet(entries, "Submission Status");
+        dataSet.setColors(
+                ContextCompat.getColor(context, R.color.no_submission),
+                ContextCompat.getColor(context, R.color.green)
+        );
+        dataSet.setValueTextSize(12f);
+
+        dataSet.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getBarLabel(BarEntry barEntry) {
+                return String.valueOf((int) barEntry.getY());
+            }
+        });
+
+        BarData data = new BarData(dataSet);
+        data.setBarWidth(0.4f);
+
+        barChart.setData(data);
+
+        final String[] labels = new String[]{"Not Submitted", "Submitted"};
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(12f);
+
+        barChart.getAxisLeft().setAxisMinimum(0f);
+        barChart.getAxisRight().setEnabled(false);
+
+        barChart.getDescription().setEnabled(false);
+        barChart.getLegend().setEnabled(false);
+
+        barChart.getXAxis().setAxisMinimum(-0.5f);
+        barChart.getXAxis().setAxisMaximum(entries.size() - 0.5f);
+
+        barChart.animateY(1000);
+        barChart.invalidate();
     }
 }
