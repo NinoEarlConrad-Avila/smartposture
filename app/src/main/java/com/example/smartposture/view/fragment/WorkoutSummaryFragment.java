@@ -22,6 +22,7 @@ import com.example.smartposture.util.CustomGraph;
 import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.R;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WorkoutSummaryFragment extends BaseFragment {
     private TextView repCount, totalScore;
@@ -101,7 +102,8 @@ public class WorkoutSummaryFragment extends BaseFragment {
             repCount.setText(String.valueOf(floatList.size()-1));
             totalScore.setText(String.valueOf(floatList.get(0)));
 
-            CustomGraph.setGraphViewData(view, floatList, getContext());
+            ArrayList<Float> subList = new ArrayList<>(floatList.subList(1, floatList.size()));
+            CustomGraph.setGraphViewData(view, subList, getContext());
         } else {
             Log.d("WorkoutSummaryFragment", "No data found in floatList.");
         }

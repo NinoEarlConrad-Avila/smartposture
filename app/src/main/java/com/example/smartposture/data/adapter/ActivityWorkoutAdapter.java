@@ -76,6 +76,7 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
             bundle.putInt("activity_workout_id", activity.getActivity_workout_id());
             bundle.putInt("workout_id", activity.getWorkout_id());
             bundle.putInt("repetition", activity.getRepetition());
+            bundle.putString("from", "Room");
 
             WorkoutDetailFragment fragment = new WorkoutDetailFragment();
             fragment.setArguments(bundle);

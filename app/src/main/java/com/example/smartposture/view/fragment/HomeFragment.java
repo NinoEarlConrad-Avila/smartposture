@@ -152,6 +152,7 @@ public class HomeFragment extends BaseFragment {
     private void navigateToWorkoutDetails(int workoutId) {
         Bundle bundle = new Bundle();
         bundle.putInt("workout_id", workoutId);
+        bundle.putString("from", "Home");
 
         WorkoutDetailFragment fragment = new WorkoutDetailFragment();
         fragment.setArguments(bundle);
@@ -175,7 +176,6 @@ public class HomeFragment extends BaseFragment {
         Bundle bundle = new Bundle();
         bundle.putString("notification_type", "user");
         bundle.putString("exer", "squat");
-
         NotificationFragment fragment = new NotificationFragment();
         fragment.setArguments(bundle);
 

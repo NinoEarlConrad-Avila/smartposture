@@ -142,6 +142,7 @@ public class WorkoutFragment extends Fragment {
     private void navigateToWorkoutDetails(int workoutId) {
         Bundle bundle = new Bundle();
         bundle.putInt("workout_id", workoutId);
+        bundle.putString("from", "Workout");
 
         WorkoutDetailFragment fragment = new WorkoutDetailFragment();
         fragment.setArguments(bundle);

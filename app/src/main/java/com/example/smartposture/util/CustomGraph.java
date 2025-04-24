@@ -130,8 +130,8 @@ public class CustomGraph {
             repetitionSubmittedCount = floatList.size();
 
             for (Float value : floatList) {
-                if (value <= 0.25) partialSquatCount++;
-                else if (value <= 0.5) parallelSquatCount++;
+                if (value == 0.25) partialSquatCount++;
+                else if (value == 0.5) parallelSquatCount++;
                 else deepSquatCount++;
 
                 totalWorkoutScore += value;

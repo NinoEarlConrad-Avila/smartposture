@@ -82,7 +82,7 @@ public class PoseDetectorFragment extends BaseFragment {
     private boolean isInitialCam = true;
     private ImageView switchCameraBtn;
     private ProcessCameraProvider cameraProvider;
-    private String type;
+    private String type, from;
     private boolean guidanceStatus;
     private SharedPreferenceManager spManager;
     private PoseDetectorViewModel poseDetectorViewModel;
@@ -91,6 +91,7 @@ public class PoseDetectorFragment extends BaseFragment {
     private List<String> classificationResult;
     private LinearLayout goalLayout;
     private Button done;
+    private Button goBack;
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Nullable
     @Override
@@ -112,13 +113,15 @@ public class PoseDetectorFragment extends BaseFragment {
         previewView = view.findViewById(R.id.previewView);
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
         done = view.findViewById(R.id.done);
-        Button goHome = view.findViewById(R.id.goHome);
+        goBack = view.findViewById(R.id.goBack);
         goalRepetition = view.findViewById(R.id.goalRepCount);
         currentRepetition = view.findViewById(R.id.currentRepCount);
 
+        from = requireArguments().getString("from", "");
         activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
         goal = requireArguments().getInt("rep_goal", -1);
 
+        goBack.setText(from);
         if (activityWorkoutId != -1 && goal != -1){
             goalRepetition.setText(String.valueOf(goal));
         }else {
@@ -160,8 +163,13 @@ public class PoseDetectorFragment extends BaseFragment {
         poseClassifierProcessor = new PoseClassifierProcessor(getContext(), this, true, homeViewModel, type);
 
 
-        goHome.setOnClickListener(v -> {
-            navigateToHome();
+        goBack.setOnClickListener(v -> {
+            if(from.equals("Home"))
+                navigateToHome();
+            else if(from.equals("Workout"))
+                navigateToWorkout();
+            else if(from.equals("Room"))
+                navigateToRoom();
         });
         done.setOnClickListener(v -> {
             ArrayList<Float> floatList = poseClassifierProcessor.getScores();
@@ -404,8 +412,6 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     private void navigateToHome() {
-        Bundle bundle = new Bundle();
-
         HomeFragment fragment = new HomeFragment();
 
         requireActivity().getSupportFragmentManager()
@@ -413,6 +419,25 @@ public class PoseDetectorFragment extends BaseFragment {
                 .replace(R.id.container, fragment)
                 .addToBackStack("RoomDetailFragment")
                 .commit();
+    }
+
+    private void navigateToWorkout() {
+        WorkoutFragment fragment = new WorkoutFragment();
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack("RoomDetailFragment")
+                .commit();
+    }
+
+    private void navigateToRoom(){
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        for (int i = 0; i < 3; i++) {
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack();
+            }
+        }
     }
     private void navigateToSummary(ArrayList<Float> floatList) {
         Bundle bundle = new Bundle();

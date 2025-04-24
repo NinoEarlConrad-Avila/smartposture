@@ -159,12 +159,13 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/goHome"
+                android:id="@+id/goBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/teal"
                 android:layout_gravity="end"
                 android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/teal"
+                android:capitalize="words"
                 android:text="Home"
                 android:textColor="@color/white" />
 

@@ -52,7 +52,6 @@ public class WorkoutDetailFragment extends BaseFragment {
         workoutId = requireArguments().getInt("workout_id", -1);
         activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
         repetition = requireArguments().getInt("repetition", -1);
-
         // Initialize views
         workoutGoals = view.findViewById(R.id.workoutGoals);
         repGoal = view.findViewById(R.id.repetitionGoal);
@@ -167,6 +166,7 @@ public class WorkoutDetailFragment extends BaseFragment {
         bundle.putInt("activity_id", requireArguments().getInt("activity_id", -1));
         bundle.putInt("activity_workout_id", activityWorkoutId);
         bundle.putInt("rep_goal", repetition);
+        bundle.putString("from", requireArguments().getString("from", ""));
 
         PoseDetectorFragment fragment = new PoseDetectorFragment();
         fragment.setArguments(bundle);
