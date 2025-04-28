@@ -27,6 +27,7 @@ import com.example.smartposture.R;
 import com.example.smartposture.data.adapter.WorkoutAdapter;
 import com.example.smartposture.data.model.Room;
 import com.example.smartposture.data.sharedpreference.SharedPreferenceManager;
+import com.example.smartposture.util.AdditionalSpaceBottom;
 import com.example.smartposture.view.activity.MainActivity;
 import com.example.smartposture.viewmodel.WorkoutViewModel;
 
@@ -111,7 +112,9 @@ public class HomeFragment extends BaseFragment {
     private void observeViewModel() {
         workoutsViewModel.getWorkoutsLiveData().observe(getViewLifecycleOwner(), workouts -> {
             if (workouts != null && !workouts.isEmpty()) {
+                int spaceInPixels = getResources().getDimensionPixelSize(R.dimen.recyclerViewSpacing);
                 workoutAdapter.setWorkouts(workouts);
+                workoutRecyclerView.addItemDecoration(new AdditionalSpaceBottom(spaceInPixels));
                 workoutRecyclerView.setVisibility(View.VISIBLE);
                 layoutNoWorkouts.setVisibility(View.GONE);
             } else {
