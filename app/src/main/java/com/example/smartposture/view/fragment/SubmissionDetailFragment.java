@@ -57,6 +57,7 @@ public class SubmissionDetailFragment extends BaseFragment implements Submission
         int roomId = requireArguments().getInt("room_id", -1);
         int activityId = requireArguments().getInt("activity_id", -1);
         traineeId = requireArguments().getInt("trainee_id", -1);
+        String workoutName = requireArguments().getString("workout_name", "");
         spManager = getSharedPreferenceManager();
         int userId = spManager.getUserId();
         String userType = spManager.getUserType();
@@ -126,11 +127,12 @@ public class SubmissionDetailFragment extends BaseFragment implements Submission
     }
 
     @Override
-    public void viewScore(int activityWorkoutId, int repetition) {
+    public void viewScore(int activityWorkoutId, int repetition, int workoutId) {
         CustomGraph.showWorkoutDialog(
                 getViewLifecycleOwner(),
                 requireContext(),
                 activityWorkoutId,
+                workoutId,
                 repetition,
                 traineeId,
                 activityViewModel

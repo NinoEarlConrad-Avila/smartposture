@@ -91,11 +91,12 @@ public class PoseDetectorFragment extends BaseFragment {
     private boolean guidanceStatus;
     private SharedPreferenceManager spManager;
     private PoseDetectorViewModel poseDetectorViewModel;
-    private TextView goalRepetition, currentRepetition;
+    private TextView goalRepetition, currentRepetition, workoutType;
     private int activityWorkoutId, goal, current;
     private List<String> classificationResult;
     private LinearLayout goalLayout;
     private Button done;
+    private String workoutName;
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Nullable
     @Override
@@ -120,10 +121,13 @@ public class PoseDetectorFragment extends BaseFragment {
         Button goHome = view.findViewById(R.id.goBack);
         goalRepetition = view.findViewById(R.id.goalRepCount);
         currentRepetition = view.findViewById(R.id.currentRepCount);
+        workoutType = view.findViewById(R.id.workoutType);
 
+        workoutName = requireArguments().getString("workout_name", "");
         activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
         goal = requireArguments().getInt("rep_goal", -1);
 
+        workoutType.setText(workoutName);
         if (activityWorkoutId != -1 && goal != -1){
             goalRepetition.setText(String.valueOf(goal));
         }else {
@@ -168,48 +172,48 @@ public class PoseDetectorFragment extends BaseFragment {
         goHome.setOnClickListener(v -> {
             navigateToHome();
         });
-//        done.setOnClickListener(v -> {
-//            ArrayList<Float> floatList = poseClassifierProcessor.getScores();
-//
-//            if (floatList == null || floatList.isEmpty()) {
-//                // Show dialog for no available data
-//                showCustomDialog(
-//                        "No Data Available",
-//                        "No scores were recorded. Please try the exercise again.",
-//                        null, // No action needed on confirm
-//                        null // No action needed for cancel (since button is hidden)
-//                );
-//            } else {
-//                // Show confirmation dialog to proceed
-//                showCustomDialog(
-//                        "Confirm Action",
-//                        "Scores are available. Do you want to proceed?",
-//                        () -> {
-//                            // Action on "Yes": Navigate to the WorkoutSummaryFragment
-//                            navigateToSummary(floatList);
-//                        },
-//                        () -> {
-//                            resetCamera();
-//                            resetPoseClassifierProcessor();
-//                        }
-//                );
-//            }
-//        });
         done.setOnClickListener(v -> {
-            Handler handler = new Handler(Looper.getMainLooper()); // Initialize PoseAudio
+            ArrayList<Float> floatList = poseClassifierProcessor.getScores();
 
-            // Countdown with audio
-//            handler.post(() -> pa.speak("3..................2.................1"));
-//            handler.postDelayed(() -> pa.speak("2"), 1000);
-//            handler.postDelayed(() -> pa.speak("1"), 2000);
-
-            // Change isRecording state after countdown
-            handler.postDelayed(() -> {
-                isRecording = !isRecording; // Toggle the recording state
-                Log.d(TAG, "Recording state changed: " + (isRecording ? "Started" : "Stopped"));
-            }, 1000);
-//            isRecording = isRecording ? false: true;
+            if (floatList == null || floatList.isEmpty()) {
+                // Show dialog for no available data
+                showCustomDialog(
+                        "No Data Available",
+                        "No scores were recorded. Please try the exercise again.",
+                        null, // No action needed on confirm
+                        null // No action needed for cancel (since button is hidden)
+                );
+            } else {
+                // Show confirmation dialog to proceed
+                showCustomDialog(
+                        "Confirm Action",
+                        "Scores are available. Do you want to proceed?",
+                        () -> {
+                            // Action on "Yes": Navigate to the WorkoutSummaryFragment
+                            navigateToSummary(floatList);
+                        },
+                        () -> {
+                            resetCamera();
+                            resetPoseClassifierProcessor();
+                        }
+                );
+            }
         });
+//        done.setOnClickListener(v -> {
+//            Handler handler = new Handler(Looper.getMainLooper()); // Initialize PoseAudio
+//
+//            // Countdown with audio
+////            handler.post(() -> pa.speak("3..................2.................1"));
+////            handler.postDelayed(() -> pa.speak("2"), 1000);
+////            handler.postDelayed(() -> pa.speak("1"), 2000);
+//
+//            // Change isRecording state after countdown
+//            handler.postDelayed(() -> {
+//                isRecording = !isRecording; // Toggle the recording state
+//                Log.d(TAG, "Recording state changed: " + (isRecording ? "Started" : "Stopped"));
+//            }, 1000);
+////            isRecording = isRecording ? false: true;
+//        });
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -438,6 +442,9 @@ public class PoseDetectorFragment extends BaseFragment {
     }
     private void navigateToSummary(ArrayList<Float> floatList) {
         Bundle bundle = new Bundle();
+        bundle.putInt("workout_id", requireArguments().getInt("workout_id", -1));
+        bundle.putString("workout_name", workoutName);
+        bundle.putString("workout_img_path", requireArguments().getString("workout_img_path", ""));
         bundle.putInt("room_id", requireArguments().getInt("room_id", -1));
         bundle.putInt("activity_id", requireArguments().getInt("activity_id", -1));
         bundle.putInt("rep_goal", requireArguments().getInt("rep_goal", -1));

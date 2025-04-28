@@ -76,7 +76,7 @@ public class PoseClassifierProcessor {
     this.isStreamMode = isStreamMode;
     this.homeViewModel = homeViewModel;
     this.type = type;
-    if(type != null && type.trim().equals("pushup")){
+    if(type != null && type.trim().equals("push up")){
       POSE_SAMPLES_FILE = "pose/squats.csv";
     }else if(type != null && type.trim().equals("squat")){
       POSE_SAMPLES_FILE = "pose/squats.csv";

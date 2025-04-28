@@ -41,6 +41,7 @@ public class WorkoutDetailFragment extends BaseFragment {
     private ImageButton backButton;
     private LinearLayout workoutGoals;
     private int workoutId, activityWorkoutId, repetition;
+    private String wktName, wktImgPath;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -97,6 +98,9 @@ public class WorkoutDetailFragment extends BaseFragment {
             workoutViewModel.getWorkoutDetail().observe(getViewLifecycleOwner(), response -> {
                 if (response != null && response != null) {
                     // Successfully fetched workout data
+                    wktName = response.getName();
+                    wktImgPath = response.getPath();
+
                     workoutName.setText(response.getName());
                     workoutDescription.setText(response.getDescription());
 
@@ -162,6 +166,9 @@ public class WorkoutDetailFragment extends BaseFragment {
     private void navigateToPoseDetector(String name) {
         Bundle bundle = new Bundle();
         bundle.putString("exer", name);
+        bundle.putInt("workout_id", workoutId);
+        bundle.putString("workout_name", wktName);
+        bundle.putString("workout_img_path", wktImgPath);
         bundle.putInt("room_id", requireArguments().getInt("room_id", -1));
         bundle.putInt("activity_id", requireArguments().getInt("activity_id", -1));
         bundle.putInt("activity_workout_id", activityWorkoutId);

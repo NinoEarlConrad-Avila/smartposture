@@ -191,11 +191,12 @@ public class ActivityDetailsFragment extends BaseFragment implements ActivityWor
     }
 
     @Override
-    public void viewScore(int activityWorkoutId, int repetition) {
+    public void viewScore(int activityWorkoutId, int repetition, int workoutId) {
         CustomGraph.showWorkoutDialog(
                 getViewLifecycleOwner(),
                 requireContext(),
                 activityWorkoutId,
+                workoutId,
                 repetition,
                 userId,
                 activityViewModel

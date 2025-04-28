@@ -41,9 +41,9 @@ import java.util.List;
 
 public class CustomGraph {
 
-    private static int partialSquatCount = 0;
-    private static int parallelSquatCount = 0;
-    private static int deepSquatCount = 0;
+    private static int partialCount = 0;
+    private static int parallelCount = 0;
+    private static int deepCount = 0;
     private static float totalWorkoutScore = 0;
     private static int repetitionSubmittedCount = 0;
 
@@ -51,6 +51,7 @@ public class CustomGraph {
             LifecycleOwner lifecycleOwner,
             Context context,
             int activityWorkoutId,
+            int workoutId,
             int repetition,
             int traineeId,
             ActivityViewModel activityViewModel
@@ -87,13 +88,15 @@ public class CustomGraph {
 
         activityViewModel.fetchWorkoutScores(activityWorkoutId, traineeId).observe(lifecycleOwner, workoutScores -> {
             if (workoutScores != null) {
-                setGraphViewData(workoutDialog.findViewById(R.id.viewScoreBarChart), workoutScores, context);
-
+                if(workoutId != 5002)
+                    setGraphViewThreeData(workoutDialog.findViewById(R.id.viewScoreBarChart), workoutScores, context);
+                else
+                    setGraphViewTwoData(workoutDialog.findViewById(R.id.viewScoreBarChart), workoutScores, context);
                 requiredRepetition.setText(String.valueOf(repetition));
                 repetitionSubmitted.setText(String.valueOf(repetitionSubmittedCount));
-                partialSquat.setText(String.valueOf(partialSquatCount));
-                parallelSquat.setText(String.valueOf(parallelSquatCount));
-                deepSquat.setText(String.valueOf(deepSquatCount));
+                partialSquat.setText(String.valueOf(partialCount));
+                parallelSquat.setText(String.valueOf(parallelCount));
+                deepSquat.setText(String.valueOf(deepCount));
                 totalScore.setText(String.valueOf(totalWorkoutScore));
 
                 int calcScore = (int) ((totalWorkoutScore / repetitionSubmittedCount) * 100);
@@ -119,28 +122,93 @@ public class CustomGraph {
         workoutDialog.show();
     }
 
-    public static void setGraphViewData(View view, ArrayList<Float> floatList, Context context) {
+    public static void setGraphViewTwoData(View view, ArrayList<Float> floatList, Context context) {
         BarChart barChart = view.findViewById(R.id.viewScoreBarChart);
 
         if (floatList != null && !floatList.isEmpty()) {
-            partialSquatCount = 0;
-            parallelSquatCount = 0;
-            deepSquatCount = 0;
+            parallelCount = 0;
+            deepCount = 0;
             totalWorkoutScore = 0;
             repetitionSubmittedCount = floatList.size();
 
             for (Float value : floatList) {
-                if (value == 0.25) partialSquatCount++;
-                else if (value == 0.5) parallelSquatCount++;
-                else deepSquatCount++;
+                if (value == 0.5) parallelCount++;
+                else deepCount++;
 
                 totalWorkoutScore += value;
             }
 
             ArrayList<BarEntry> entries = new ArrayList<>();
-            entries.add(new BarEntry(0f, partialSquatCount));
-            entries.add(new BarEntry(1f, parallelSquatCount));
-            entries.add(new BarEntry(2f, deepSquatCount));
+            entries.add(new BarEntry(0f, parallelCount));
+            entries.add(new BarEntry(1f, deepCount));
+
+            BarDataSet barDataSet = new BarDataSet(entries, "");
+            barDataSet.setColors(
+                    ContextCompat.getColor(context, R.color.submitted_late),
+                    ContextCompat.getColor(context, R.color.green)
+            );
+
+            barDataSet.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return String.valueOf((int) value);
+                }
+            });
+
+            BarData barData = new BarData(barDataSet);
+            barChart.setData(barData);
+            barChart.setFitBars(true);
+            XAxis xAxis = barChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+            xAxis.setLabelCount(2);
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(new String[]{"Parallel", "Deep"}));
+
+            YAxis yAxisLeft = barChart.getAxisLeft();
+            yAxisLeft.setGranularity(1f);
+            yAxisLeft.setAxisMinimum(0f);
+
+            barChart.getAxisRight().setEnabled(false);
+
+            barChart.setDoubleTapToZoomEnabled(false);
+            barChart.setPinchZoom(false);
+            barChart.setScaleEnabled(false);
+            barChart.setClickable(false);
+            barChart.animateY(1000);
+
+            Description description = new Description();
+            description.setText("");
+            barChart.setDescription(description);
+            barChart.getLegend().setEnabled(false);
+
+            barChart.invalidate();
+        } else {
+            Log.d("BarChart", "No data available in the floatList.");
+        }
+    }
+
+    public static void setGraphViewThreeData(View view, ArrayList<Float> floatList, Context context) {
+        BarChart barChart = view.findViewById(R.id.viewScoreBarChart);
+
+        if (floatList != null && !floatList.isEmpty()) {
+            partialCount = 0;
+            parallelCount = 0;
+            deepCount = 0;
+            totalWorkoutScore = 0;
+            repetitionSubmittedCount = floatList.size();
+
+            for (Float value : floatList) {
+                if (value == 0.25) partialCount++;
+                else if (value == 0.5) parallelCount++;
+                else deepCount++;
+
+                totalWorkoutScore += value;
+            }
+
+            ArrayList<BarEntry> entries = new ArrayList<>();
+            entries.add(new BarEntry(0f, partialCount));
+            entries.add(new BarEntry(1f, parallelCount));
+            entries.add(new BarEntry(2f, deepCount));
 
             BarDataSet barDataSet = new BarDataSet(entries, "");
             barDataSet.setColors(

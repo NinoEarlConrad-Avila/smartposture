@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,20 +31,29 @@ public class WorkoutSummaryFragment extends BaseFragment {
     private ActivityViewModel activityViewModel;
     private SharedPreferenceManager spManager;
     private boolean isGuest;
-
+    private int workoutId;
+    private String workoutName, workoutImgPath;
+    private TextView workoutTitle;
+    private ImageView workoutPath;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout_summary, container, false);
 
+        workoutId = requireArguments().getInt("workout_id", -1);
         int activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
         int activityId = requireArguments().getInt("activity_id", -1);
         int goalRep = requireArguments().getInt("rep_goal", -1);
+        workoutName = requireArguments().getString("workout_name", "");
+        workoutImgPath = requireArguments().getString("workout_img_path", "");
+
         spManager = getSharedPreferenceManager();
         int userId = spManager.getUserId();
         ArrayList<Float> floatList = (ArrayList<Float>) getArguments().getSerializable("floatList");
 
+        workoutTitle = view.findViewById(R.id.workoutTitle);
+        workoutPath = view.findViewById(R.id.workoutImage);
         repCount = view.findViewById(R.id.repCount);
         totalScore = view.findViewById(R.id.totalScore);
         submit = view.findViewById(R.id.submit);
@@ -101,9 +111,16 @@ public class WorkoutSummaryFragment extends BaseFragment {
 
             repCount.setText(String.valueOf(floatList.size()-1));
             totalScore.setText(String.valueOf(floatList.get(0)));
+            workoutTitle.setText(workoutName);
+            int imageResourceId = requireContext().getResources().getIdentifier(workoutImgPath, "drawable", requireContext().getPackageName());
+            workoutPath.setImageResource(imageResourceId != 0 ? imageResourceId : R.drawable.default_image);
 
             ArrayList<Float> subList = new ArrayList<>(floatList.subList(1, floatList.size()));
-            CustomGraph.setGraphViewData(view, subList, getContext());
+
+            if(workoutId != 5002)
+                CustomGraph.setGraphViewThreeData(view, subList, getContext());
+            else
+                CustomGraph.setGraphViewTwoData(view, subList, getContext());
         } else {
             Log.d("WorkoutSummaryFragment", "No data found in floatList.");
         }

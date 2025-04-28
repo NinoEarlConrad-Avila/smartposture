@@ -24,7 +24,7 @@ public class SubmissionWorkoutsAdapter extends RecyclerView.Adapter<SubmissionWo
     private int roomId, activityId, traineeId;
     private final OnViewClickListener viewClickListener;
     public interface OnViewClickListener {
-        void viewScore(int activityWorkoutId, int repetition);
+        void viewScore(int activityWorkoutId, int repetition, int workoutId);
     }
 
     public SubmissionWorkoutsAdapter(List<ActivityWorkout> workouts, SubmissionDetailFragment context, OnViewClickListener viewClickListener, int activityId, int roomId, int traineeId) {
@@ -57,7 +57,7 @@ public class SubmissionWorkoutsAdapter extends RecyclerView.Adapter<SubmissionWo
 
         holder.viewScore.setOnClickListener(view -> {
             if (viewClickListener != null) {
-                viewClickListener.viewScore(activity.getActivity_workout_id(), activity.getRepetition());
+                viewClickListener.viewScore(activity.getActivity_workout_id(), activity.getRepetition(), activity.getWorkout_id());
             }
         });
     }

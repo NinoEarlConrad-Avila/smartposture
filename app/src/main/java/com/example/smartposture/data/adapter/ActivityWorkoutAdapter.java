@@ -27,7 +27,7 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
     private int activityId, roomId;
     private String userType;
     public interface OnWorkoutClickListener {
-        void viewScore(int activity_workout_id, int repetition);
+        void viewScore(int activity_workout_id, int repetition, int workout_id);
     }
     public ActivityWorkoutAdapter(List<ActivityWorkout> workouts, ActivityDetailsFragment context, int activityId, int roomId,  OnWorkoutClickListener listener, String userType){
         this.workouts = workouts;
@@ -90,7 +90,7 @@ public class ActivityWorkoutAdapter extends RecyclerView.Adapter<ActivityWorkout
 
         holder.doneWorkout.setOnClickListener(view -> {
             if (workoutClickListener != null) {
-                workoutClickListener.viewScore(activity.getActivity_workout_id(), activity.getRepetition());
+                workoutClickListener.viewScore(activity.getActivity_workout_id(), activity.getRepetition(), activity.getWorkout_id());
             }
         });
     }

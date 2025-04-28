@@ -41,8 +41,8 @@ public class CreateActivityFragment extends BaseFragment {
     private boolean isInitial = true;
     private int[] workouts = new int[0];
     private int[] repetitions = new int[0];
-    private String[] spinnerItems = {"Squat"};
-    private int[] spinnerValues = {5000};
+    private String[] spinnerItems = {"Squat", "Push Up", "Lunge", "Wall Sit"};
+    private int[] spinnerValues = {5000, 5001, 5002, 5003};
     private String title, description, date, time;
     private boolean validInputs = true;
     private EditText titleEditText, descriptionEditText, datePickerEditText, timePickerEditText;
