@@ -163,6 +163,7 @@ public class PoseClassifierProcessor {
       // Check the classification for squat phases
       isSquattingDown = classification.getMaxConfidenceClass().equals("squats_down");
       isLungeDown = classification.getMaxConfidenceClass().equals("lunge_down");
+      isPushingDown = classification.getMaxConfidenceClass().equals("pushup_down");
       // Check the exercise type and apply relevant corrections
       if (type.equals("squat")) {
         // Get key landmarks: hip, knee, ankle
@@ -263,11 +264,11 @@ public class PoseClassifierProcessor {
           } else {
             // When pushing up, evaluate
             if (lowestPushupAngle != Float.MAX_VALUE) { // Ensure a push-down phase occurred
-              float scoreToAdd = 0f;
+              float scoreToAdd = 0;
 
               if (lowestPushupAngle > 120) {
                 scoreToAdd = 0.25f;
-              } else if (lowestPushupAngle <= 110 && lowestPushupAngle >= 90) {
+              } else if (lowestPushupAngle <= 120 && lowestPushupAngle >= 90) {
                 scoreToAdd = 0.5f;
               } else if (lowestPushupAngle < 90) {
                 scoreToAdd = 1f;
