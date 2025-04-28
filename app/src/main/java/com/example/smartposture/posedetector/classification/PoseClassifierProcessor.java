@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.smartposture.R;
 import com.example.smartposture.view.fragment.PoseDetectorFragment;
-import com.example.smartposture.viewmodel.ActivityViewModel;
 import com.example.smartposture.viewmodel.PoseDetectorViewModel;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
@@ -35,8 +34,11 @@ public class PoseClassifierProcessor {
   private MediaPlayer squatlower;
   private MediaPlayer alignforearms;
   private MediaPlayer lowerbody;
-  private boolean isSquattingDown = true;
-  private boolean isPushingDown = true;// Track if the user is squatting down
+  private boolean isSquattingDown = false;
+  private boolean isLungeDown = false;
+  private boolean isPushingDown = false;
+  private boolean isSingleStepDown = false;
+  private boolean isPushDown = true;// Track if the user is squatting down
   private boolean forearmIsAlign = true; // Track forearm alignment
   private boolean badPostureDetected = false;  // Track if a bad posture is currently detected
   private float lowestSquatAngle = Float.MAX_VALUE;
@@ -44,13 +46,13 @@ public class PoseClassifierProcessor {
   private String lastErrorResult = "";  // Store the last error result for squats
   private static String POSE_SAMPLES_FILE;
   private PoseDetectorViewModel viewModel;
-//  private static final String POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
 
   // Specify classes for which we want rep counting.
   private static final String PUSHUPS_CLASS = "pushups_down";
   private static final String SQUATS_CLASS = "squats_down";
+  private static final String WALLSIT_CLASS = "wall_sit";
   private static final String[] POSE_CLASSES = {
-          PUSHUPS_CLASS, SQUATS_CLASS
+          PUSHUPS_CLASS, SQUATS_CLASS, WALLSIT_CLASS
   };
 
   private final boolean isStreamMode;
@@ -65,6 +67,8 @@ public class PoseClassifierProcessor {
   boolean repetitionCompleted = false;
   private Context context;
   private int repCount;
+  private long lastScoreTime = 0;
+
 
   public PoseClassifierProcessor(Context context, PoseDetectorFragment fragment, boolean isStreamMode, PoseDetectorViewModel homeViewModel, String type) {
     Log.d(TAG, "PoseClassifierProcessor constructor started.");
@@ -73,9 +77,15 @@ public class PoseClassifierProcessor {
     this.homeViewModel = homeViewModel;
     this.type = type;
     if(type != null && type.trim().equals("pushup")){
-      POSE_SAMPLES_FILE = "pose/fitness_pose_samples.csv";
+      POSE_SAMPLES_FILE = "pose/squats.csv";
     }else if(type != null && type.trim().equals("squat")){
-      POSE_SAMPLES_FILE = "pose/squats_sample_data.csv";
+      POSE_SAMPLES_FILE = "pose/squats.csv";
+    } else if(type != null && type.trim().equals("wall sit")){
+      POSE_SAMPLES_FILE = "pose/wall_sit.csv";
+    } else if(type != null && type.trim().equals("lunge")){
+      POSE_SAMPLES_FILE = "pose/lunge.csv";
+    } else if(type != null && type.trim().equals("single leg squat")){
+      POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
     }
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
@@ -156,6 +166,10 @@ public class PoseClassifierProcessor {
       }
       // Check the classification for squat phases
       isSquattingDown = classification.getMaxConfidenceClass().equals("squats_down");
+      isPushDown = classification.getMaxConfidenceClass().equals("pushup_down");
+//      isWallSit = classification.getMaxConfidenceClass().equals("wall_sit");
+      isLungeDown = classification.getMaxConfidenceClass().equals("lunge_down");
+      isSingleStepDown = classification.getMaxConfidenceClass().equals("singlestep_down");
       // Check the exercise type and apply relevant corrections
       if (type.equals("squat")) {
         // Get key landmarks: hip, knee, ankle
@@ -261,20 +275,148 @@ public class PoseClassifierProcessor {
             checkForearmAlignment(elbowPoint, wristPoint, result);
           }
         }
-      }
+      } else if (type.equals("wall sit")){
+          // Get key landmarks: hip, knee, ankle
+          PoseLandmark rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP);
+          PoseLandmark rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE);
+          PoseLandmark rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE);
+          PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+          PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
+          PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
 
-      for (RepetitionCounter repCounter : repCounters) {
-        int repsBefore = repCounter.getNumRepeats();
-        int repsAfter = repCounter.addClassificationResult(classification);
-        if (repsAfter > repsBefore) {
-          ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-          tg.startTone(ToneGenerator.TONE_PROP_BEEP);
-//          lastRepResult = String.format(
-//                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
-          break;
+          if (rightHip != null && rightKnee != null && rightAnkle != null && leftHip != null && leftKnee != null && leftAnkle != null) {
+            float[] rightHipCoords = {rightHip.getPosition3D().getX(), rightHip.getPosition3D().getY(), rightHip.getPosition3D().getZ()};
+            float[] rightKneeCoords = {rightKnee.getPosition3D().getX(), rightKnee.getPosition3D().getY(), rightKnee.getPosition3D().getZ()};
+            float[] rightAnkleCoords = {rightAnkle.getPosition3D().getX(), rightAnkle.getPosition3D().getY(), rightAnkle.getPosition3D().getZ()};
+
+            float rightKneeAngle = calculateAngle3D(rightHipCoords, rightKneeCoords, rightAnkleCoords);
+
+            float[] leftHipCoords = {leftHip.getPosition3D().getX(), leftHip.getPosition3D().getY(), leftHip.getPosition3D().getZ()};
+            float[] leftKneeCoords = {leftKnee.getPosition3D().getX(), leftKnee.getPosition3D().getY(), leftKnee.getPosition3D().getZ()};
+            float[] leftAnkleCoords = {leftAnkle.getPosition3D().getX(), leftAnkle.getPosition3D().getY(), leftAnkle.getPosition3D().getZ()};
+
+            float leftKneeAngle = calculateAngle3D(leftHipCoords, leftKneeCoords, leftAnkleCoords);
+
+            // Calculate mean knee angle
+            float kneeAngle = (rightKneeAngle + leftKneeAngle) / 2;
+
+            long currentTime = System.currentTimeMillis();
+            if (lastScoreTime == 0) {
+              lastScoreTime = currentTime;
+            }
+            if(kneeAngle < 140){
+              if (currentTime - lastScoreTime >= 1000) { // 1 second has passed
+                float scoreToAdd = 0;
+
+                if (kneeAngle > 120) {
+                  scoreToAdd = 0.25f;
+                } else if (kneeAngle <= 120 && kneeAngle >= 90) {
+                  scoreToAdd = 0.5f;
+                } else if (kneeAngle < 90) {
+                  scoreToAdd = 1f;
+                }
+
+                // Add score to list
+                if (scores.isEmpty()) {
+                  scores.add(0f);  // Initialize if needed
+                }
+                scores.add(scoreToAdd);
+
+                // Update total score
+                scores.set(0, scores.get(0) + scoreToAdd);
+                viewModel.updateRepetition(scores);
+                result.add(String.format(Locale.US, "Score for repetition %.2f: ", scores.get(0)));
+
+                // Update last scoring time
+                lastScoreTime = currentTime;
+              }
+            }
+//            isWallSit = false;
+            }
+        } else if (type.equals("lunge") || type.equals("single step squat")){
+        // Get key landmarks: hip, knee, ankle
+        PoseLandmark rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP);
+        PoseLandmark rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE);
+        PoseLandmark rightAnkle = pose.getPoseLandmark(PoseLandmark.RIGHT_ANKLE);
+        PoseLandmark leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP);
+        PoseLandmark leftKnee = pose.getPoseLandmark(PoseLandmark.LEFT_KNEE);
+        PoseLandmark leftAnkle = pose.getPoseLandmark(PoseLandmark.LEFT_ANKLE);
+
+        if (rightHip != null && rightKnee != null && rightAnkle != null && leftHip != null && leftKnee != null && leftAnkle != null) {
+          float[] rightHipCoords = {rightHip.getPosition3D().getX(), rightHip.getPosition3D().getY(), rightHip.getPosition3D().getZ()};
+          float[] rightKneeCoords = {rightKnee.getPosition3D().getX(), rightKnee.getPosition3D().getY(), rightKnee.getPosition3D().getZ()};
+          float[] rightAnkleCoords = {rightAnkle.getPosition3D().getX(), rightAnkle.getPosition3D().getY(), rightAnkle.getPosition3D().getZ()};
+
+          float rightKneeAngle = calculateAngle3D(rightHipCoords, rightKneeCoords, rightAnkleCoords);
+
+          // Left foot angle
+          float[] leftHipCoords = {leftHip.getPosition3D().getX(), leftHip.getPosition3D().getY(), leftHip.getPosition3D().getZ()};
+          float[] leftKneeCoords = {leftKnee.getPosition3D().getX(), leftKnee.getPosition3D().getY(), leftKnee.getPosition3D().getZ()};
+          float[] leftAnkleCoords = {leftAnkle.getPosition3D().getX(), leftAnkle.getPosition3D().getY(), leftAnkle.getPosition3D().getZ()};
+
+          float leftKneeAngle = calculateAngle3D(leftHipCoords, leftKneeCoords, leftAnkleCoords);
+
+          // find lowest angle
+          float kneeAngle = (rightKneeAngle < leftKneeAngle) ? rightKneeAngle : leftKneeAngle;
+
+          if (isLungeDown) {
+            // Update the lowest squat angle while squatting down
+            lowestSquatAngle = Math.min(lowestSquatAngle, kneeAngle);
+          } else {
+            // Evaluate squat once transitioning up
+            if (lowestSquatAngle != Float.MAX_VALUE) { // Ensure a squat phase occurred
+              float scoreToAdd = 0;
+              if(type.equals("single step squat")){
+                if (lowestSquatAngle > 90) {
+                  scoreToAdd = 0.25f;
+                } else if (lowestSquatAngle <= 90 && lowestSquatAngle >= 50) {
+                  scoreToAdd = 0.5f;
+                } else if (lowestSquatAngle < 50) {
+                  scoreToAdd = 1f;
+                }
+              }else{
+                if (lowestSquatAngle > 90) {
+                  scoreToAdd = 0.5f;
+                } else if (lowestSquatAngle < 90) {
+                  scoreToAdd = 1f;
+                }
+              }
+              // Only add the score once per repetition
+
+              if (!repetitionCompleted) {
+                // Add score to list
+                if (scores.isEmpty()) {
+                  scores.add(0f);  // Initialize the total score if the list is empty
+                }
+                scores.add(scoreToAdd);
+                // Update total score
+//              float totalScore = scores.stream().reduce(0f, Float::sum);
+                scores.set(0, scores.get(0) + scoreToAdd);
+                viewModel.updateRepetition(scores);
+                result.add(String.format(Locale.US, "Score for repetition %.2f: ", scores.get(0)));
+
+                // Mark the repetition as completed
+                repetitionCompleted = true;
+              }
+            }
+          }
         }
       }
-      if (isSquattingDown) {
+
+
+//      for (RepetitionCounter repCounter : repCounters) {
+//        int repsBefore = repCounter.getNumRepeats();
+//        int repsAfter = repCounter.addClassificationResult(classification);
+//        if (repsAfter > repsBefore) {
+//          ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+//          tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+////          lastRepResult = String.format(
+////                  Locale.US, "%s : %d reps", repCounter.getClassName(), repsAfter);
+//          break;
+//        }
+//      }
+
+      if (isSquattingDown || isLungeDown || isSingleStepDown) {
         repetitionCompleted = false;
       }
       result.add(lastRepResult);

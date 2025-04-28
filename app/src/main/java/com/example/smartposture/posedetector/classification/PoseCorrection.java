@@ -20,12 +20,24 @@ public class PoseCorrection {
     private final List<List<PointF3D>> dataset;
     private final float threshold = 30;
     private final PoseAudio pa;
+    private static String POSE_SAMPLES_FILE;
 
     private final PoseNormalizer pn = new PoseNormalizer();
 //    private final PoseEmbedding pe = new PoseEmbedding();
 
-    public PoseCorrection(Context context, String fileName) {
-        dataset = loadDatasetFromAssets(context, fileName);
+    public PoseCorrection(Context context, String type) {
+        if(type != null && type.trim().equals("push up")){
+            POSE_SAMPLES_FILE = "pose/squats.csv";
+        }else if(type != null && type.trim().equals("squat")){
+            POSE_SAMPLES_FILE = "pose/squats_cor.csv";
+        } else if(type != null && type.trim().equals("wall sit")){
+            POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
+        } else if(type != null && type.trim().equals("lunge")){
+            POSE_SAMPLES_FILE = "pose/lunge_cor.csv";
+        } else if(type != null && type.trim().equals("single leg squat")){
+            POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
+        }
+        dataset = loadDatasetFromAssets(context, POSE_SAMPLES_FILE);
         pa = new PoseAudio(context);
     }
 
@@ -86,6 +98,7 @@ public class PoseCorrection {
                 nearestNeighbor = sample;
             }
         }
+        Log.d("NearestNeighbor", nearestNeighbor.toString());
         // Handle cases where no nearest neighbor is found
         if (nearestNeighbor == null) {
             Log.e("PoseCorrection", "No nearest neighbor found in the dataset.");
@@ -187,15 +200,15 @@ public class PoseCorrection {
         List<PointF3D> correction = findCorrection(normalizedPose);
 
         List<String> bodyPointsToConsider = Arrays.asList(
+                "Left Knee", "Right Knee",
+                "Left Hip", "Right Hip",
                 "Left Hand", "Right Hand",
                 "Left Elbow", "Right Elbow",
-                "Left Shoulder", "Right Shoulder",
-                "Left Hip", "Right Hip",
-                "Left Knee", "Right Knee"
+                "Left Shoulder", "Right Shoulder"
         );
 
         // Indices of the relevant landmarks in the pose list
-        int[] relevantIndices = {15, 16, 13, 14, 11, 12, 23, 24, 25, 26};
+        int[] relevantIndices = {25, 26, 23, 24, 15, 16, 13, 14, 11, 12};
 
         // Building guidance output based on the filtered landmarks
         List<String> guidance = new ArrayList<>();

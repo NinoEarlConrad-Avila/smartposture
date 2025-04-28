@@ -101,14 +101,14 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
                     int workoutId = (int) v.getTag();
                     String category = nameTextView.getText().toString(); // Get the category text
 
-                    if ("squat".equalsIgnoreCase(category)) {
-                        // Proceed if the category is "squat"
-                        Log.d("Adapter", "Id: " + workoutId);
+//                    if ("squat".equalsIgnoreCase(category)) {
+//                        // Proceed if the category is "squat"
+//                        Log.d("Adapter", "Id: " + workoutId);
                         listener.onWorkoutClick(workoutId);
-                    } else {
-                        // Show a toast if the category is not "squat"
-                        Toast.makeText(v.getContext(), "Feature not yet available. Coming Soon", Toast.LENGTH_SHORT).show();
-                    }
+//                    } else {
+//                        // Show a toast if the category is not "squat"
+//                        Toast.makeText(v.getContext(), "Feature not yet available. Coming Soon", Toast.LENGTH_SHORT).show();
+//                    }
                 }
             });
         }

@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,9 +58,12 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseDetection;
 import com.google.mlkit.vision.pose.PoseDetector;
+import com.google.mlkit.vision.pose.PoseLandmark;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,7 @@ import java.util.concurrent.ExecutionException;
 public class PoseDetectorFragment extends BaseFragment {
     private static final String TAG = "PoseDetectorFragment";
     private static final int PERMISSION_REQUESTS = 1;
+    private boolean isRecording = false;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
     private PoseCorrection poseCorrection;
@@ -82,7 +87,7 @@ public class PoseDetectorFragment extends BaseFragment {
     private boolean isInitialCam = true;
     private ImageView switchCameraBtn;
     private ProcessCameraProvider cameraProvider;
-    private String type, from;
+    private String type;
     private boolean guidanceStatus;
     private SharedPreferenceManager spManager;
     private PoseDetectorViewModel poseDetectorViewModel;
@@ -91,7 +96,6 @@ public class PoseDetectorFragment extends BaseFragment {
     private List<String> classificationResult;
     private LinearLayout goalLayout;
     private Button done;
-    private Button goBack;
     @OptIn(markerClass = ExperimentalGetImage.class)
     @Nullable
     @Override
@@ -113,15 +117,13 @@ public class PoseDetectorFragment extends BaseFragment {
         previewView = view.findViewById(R.id.previewView);
         graphicOverlay = view.findViewById(R.id.graphicOverlay);
         done = view.findViewById(R.id.done);
-        goBack = view.findViewById(R.id.goBack);
+        Button goHome = view.findViewById(R.id.goBack);
         goalRepetition = view.findViewById(R.id.goalRepCount);
         currentRepetition = view.findViewById(R.id.currentRepCount);
 
-        from = requireArguments().getString("from", "");
         activityWorkoutId = requireArguments().getInt("activity_workout_id", -1);
         goal = requireArguments().getInt("rep_goal", -1);
 
-        goBack.setText(from);
         if (activityWorkoutId != -1 && goal != -1){
             goalRepetition.setText(String.valueOf(goal));
         }else {
@@ -152,7 +154,7 @@ public class PoseDetectorFragment extends BaseFragment {
             }
         });
 
-        poseCorrection = new PoseCorrection(requireContext(),"pose/pose_landmarks2.csv");
+
 
         handlerThread = new HandlerThread("PoseClassifierProcessorThread");
         handlerThread.start();
@@ -161,15 +163,10 @@ public class PoseDetectorFragment extends BaseFragment {
         Bundle args = getArguments();
         type = args != null ? args.getString("exer") : "squat";
         poseClassifierProcessor = new PoseClassifierProcessor(getContext(), this, true, homeViewModel, type);
+        poseCorrection = new PoseCorrection(requireContext(),type);
 
-
-        goBack.setOnClickListener(v -> {
-            if(from.equals("Home"))
-                navigateToHome();
-            else if(from.equals("Workout"))
-                navigateToWorkout();
-            else if(from.equals("Room"))
-                navigateToRoom();
+        goHome.setOnClickListener(v -> {
+            navigateToHome();
         });
         done.setOnClickListener(v -> {
             ArrayList<Float> floatList = poseClassifierProcessor.getScores();
@@ -198,7 +195,21 @@ public class PoseDetectorFragment extends BaseFragment {
                 );
             }
         });
-
+//        done.setOnClickListener(v -> {
+//            Handler handler = new Handler(Looper.getMainLooper()); // Initialize PoseAudio
+//
+//            // Countdown with audio
+////            handler.post(() -> pa.speak("3..................2.................1"));
+////            handler.postDelayed(() -> pa.speak("2"), 1000);
+////            handler.postDelayed(() -> pa.speak("1"), 2000);
+//
+//            // Change isRecording state after countdown
+//            handler.postDelayed(() -> {
+//                isRecording = !isRecording; // Toggle the recording state
+//                Log.d(TAG, "Recording state changed: " + (isRecording ? "Started" : "Stopped"));
+//            }, 1000);
+////            isRecording = isRecording ? false: true;
+//        });
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -234,9 +245,9 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-//        if (!isInitialCam){
+        if (!isInitialCam){
             cameraProvider.unbindAll();
-//        }
+        }
 
         // Create a Preview use case
         Preview preview = new Preview.Builder().build();
@@ -272,6 +283,9 @@ public class PoseDetectorFragment extends BaseFragment {
                         InputImage image = InputImage.fromBitmap(bitmap, imageProxy.getImageInfo().getRotationDegrees());
                         Task<Pose> result = poseDetector.process(image)
                                 .addOnSuccessListener(pose -> {
+                                    if (isRecording) {
+                                        writeLandmarksToCsv(pose);
+                                    }
                                     classificationResult = new ArrayList<>();
                                     if (poseClassifierProcessor != null && runClassification) {
                                         handler.post(() -> {
@@ -412,6 +426,8 @@ public class PoseDetectorFragment extends BaseFragment {
     }
 
     private void navigateToHome() {
+        Bundle bundle = new Bundle();
+
         HomeFragment fragment = new HomeFragment();
 
         requireActivity().getSupportFragmentManager()
@@ -419,25 +435,6 @@ public class PoseDetectorFragment extends BaseFragment {
                 .replace(R.id.container, fragment)
                 .addToBackStack("RoomDetailFragment")
                 .commit();
-    }
-
-    private void navigateToWorkout() {
-        WorkoutFragment fragment = new WorkoutFragment();
-
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, fragment)
-                .addToBackStack("RoomDetailFragment")
-                .commit();
-    }
-
-    private void navigateToRoom(){
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        for (int i = 0; i < 3; i++) {
-            if (fragmentManager.getBackStackEntryCount() > 0) {
-                fragmentManager.popBackStack();
-            }
-        }
     }
     private void navigateToSummary(ArrayList<Float> floatList) {
         Bundle bundle = new Bundle();
@@ -454,6 +451,37 @@ public class PoseDetectorFragment extends BaseFragment {
                 .replace(R.id.container, summary)
                 .addToBackStack("WorkoutSummary")
                 .commit();
+    }
+    private void writeLandmarksToCsv(Pose pose) {
+        String fileName = requireContext().getExternalFilesDir(null) + "/pose_landmarks.csv";
+
+        // Use a Handler to delay the execution
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try (FileWriter writer = new FileWriter(fileName, true)) {
+                // Start an empty row
+                StringBuilder row = new StringBuilder();
+
+                // Loop through all pose landmarks and append their data (X, Y, Z) to the row
+                for (PoseLandmark landmark : pose.getAllPoseLandmarks()) {
+                    row.append(String.format("%f,%f,%f,",
+                            landmark.getPosition3D().getX(),
+                            landmark.getPosition3D().getY(),
+                            landmark.getPosition3D().getZ()));
+                }
+
+                // Remove the trailing comma and add a new line after each pose's landmarks
+                if (row.length() > 0) {
+                    row.setLength(row.length() - 1);  // Remove trailing comma
+                }
+                row.append("\n");
+
+                // Write the row to the CSV file
+                writer.append(row.toString());
+
+            } catch (IOException e) {
+                Log.e(TAG, "Error writing landmarks to CSV", e);
+            }
+        }, 3000); // 3000 milliseconds = 3 seconds
     }
     public void showBadPosturePopup(String alert) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
