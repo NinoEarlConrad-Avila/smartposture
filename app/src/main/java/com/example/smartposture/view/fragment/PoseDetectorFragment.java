@@ -83,7 +83,7 @@ public class PoseDetectorFragment extends BaseFragment {
     private Handler handler;
     private final boolean runClassification = true;
     private PoseDetectorViewModel homeViewModel;
-    private boolean isBackCamera = false;
+    private boolean isBackCamera = true;
     private boolean isInitialCam = true;
     private ImageView switchCameraBtn;
     private ProcessCameraProvider cameraProvider;

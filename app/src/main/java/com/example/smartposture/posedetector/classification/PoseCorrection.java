@@ -27,15 +27,13 @@ public class PoseCorrection {
 
     public PoseCorrection(Context context, String type) {
         if(type != null && type.trim().equals("push up")){
-            POSE_SAMPLES_FILE = "pose/squats.csv";
+            POSE_SAMPLES_FILE = "pose/pushup_cor.csv";
         }else if(type != null && type.trim().equals("squat")){
             POSE_SAMPLES_FILE = "pose/squats_cor.csv";
         } else if(type != null && type.trim().equals("wall sit")){
             POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
         } else if(type != null && type.trim().equals("lunge")){
             POSE_SAMPLES_FILE = "pose/lunge_cor.csv";
-        } else if(type != null && type.trim().equals("single leg squat")){
-            POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
         }
         dataset = loadDatasetFromAssets(context, POSE_SAMPLES_FILE);
         pa = new PoseAudio(context);

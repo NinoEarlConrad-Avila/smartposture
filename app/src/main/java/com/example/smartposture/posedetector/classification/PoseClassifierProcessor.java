@@ -37,8 +37,6 @@ public class PoseClassifierProcessor {
   private boolean isSquattingDown = false;
   private boolean isLungeDown = false;
   private boolean isPushingDown = false;
-  private boolean isSingleStepDown = false;
-  private boolean isPushDown = true;// Track if the user is squatting down
   private boolean forearmIsAlign = true; // Track forearm alignment
   private boolean badPostureDetected = false;  // Track if a bad posture is currently detected
   private float lowestSquatAngle = Float.MAX_VALUE;
@@ -77,15 +75,13 @@ public class PoseClassifierProcessor {
     this.homeViewModel = homeViewModel;
     this.type = type;
     if(type != null && type.trim().equals("push up")){
-      POSE_SAMPLES_FILE = "pose/squats.csv";
+      POSE_SAMPLES_FILE = "pose/pushup.csv";
     }else if(type != null && type.trim().equals("squat")){
       POSE_SAMPLES_FILE = "pose/squats.csv";
     } else if(type != null && type.trim().equals("wall sit")){
       POSE_SAMPLES_FILE = "pose/wall_sit.csv";
     } else if(type != null && type.trim().equals("lunge")){
       POSE_SAMPLES_FILE = "pose/lunge.csv";
-    } else if(type != null && type.trim().equals("single leg squat")){
-      POSE_SAMPLES_FILE = "pose/wall_sit_cor.csv";
     }
     if (isStreamMode) {
       emaSmoothing = new EMASmoothing();
@@ -166,10 +162,7 @@ public class PoseClassifierProcessor {
       }
       // Check the classification for squat phases
       isSquattingDown = classification.getMaxConfidenceClass().equals("squats_down");
-      isPushDown = classification.getMaxConfidenceClass().equals("pushup_down");
-//      isWallSit = classification.getMaxConfidenceClass().equals("wall_sit");
       isLungeDown = classification.getMaxConfidenceClass().equals("lunge_down");
-      isSingleStepDown = classification.getMaxConfidenceClass().equals("singlestep_down");
       // Check the exercise type and apply relevant corrections
       if (type.equals("squat")) {
         // Get key landmarks: hip, knee, ankle
@@ -232,47 +225,68 @@ public class PoseClassifierProcessor {
             }
           }
         }
-      } else if (type.equals("pushup")) {
+      } else if (type.equals("push up")) {
         // Pushup posture correction
-        PoseLandmark shoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER); // Or RIGHT_SHOULDER
-        PoseLandmark elbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW); // Or RIGHT_ELBOW
-        PoseLandmark wrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST); // Or RIGHT_WRIST
+        PoseLandmark leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER);
+        PoseLandmark leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW);
+        PoseLandmark leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST);
+        PoseLandmark rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER);
+        PoseLandmark rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW);
+        PoseLandmark rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST);
 
-        if (shoulder != null && elbow != null && wrist != null) {
-          // Get 3D coordinates for the angle calculation
-          float[] shoulderPoint = new float[]{shoulder.getPosition3D().getX(), shoulder.getPosition3D().getY(), shoulder.getPosition3D().getZ()};
-          float[] elbowPoint = new float[]{elbow.getPosition3D().getX(), elbow.getPosition3D().getY(), elbow.getPosition3D().getZ()};
-          float[] wristPoint = new float[]{wrist.getPosition3D().getX(), wrist.getPosition3D().getY(), wrist.getPosition3D().getZ()};
+        if (leftShoulder != null && leftElbow != null && leftWrist != null
+                && rightShoulder != null && rightElbow != null && rightWrist != null) {
 
-          // Calculate the angle between shoulder, elbow, and wrist
-          float pushupAngle = calculateAngle3D(shoulderPoint, elbowPoint, wristPoint);
+          // Left arm
+          float[] leftShoulderCoords = {leftShoulder.getPosition3D().getX(), leftShoulder.getPosition3D().getY(), leftShoulder.getPosition3D().getZ()};
+          float[] leftElbowCoords = {leftElbow.getPosition3D().getX(), leftElbow.getPosition3D().getY(), leftElbow.getPosition3D().getZ()};
+          float[] leftWristCoords = {leftWrist.getPosition3D().getX(), leftWrist.getPosition3D().getY(), leftWrist.getPosition3D().getZ()};
 
+          float leftElbowAngle = calculateAngle3D(leftShoulderCoords, leftElbowCoords, leftWristCoords);
+
+          // Right arm
+          float[] rightShoulderCoords = {rightShoulder.getPosition3D().getX(), rightShoulder.getPosition3D().getY(), rightShoulder.getPosition3D().getZ()};
+          float[] rightElbowCoords = {rightElbow.getPosition3D().getX(), rightElbow.getPosition3D().getY(), rightElbow.getPosition3D().getZ()};
+          float[] rightWristCoords = {rightWrist.getPosition3D().getX(), rightWrist.getPosition3D().getY(), rightWrist.getPosition3D().getZ()};
+
+          float rightElbowAngle = calculateAngle3D(rightShoulderCoords, rightElbowCoords, rightWristCoords);
+
+          // Calculate mean angle of both arms
+          float elbowAngle = (leftElbowAngle + rightElbowAngle) / 2f;
+
+          // Update movement phase
           isPushingDown = classification.getMaxConfidenceClass().equals("pushups_down");
-          // Check if the angle meets the pushup threshold (e.g., elbow at 90 degrees or lower)
-          if (!isPushingDown) {
-            lowestPushupAngle = Float.MAX_VALUE;
+
+          if (isPushingDown) {
+            // While pushing down, record the lowest elbow angle
+            lowestPushupAngle = Math.min(lowestPushupAngle, elbowAngle);
           } else {
-//            result.add("Movement: Push Down");
-            if (pushupAngle < lowestPushupAngle) {
-              lowestPushupAngle = pushupAngle;
-            }
-            // Additional checks for bad posture
-            if (pushupAngle > 90) {
-              result.add("Bad Posture: Lower your body further");
-              if (!alignforearms.isPlaying()) {
-                alignforearms.start();
+            // When pushing up, evaluate
+            if (lowestPushupAngle != Float.MAX_VALUE) { // Ensure a push-down phase occurred
+              float scoreToAdd = 0f;
+
+              if (lowestPushupAngle > 120) {
+                scoreToAdd = 0.25f;
+              } else if (lowestPushupAngle <= 110 && lowestPushupAngle >= 90) {
+                scoreToAdd = 0.5f;
+              } else if (lowestPushupAngle < 90) {
+                scoreToAdd = 1f;
+              }
+
+              // Only add the score once per repetition
+              if (!repetitionCompleted) {
+                if (scores.isEmpty()) {
+                  scores.add(0f);  // Initialize total score if empty
+                }
+                scores.add(scoreToAdd);
+                scores.set(0, scores.get(0) + scoreToAdd);
+
+                viewModel.updateRepetition(scores);
+                result.add(String.format(Locale.US, "Score for repetition %.2f: ", scores.get(0)));
+
+                repetitionCompleted = true;
               }
             }
-
-            if (!forearmIsAlign){
-              result.add("Bad Posture: Align your forearms vertically");
-              if (!alignforearms.isPlaying()) {
-                alignforearms.start();
-              }
-            }
-
-            // Check forearm alignment
-            checkForearmAlignment(elbowPoint, wristPoint, result);
           }
         }
       } else if (type.equals("wall sit")){
@@ -333,7 +347,7 @@ public class PoseClassifierProcessor {
             }
 //            isWallSit = false;
             }
-        } else if (type.equals("lunge") || type.equals("single step squat")){
+        } else if (type.equals("lunge")){
         // Get key landmarks: hip, knee, ankle
         PoseLandmark rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP);
         PoseLandmark rightKnee = pose.getPoseLandmark(PoseLandmark.RIGHT_KNEE);
@@ -366,21 +380,11 @@ public class PoseClassifierProcessor {
             // Evaluate squat once transitioning up
             if (lowestSquatAngle != Float.MAX_VALUE) { // Ensure a squat phase occurred
               float scoreToAdd = 0;
-              if(type.equals("single step squat")){
-                if (lowestSquatAngle > 90) {
-                  scoreToAdd = 0.25f;
-                } else if (lowestSquatAngle <= 90 && lowestSquatAngle >= 50) {
-                  scoreToAdd = 0.5f;
-                } else if (lowestSquatAngle < 50) {
-                  scoreToAdd = 1f;
-                }
-              }else{
                 if (lowestSquatAngle > 90) {
                   scoreToAdd = 0.5f;
                 } else if (lowestSquatAngle < 90) {
                   scoreToAdd = 1f;
                 }
-              }
               // Only add the score once per repetition
 
               if (!repetitionCompleted) {
@@ -402,8 +406,6 @@ public class PoseClassifierProcessor {
           }
         }
       }
-
-
 //      for (RepetitionCounter repCounter : repCounters) {
 //        int repsBefore = repCounter.getNumRepeats();
 //        int repsAfter = repCounter.addClassificationResult(classification);
@@ -416,7 +418,7 @@ public class PoseClassifierProcessor {
 //        }
 //      }
 
-      if (isSquattingDown || isLungeDown || isSingleStepDown) {
+      if (isSquattingDown || isLungeDown || isPushingDown) {
         repetitionCompleted = false;
       }
       result.add(lastRepResult);
