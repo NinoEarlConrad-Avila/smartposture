@@ -168,48 +168,48 @@ public class PoseDetectorFragment extends BaseFragment {
         goHome.setOnClickListener(v -> {
             navigateToHome();
         });
-        done.setOnClickListener(v -> {
-            ArrayList<Float> floatList = poseClassifierProcessor.getScores();
-
-            if (floatList == null || floatList.isEmpty()) {
-                // Show dialog for no available data
-                showCustomDialog(
-                        "No Data Available",
-                        "No scores were recorded. Please try the exercise again.",
-                        null, // No action needed on confirm
-                        null // No action needed for cancel (since button is hidden)
-                );
-            } else {
-                // Show confirmation dialog to proceed
-                showCustomDialog(
-                        "Confirm Action",
-                        "Scores are available. Do you want to proceed?",
-                        () -> {
-                            // Action on "Yes": Navigate to the WorkoutSummaryFragment
-                            navigateToSummary(floatList);
-                        },
-                        () -> {
-                            resetCamera();
-                            resetPoseClassifierProcessor();
-                        }
-                );
-            }
-        });
 //        done.setOnClickListener(v -> {
-//            Handler handler = new Handler(Looper.getMainLooper()); // Initialize PoseAudio
+//            ArrayList<Float> floatList = poseClassifierProcessor.getScores();
 //
-//            // Countdown with audio
-////            handler.post(() -> pa.speak("3..................2.................1"));
-////            handler.postDelayed(() -> pa.speak("2"), 1000);
-////            handler.postDelayed(() -> pa.speak("1"), 2000);
-//
-//            // Change isRecording state after countdown
-//            handler.postDelayed(() -> {
-//                isRecording = !isRecording; // Toggle the recording state
-//                Log.d(TAG, "Recording state changed: " + (isRecording ? "Started" : "Stopped"));
-//            }, 1000);
-////            isRecording = isRecording ? false: true;
+//            if (floatList == null || floatList.isEmpty()) {
+//                // Show dialog for no available data
+//                showCustomDialog(
+//                        "No Data Available",
+//                        "No scores were recorded. Please try the exercise again.",
+//                        null, // No action needed on confirm
+//                        null // No action needed for cancel (since button is hidden)
+//                );
+//            } else {
+//                // Show confirmation dialog to proceed
+//                showCustomDialog(
+//                        "Confirm Action",
+//                        "Scores are available. Do you want to proceed?",
+//                        () -> {
+//                            // Action on "Yes": Navigate to the WorkoutSummaryFragment
+//                            navigateToSummary(floatList);
+//                        },
+//                        () -> {
+//                            resetCamera();
+//                            resetPoseClassifierProcessor();
+//                        }
+//                );
+//            }
 //        });
+        done.setOnClickListener(v -> {
+            Handler handler = new Handler(Looper.getMainLooper()); // Initialize PoseAudio
+
+            // Countdown with audio
+//            handler.post(() -> pa.speak("3..................2.................1"));
+//            handler.postDelayed(() -> pa.speak("2"), 1000);
+//            handler.postDelayed(() -> pa.speak("1"), 2000);
+
+            // Change isRecording state after countdown
+            handler.postDelayed(() -> {
+                isRecording = !isRecording; // Toggle the recording state
+                Log.d(TAG, "Recording state changed: " + (isRecording ? "Started" : "Stopped"));
+            }, 1000);
+//            isRecording = isRecording ? false: true;
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
